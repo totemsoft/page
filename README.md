@@ -1,1 +1,10 @@
 # page
+mvn -version
+mvn clean install -Dtest -DfailIfNoTests=false
+
+mvn eclipse:clean eclipse:eclipse
+mvn dependency:sources
+mvn dependency:tree -DoutputFile=dependency.txt
+
+./mvnw spring-boot:run
+mvn spring-boot:run -Dspring-boot.run.profiles=local

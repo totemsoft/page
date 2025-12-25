@@ -2,10 +2,13 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
 <head>
     <title>Getting Started: Page Builder</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link type="text/css" rel="stylesheet" href="/css/yui-combine.css" />
+    <script type="text/javascript" src="/js/yui/yui-combine.js"></script>
+    <script type="text/javascript" src="/js/default.js"></script>
 </head>
-<body>
-    <p th:text="|Hello, ${name}!|" />
+<body class="yui-skin-sam">
+    <p th:text="|Hello, ${pageId}!|" />
 
     <div style="float: right" th:fragment="logout" sec:authorize="isAuthenticated()">
         <div>
@@ -29,7 +32,26 @@
         You are successfully logged in <span style="font-weight:bold" th:text="${userName}"></span>
         (<span style="font-weight:bold" th:text="${preferredUsername}"></span>)
     </div>
-    <div>&nbsp;</div>
+
+    <div id="pageDiv">
+        <div th:id="${pageId}" class="yui-navset">
+            <ul class="yui-nav">
+                <li id="slot.tab.${pageId}.0">
+                    <a href="#slot.page.${pageId}.0">
+                        <em th:text="${pageId}"></em>
+                    </a>
+                </li>
+            </ul>
+            <div class="yui-content">
+                <div id="slot.page.${pageId}">
+                    <div id="slot.page.${pageId.id}.0" class="yui-u first">
+                    
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div>&nbsp;</div>
     <div>
         <a href="/group1" >Group1 Message</a> |

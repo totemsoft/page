@@ -13,11 +13,11 @@ public class PageController {
 
     @GetMapping("/")
     public String main(
-            @RequestParam(name = "name", required = false, defaultValue = "Data") String name,
+            @RequestParam(name = "pageId", required = false, defaultValue = "Data007") String pageId,
             Model model) {
-        log.debug("Loading page {} ...", name);
-        model.addAttribute("name", name);
-        return "index";
+        log.debug("Loading page {} ...", pageId);
+        model.addAttribute("pageId", pageId);
+        return "page";
     }
 
 }

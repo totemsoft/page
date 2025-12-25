@@ -33,20 +33,18 @@
         (<span style="font-weight:bold" th:text="${preferredUsername}"></span>)
     </div>
 
-    <div id="pageDiv">
-        <div th:id="${pageId}" class="yui-navset">
-            <ul class="yui-nav">
-                <li id="slot.tab.${pageId}.0">
-                    <a href="#slot.page.${pageId}.0">
-                        <em th:text="${pageId}"></em>
-                    </a>
-                </li>
-            </ul>
-            <div class="yui-content">
-                <div id="slot.page.${pageId}">
-                    <div id="slot.page.${pageId.id}.0" class="yui-u first">
-                    
-                    </div>
+    <div id="pageDiv" class="yui-navset">
+        <ul class="yui-nav">
+            <li th:id="|slot.tab.${pageId}.0|">
+                <a th:href="|#slot.page.${pageId}.0|">
+                    <em th:text="${pageId}"></em>
+                </a>
+            </li>
+        </ul>
+        <div class="yui-content">
+            <div th:id="|slot.page.${pageId}|">
+                <div th:id="|slot.page.${pageId}.0|">
+                
                 </div>
             </div>
         </div>

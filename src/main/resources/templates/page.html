@@ -8,7 +8,7 @@
     <script type="text/javascript" src="/js/default.js"></script>
 </head>
 <body class="yui-skin-sam">
-    <p th:text="|Hello, ${pageId}!|" />
+    <p th:text="|Hello, ${page.id}!|" />
 
     <div style="float: right" th:fragment="logout" sec:authorize="isAuthenticated()">
         <div>
@@ -35,16 +35,19 @@
 
     <div id="pageDiv" class="yui-navset">
         <ul class="yui-nav">
-            <li th:id="|slot.tab.${pageId}.0|">
-                <a th:href="|#slot.page.${pageId}.0|">
-                    <em th:text="${pageId}"></em>
+            <li th:each="tab: ${page.tabs}" th:id="|slot.tab.${page.id}.${tab.id}|">
+                <a th:href="|#slot.page.${page.id}.${tab.id}|">
+                    <em th:text="${tab.name}"></em>
                 </a>
             </li>
         </ul>
         <div class="yui-content">
-            <div th:id="|slot.page.${pageId}|">
-                <div th:id="|slot.page.${pageId}.0|">
-                
+            <div th:each="tab: ${page.tabs}" th:id="|slot.page.${page.id}.${tab.id}|">
+                <div th:each="s: ${tab.sections}" th:id="|menu.section.${s.id}|">
+                    <em th:text="${s.tag.name}"></em>
+                    <div th:each="ss: ${s.subSections}" th:id="|menu.subSection.${ss.id}|">
+                        <em th:text="${ss.tag.name}"></em>
+                    </div>
                 </div>
             </div>
         </div>

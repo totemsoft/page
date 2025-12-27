@@ -31,9 +31,9 @@ public class PageController {
                         Section.builder().id(1).name("Section-1")
                             .tag(Tag.builder().id(1).name("Tag-1").build())
                             .build()
-//                        ,Section.builder().id(2).name("Section-2")
-//                            .tag(Tag.builder().id(2).name("Tag-2").build())
-//                            .build()
+                        ,Section.builder().id(2).name("Section-2")
+                            .tag(Tag.builder().id(2).name("Tag-2").build())
+                            .build()
                     ))
                     .build(),
                 Tab.builder().id(2).name("Tab-2")

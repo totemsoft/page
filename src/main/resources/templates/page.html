@@ -27,6 +27,7 @@
             </form>
         </div>
     </div>
+
     <h1 th:text="#{page.welcome}">TBD</h1>
     <div>
         You are successfully logged in <span style="font-weight:bold" th:text="${userName}"></span>
@@ -44,10 +45,10 @@
         <div class="yui-content">
             <div th:each="tab: ${page.tabs}" th:id="|tab.${tab.id}|">
                 <div th:each="s: ${tab.sections}" th:id="|section.${s.id}|">
-                    <div class="hd" th:text="${s.tag.name}">TBD</div>
+                    <div class="hd" th:text="${s.name}">TBD</div>
                     <div class="bd">
                         <div th:each="ss: ${s.subSections}" th:id="|subSection.${ss.id}|">
-                            <div class="hd" th:text="${ss.tag.name}"></div>
+                            <div class="hd" th:text="${ss.name}"></div>
                             <div class="bd">
                                 DataTable
                             </div>

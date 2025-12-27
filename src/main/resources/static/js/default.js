@@ -6,33 +6,52 @@ const YL  = YAHOO.lang,
       YUS = YAHOO.util.Selector;
 
 YAHOO.page = {
+    sectionMap: new Map(),
     init: function(oContainer) {
         const tabView = YAHOO.page.initTabView(oContainer);
         // init tab section(s)
         const tabs = tabView.get('tabs');
         tabs.forEach(tab => {
-            YAHOO.page.initSections(tab.get('contentEl'));
+            const elTab = tab.get('contentEl');
+            const sections = YAHOO.page.initSections(elTab);
+            YAHOO.page.sectionMap.set(tab, sections);
         });
+        // show first tab
+        tabView.set('activeIndex', 0, false);
     },
     initTabView: function(oContainer) {
         const tabView = new YAHOO.widget.TabView(oContainer);
         tabView.on('activeIndexChange', function(e) {
             const tab = this.getTab(e.newValue);
+            const elTab = tab.get('contentEl');
+            var r = YUD.getRegion(elTab.parentNode);
+            var y = r.top;
+            const sections = YAHOO.page.sectionMap.get(tab);
+            sections.forEach(section => {
+                section.moveTo(0, y);
+                const elSection = section.element;
+                r = YUD.getRegion(elSection);
+                y = r.bottom;
+            });
         });
-        tabView.set('activeIndex', 0, false);
         return tabView;
     },
-    initSections: function(oContainer) {
-        const sectionNodes = YUS.query('div[id^=section.]', oContainer);
-        for (var i = 0; i < sectionNodes.length; i++) {
-            YAHOO.page.initSection(oContainer, sectionNodes[i], i);
+    initSections: function(elTab) {
+        const nodes = YUS.query('div[id^=section.]', elTab);
+        const sections = [];
+        for (var i = 0; i < nodes.length; i++) {
+            const node = nodes[i];
+            const section = YAHOO.page.initSection(elTab, node);
+            sections.push(section);
         }
+        return sections;
     },
-    initSection: function(oContainer, sectionNode, index) {
+    initSection: function(elTab, elSection) {
         const w = YUD.getViewportWidth();
-        const section = new YAHOO.widget.Panel(sectionNode,
+        const section = new YAHOO.widget.Panel(elSection,
             { width: w + 'px', visible:true, draggable:!false, close:false } );
-        section.render(oContainer);
+        section.render(elTab);
+        return section;
     }
 };
 

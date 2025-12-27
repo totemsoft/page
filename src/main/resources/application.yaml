@@ -8,6 +8,8 @@ spring:
     name: Page Builder
   jpa:
     open-in-view: false
+  messages:
+    basename: messages
 
 # --------------------------------------------------------- #
 # EMBEDDED SERVER CONFIGURATION (ServerProperties)

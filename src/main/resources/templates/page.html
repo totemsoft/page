@@ -35,25 +35,30 @@
 
     <div id="pageDiv" class="yui-navset">
         <ul class="yui-nav">
-            <li th:each="tab: ${page.tabs}" th:id="|slot.tab.${page.id}.${tab.id}|">
-                <a th:href="|#slot.page.${page.id}.${tab.id}|">
+            <li th:each="tab: ${page.tabs}" th:id="|tab-menu.${tab.id}|">
+                <a th:href="|#tab.${tab.id}|">
                     <em th:text="${tab.name}"></em>
                 </a>
             </li>
         </ul>
         <div class="yui-content">
-            <div th:each="tab: ${page.tabs}" th:id="|slot.page.${page.id}.${tab.id}|">
-                <div th:each="s: ${tab.sections}" th:id="|menu.section.${s.id}|">
-                    <em th:text="${s.tag.name}"></em>
-                    <div th:each="ss: ${s.subSections}" th:id="|menu.subSection.${ss.id}|">
-                        <em th:text="${ss.tag.name}"></em>
+            <div th:each="tab: ${page.tabs}" th:id="|tab.${tab.id}|">
+                <div th:each="s: ${tab.sections}" th:id="|section.${s.id}|">
+                    <div class="hd" th:text="${s.tag.name}">TBD</div>
+                    <div class="bd">
+                        <div th:each="ss: ${s.subSections}" th:id="|subSection.${ss.id}|">
+                            <div class="hd" th:text="${ss.tag.name}"></div>
+                            <div class="bd">
+                                DataTable
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div>&nbsp;</div>
+    <!--div>&nbsp;</div>
     <div>
         <a href="/group1" >Group1 Message</a> |
         <a href="/group2" >Group2 Message</a> |
@@ -61,6 +66,6 @@
         <a href="/graph" >Graph Client</a> |
         <a href="/arm" >Arm Client</a> |
         <a href="/webapp/webapiA/webapiB" >Obo Client</a> |
-    </div>
+    </div-->
 </body>
 </html>

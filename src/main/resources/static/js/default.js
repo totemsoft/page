@@ -7,10 +7,32 @@ const YL  = YAHOO.lang,
 
 YAHOO.page = {
     init: function(oContainer) {
-        YAHOO.page.initTabView(oContainer);
+        const tabView = YAHOO.page.initTabView(oContainer);
+        // init tab section(s)
+        const tabs = tabView.get('tabs');
+        tabs.forEach(tab => {
+            YAHOO.page.initSections(tab.get('contentEl'));
+        });
     },
     initTabView: function(oContainer) {
-        YAHOO.page.pageTabView = new YAHOO.widget.TabView(oContainer);
+        const tabView = new YAHOO.widget.TabView(oContainer);
+        tabView.on('activeIndexChange', function(e) {
+            const tab = this.getTab(e.newValue);
+        });
+        tabView.set('activeIndex', 0, false);
+        return tabView;
+    },
+    initSections: function(oContainer) {
+        const sectionNodes = YUS.query('div[id^=section.]', oContainer);
+        for (var i = 0; i < sectionNodes.length; i++) {
+            YAHOO.page.initSection(oContainer, sectionNodes[i], i);
+        }
+    },
+    initSection: function(oContainer, sectionNode, index) {
+        const w = YUD.getViewportWidth();
+        const section = new YAHOO.widget.Panel(sectionNode,
+            { width: w + 'px', visible:true, draggable:!false, close:false } );
+        section.render(oContainer);
     }
 };
 

@@ -11,6 +11,8 @@ public class SubSection {
 
     private String name;
 
+    private long sectionId;
+
     private Tag tag;
 
 }

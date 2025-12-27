@@ -13,6 +13,13 @@ public class Section {
 
     private String name;
 
+    private long tabId;
+
+    /**
+     * vertical position (row index within the tab: 0..n)
+     */
+    private int index;
+
     private Tag tag;
 
     private List<SubSection> subSections;

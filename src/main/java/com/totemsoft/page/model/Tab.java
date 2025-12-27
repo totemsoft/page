@@ -13,6 +13,8 @@ public class Tab {
 
     private String name;
 
+    private long pageId;
+
     private List<Section> sections;
 
 }

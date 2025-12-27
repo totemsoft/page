@@ -24,13 +24,12 @@ YAHOO.page = {
         tabView.on('activeIndexChange', function(e) {
             const tab = this.getTab(e.newValue);
             const elTab = tab.get('contentEl');
-            var r = YUD.getRegion(elTab.parentNode);
-            var y = r.top;
+            let r = YUD.getRegion(elTab.parentNode);
+            let y = r.top;
             const sections = YAHOO.page.sectionMap.get(tab);
             sections.forEach(section => {
                 section.moveTo(0, y);
-                const elSection = section.element;
-                r = YUD.getRegion(elSection);
+                r = YUD.getRegion(section.element);
                 y = r.bottom;
             });
         });
@@ -39,24 +38,23 @@ YAHOO.page = {
     initSections: function(elTab) {
         const nodes = YUS.query('div[id^=section.]', elTab);
         const sections = [];
-        for (var i = 0; i < nodes.length; i++) {
-            const node = nodes[i];
+        nodes.forEach(node => {
             const section = YAHOO.page.initSection(elTab, node);
             sections.push(section);
-        }
+        });
         return sections;
     },
     initSection: function(elTab, elSection) {
         const w = YUD.getViewportWidth();
         const section = new YAHOO.widget.Panel(elSection,
-            { width: w + 'px', visible:true, draggable:!false, close:false } );
+            { width: w + 'px', visible:true, draggable:false, close:false } );
         section.render(elTab);
         return section;
     }
 };
 
 (function() {
-    var loader = new YAHOO.util.YUILoader({
+    const loader = new YAHOO.util.YUILoader({
         base: 'js/yui/',
         skin: {
             base: 'assets/skins/',

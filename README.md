@@ -9,5 +9,8 @@ mvn dependency:tree -DoutputFile=dependency.txt
 ./mvnw spring-boot:run
 mvn spring-boot:run -Dspring-boot.run.profiles=local
 
+ps aux | grep java
+kill -9 PID
+
 # References
 [Tutorial: Using Thymeleaf](https://www.thymeleaf.org/doc/tutorials/3.1/usingthymeleaf.html)

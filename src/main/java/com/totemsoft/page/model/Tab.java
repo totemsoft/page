@@ -2,6 +2,7 @@ package com.totemsoft.page.model;
 
 import java.util.List;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 import lombok.Data;
 
@@ -11,6 +12,7 @@ public class Tab {
 
     private long id;
 
+    @NotBlank
     private String name;
 
     private long pageId;

@@ -30,8 +30,13 @@ public class PageController {
                 .sections(List.of(
                         Section.builder().id(1).name("Section-1")
                             .tag(Tag.builder().id(1).name("Tag-1").build())
-                            .build()
-                        ,Section.builder().id(2).name("Section-2")
+                            .subSections(List.of(
+                                    SubSection.builder().id(1).name("SubSection-1")
+                                        .tag(Tag.builder().id(1).name("Tag-1").build())
+                                        .build()
+                                ))
+                            .build(),
+                        Section.builder().id(2).name("Section-2")
                             .tag(Tag.builder().id(2).name("Tag-2").build())
                             .build()
                     ))
@@ -40,12 +45,26 @@ public class PageController {
                     .sections(List.of(
                         Section.builder().id(10).name("Section-10")
                             .tag(Tag.builder().id(10).name("Tag-10").build())
+                            .subSections(List.of(
+                                    SubSection.builder().id(10).name("SubSection-10")
+                                        .tag(Tag.builder().id(10).name("Tag-10").build())
+                                        .build(),
+                                    SubSection.builder().id(20).name("SubSection-20")
+                                        .tag(Tag.builder().id(20).name("Tag-20").build())
+                                        .build()
+                                ))
                             .build(),
                         Section.builder().id(20).name("Section-20")
                             .tag(Tag.builder().id(20).name("Tag-20").build())
                             .subSections(List.of(
                                     SubSection.builder().id(200).name("SubSection-200")
                                         .tag(Tag.builder().id(200).name("Tag-200").build())
+                                        .build(),
+                                    SubSection.builder().id(300).name("SubSection-300")
+                                        .tag(Tag.builder().id(300).name("Tag-300").build())
+                                        .build(),
+                                    SubSection.builder().id(400).name("SubSection-400")
+                                        .tag(Tag.builder().id(400).name("Tag-400").build())
                                         .build()
                                 ))
                             .build()

@@ -6,6 +6,7 @@ import com.totemsoft.page.model.refdata.SplitRatioEnum;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
 
@@ -27,7 +28,9 @@ public class Section {
 
     private Tag tag;
 
-    private SplitRatioEnum splitRatio;
+    @NotNull
+    @Builder.Default
+    private SplitRatioEnum splitRatio = SplitRatioEnum.NONE;
 
     @Max(value = 3)
     private List<SubSection> subSections;

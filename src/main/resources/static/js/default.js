@@ -101,14 +101,14 @@ YAHOO.page = {
             });
             subSectionLayout.render();
         }
-    },
+    }/*,
     initSubSection: function(section, elSubSection) {
         const w = YUD.getViewportWidth() / 2;
         const subSection = new YAHOO.widget.Panel(elSubSection,
             { width: w + 'px', autofillheight: 'body', constraintoviewport: true, visible:true, draggable:!false, close:false } );
         subSection.render(section.body);
         return subSection;
-    }
+    }*/
 };
 
 (function() {

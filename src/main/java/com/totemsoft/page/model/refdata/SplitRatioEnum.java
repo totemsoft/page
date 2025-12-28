@@ -20,10 +20,14 @@ public enum SplitRatioEnum {
     //THREE_QUATER("3/4 - 1/4"),
     ;
 
-    private final String name;
+    private final String title;
 
     public int getId() {
         return ordinal();
+    }
+
+    public String getName() {
+        return name();
     }
 
     public static SplitRatioEnum valueOf(int id) {

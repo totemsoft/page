@@ -12,6 +12,7 @@ import com.totemsoft.page.model.Section;
 import com.totemsoft.page.model.SubSection;
 import com.totemsoft.page.model.Tab;
 import com.totemsoft.page.model.Tag;
+import com.totemsoft.page.model.refdata.SplitRatioEnum;
 
 import lombok.extern.log4j.Log4j2;
 
@@ -30,6 +31,7 @@ public class PageController {
                 .sections(List.of(
                         Section.builder().id(1).name("Section-1")
                             .tag(Tag.builder().id(1).name("Tag-1").build())
+                            .splitRatio(SplitRatioEnum.ONE)
                             .subSections(List.of(
                                     SubSection.builder().id(1).name("SubSection-1")
                                         .tag(Tag.builder().id(1).name("Tag-1").build())
@@ -45,6 +47,7 @@ public class PageController {
                     .sections(List.of(
                         Section.builder().id(10).name("Section-10")
                             .tag(Tag.builder().id(10).name("Tag-10").build())
+                            .splitRatio(SplitRatioEnum.HALF)
                             .subSections(List.of(
                                     SubSection.builder().id(10).name("SubSection-10")
                                         .tag(Tag.builder().id(10).name("Tag-10").build())
@@ -56,6 +59,7 @@ public class PageController {
                             .build(),
                         Section.builder().id(20).name("Section-20")
                             .tag(Tag.builder().id(20).name("Tag-20").build())
+                            .splitRatio(SplitRatioEnum.THIRD)
                             .subSections(List.of(
                                     SubSection.builder().id(200).name("SubSection-200")
                                         .tag(Tag.builder().id(200).name("Tag-200").build())

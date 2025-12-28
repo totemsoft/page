@@ -24,9 +24,9 @@ YAHOO.page = {
             YAHOO.page.pageMap.set(tab, sections);
         });
         // show first tab
-        //setTimeout(function() {
+        setTimeout(function() {
             tabView.set('activeIndex', 0, false);
-        //}, 100);
+        }, 100);
     },
     initTabView: function(oContainer) {
         const tabView = new YAHOO.widget.TabView(oContainer);
@@ -91,7 +91,8 @@ YAHOO.page = {
                     //footer: 'ft.' + id,
                     // The content for the body. If we find an element in the page with an id that matches the passed option we will move that element into the body of this unit. (sets via innerHTML)
                     body: 'bd.' + id,
-                    width: width / size
+                    width: width / size,
+                    gutter: '2'
                 });
             });
             const subSectionLayout = new YAHOO.widget.Layout('bd.' + section.id, {
@@ -101,14 +102,7 @@ YAHOO.page = {
             });
             subSectionLayout.render();
         }
-    }/*,
-    initSubSection: function(section, elSubSection) {
-        const w = YUD.getViewportWidth() / 2;
-        const subSection = new YAHOO.widget.Panel(elSubSection,
-            { width: w + 'px', autofillheight: 'body', constraintoviewport: true, visible:true, draggable:!false, close:false } );
-        subSection.render(section.body);
-        return subSection;
-    }*/
+    }
 };
 
 (function() {

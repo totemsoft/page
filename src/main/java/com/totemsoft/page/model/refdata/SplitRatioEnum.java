@@ -9,9 +9,9 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public enum SplitRatioEnum {
 
-    NONE(null),        // 0
-    ONE("1"),          // 1
-    HALF("1/2 - 1/2"), // 2
+    NONE(null),               // 0
+    ONE("1"),                 // 1 = #doc3
+    HALF("1/2 - 1/2"),        // 2 = yui-g
     THIRD("1/3 - 1/3 - 1/3"), // 3 = yui-gb
     ONE_THIRD("1/3 - 2/3"),   // 4 = yui-gd
     TWO_THIRD("2/3 - 1/3"),   // 5 = yui-gc

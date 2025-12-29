@@ -40,6 +40,15 @@ public class PageController {
                             .build(),
                         Section.builder().id(2).name("Section-2")
                             .tag(Tag.builder().id(2).name("Tag-2").build())
+                            .splitRatio(SplitRatioEnum.HALF)
+                            .subSections(List.of(
+                                    SubSection.builder().id(2).name("SubSection-2")
+                                        .tag(Tag.builder().id(2).name("Tag-2").build())
+                                        .build(),
+                                    SubSection.builder().id(3).name("SubSection-3")
+                                        .tag(Tag.builder().id(3).name("Tag-3").build())
+                                        .build()
+                                ))
                             .build()
                     ))
                     .build(),
@@ -47,7 +56,7 @@ public class PageController {
                     .sections(List.of(
                         Section.builder().id(10).name("Section-10")
                             .tag(Tag.builder().id(10).name("Tag-10").build())
-                            .splitRatio(SplitRatioEnum.HALF)
+                            .splitRatio(SplitRatioEnum.ONE_THIRD)
                             .subSections(List.of(
                                     SubSection.builder().id(10).name("SubSection-10")
                                         .tag(Tag.builder().id(10).name("Tag-10").build())

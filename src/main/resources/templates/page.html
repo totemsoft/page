@@ -47,7 +47,8 @@
                 <div th:each="s: ${tab.sections}" th:id="|section.${s.id}|">
                     <div class="hd" th:text="${s.name}"></div>
                     <div class="bd" th:id="|bd.section.${s.id}|">
-                        <div th:each="ss: ${s.subSections}" th:id="|subSection.${ss.id}|">
+                        <div th:each="ss, iterStat: ${s.subSections}" th:id="|subSection.${ss.id}|"
+                             th:class="${iterStat.first}? 'yui-u first' : 'yui-u'">
                             <div th:id="|hd.subSection.${ss.id}|" th:text="${ss.name}"></div>
                             <div th:id="|bd.subSection.${ss.id}|">TODO: DataTable</div>
                         </div>

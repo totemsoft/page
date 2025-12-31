@@ -6,6 +6,9 @@
     <link type="text/css" rel="stylesheet" href="/css/yui-combine.css" />
     <script type="text/javascript" src="/js/yui/yui-combine.js"></script>
     <script type="text/javascript" src="/js/default.js"></script>
+    <style type="text/css">
+        .yui-skin-sam .yui-dt table { width:100%; }
+    </style>
 </head>
 <body class="yui-skin-sam">
     <p th:text="|Hello, ${page.id}!|" />
@@ -44,13 +47,16 @@
         </ul>
         <div class="yui-content">
             <div th:each="tab: ${page.tabs}" th:id="|tab.${tab.id}|">
-                <div th:each="s: ${tab.sections}" th:id="|section.${s.id}|">
+                <div th:each="s: ${tab.sections}" th:id="|section.${s.id}|"
+                     th:class="${s.splitRatio.cssClass}">
                     <div class="hd" th:text="${s.name}"></div>
                     <div class="bd" th:id="|bd.section.${s.id}|">
                         <div th:each="ss, iterStat: ${s.subSections}" th:id="|subSection.${ss.id}|"
                              th:class="${iterStat.first}? 'yui-u first' : 'yui-u'">
                             <div th:id="|hd.subSection.${ss.id}|" th:text="${ss.name}"></div>
-                            <div th:id="|bd.subSection.${ss.id}|">TODO: DataTable</div>
+                            <div th:id="|bd.subSection.${ss.id}|">
+                                <div th:id="|data.subSection.${ss.id}|"></div>
+                            </div>
                         </div>
                     </div>
                 </div>

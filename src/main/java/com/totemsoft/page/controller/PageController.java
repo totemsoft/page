@@ -18,7 +18,7 @@ import lombok.extern.log4j.Log4j2;
 
 @Controller
 @Log4j2
-public class PageController {
+class PageController {
 
     @GetMapping("/")
     public String main(

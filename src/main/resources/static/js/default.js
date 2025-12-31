@@ -5,13 +5,6 @@ const YL  = YAHOO.lang,
       YUG = YAHOO.util.Get,
       YUS = YAHOO.util.Selector;
 
-// LayoutUnit positions
-const positions = [
-    ['center'],
-    ['center', 'right'],
-    ['left', 'center', 'right']
-];
-
 YAHOO.page = {
     pageMap: new Map(), // <Tab, [Section]>
     init: function(oContainer) {
@@ -65,17 +58,71 @@ YAHOO.page = {
         section.render(elTab);
         return section;
     },
+    getId: function(s) {
+        return s.substring(s.lastIndexOf('.') + 1);
+    },
     initSubSections: function(section) {
         const elSection = section.element;
         const elSubSections = YUS.query('div[id^=subSection.]', elSection);
         const size = elSubSections.length;
-        // max 3 subSection(s)
+        // Layout max 3 subSection(s)
         if (size > 0) {
-            YAHOO.page.initSubSectionsLayout(section, elSubSections);
+            // via grid.css
+            elSubSections.forEach((elSubSection, index) => {
+                const id = elSubSection.id; // subSection.{id}
+                var oColumnDefs = [
+                    {key:"id", sortable:true, resizeable:true},
+                    {key:"date", formatter:YAHOO.widget.DataTable.formatDate, sortable:true, sortOptions:{defaultDir:YAHOO.widget.DataTable.CLASS_DESC},resizeable:true},
+                    {key:"value", formatter:YAHOO.widget.DataTable.formatCurrency, sortable:true, resizeable:true},
+                    {key:"title", sortable:true, resizeable:true}
+                ];
+                const subSectionId = YAHOO.page.getId(id);
+                YAHOO.page.initDataTable(YUD.get('data.' + id), '/subSection/' + subSectionId, oColumnDefs);
+            });
+            // via LayoutManager
+            //YAHOO.page.initSubSectionsLayout(section, elSubSections);
+            // 
             //YAHOO.page.initSubSectionsPanel(section, elSubSections);
         }
     },
+    initDataTable: function(elSubSection, oLiveData, oColumnDefs) {
+        const id = elSubSection.id; // data.subSection.{id}
+        const subSectionId = YAHOO.page.getId(id);
+        const caption = YUD.get('hd.subSection.' + subSectionId).innerText;
+        const fields = oColumnDefs.map(columnDef => columnDef.key);
+        const dataSource = new YAHOO.util.XHRDataSource(oLiveData, {
+            connXhrMode: 'queueRequests',
+            maxCacheEntries: 0,
+            responseType: YAHOO.util.XHRDataSource.TYPE_JSON,
+            responseSchema: {
+                resultsList: 'records',
+                fields: fields,
+                metaFields: {columns:'columns'}
+            }
+        });
+        const r = YUD.getRegion(elSubSection);
+        const requestBuilder = function(oState, oDataTable) {
+            return '';
+        };
+        const dataTableConfig = {
+            caption: caption,
+            dynamicData: true,
+            generateRequest: requestBuilder,
+            //initialLoad: true,
+            //initialRequest: '/columns', // oLiveData + initialRequest
+            width: (r.width - 2) + 'px'
+        };
+        const dataTable = new YAHOO.widget.DataTable(elSubSection,
+            oColumnDefs, dataSource, dataTableConfig);
+        return dataTable;
+    },
     initSubSectionsLayout: function(section, elSubSections) {
+        // LayoutUnit positions
+        const positions = [
+            ['center'],
+            ['center', 'right'],
+            ['left', 'center', 'right']
+        ];
         const width = YUD.getViewportWidth();
         const units = [];
         // max 3 subSection(s) [left, center, right]
@@ -113,7 +160,7 @@ YAHOO.page = {
         elSubSections.forEach((elSubSection) => {
             const w = width / size;
             const subSection = new YAHOO.widget.Panel(elSubSection,
-                { /*width: w + 'px',*/ autofillheight: 'body', constraintoviewport: true, visible:true, draggable:!false, close:false } );
+                { width: w + 'px', autofillheight: 'body', constraintoviewport: true, visible:true, draggable:!false, close:false } );
             subSection.render(section.body);
         });
     }

@@ -55,6 +55,7 @@ class SubSectionController {
             ColumnDef.builder()
                 .key("date")
                 .label("Date")
+                .formatter("YAHOO.widget.DataTable.formatDate")
                 .build(),
             ColumnDef.builder()
                 .key("value")

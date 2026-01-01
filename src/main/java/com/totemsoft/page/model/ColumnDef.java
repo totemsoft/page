@@ -11,7 +11,10 @@ import lombok.Data;
  * @see https://yui.github.io/yui2/docs/yui_2.9.0/docs/YAHOO.widget.Column.html
     key: 'date'
     label: 'Date'
-    formatter: YAHOO.widget.DataTable.formatDate
+    formatter: "YAHOO.widget.DataTable.formatDate"
+        dateOptions: {format: '%d/%m/%Y', locale: 'en'}
+        dropdownOptions:
+        currencyOptions:
     resizeable: true
     sortable: true
     sortOptions: {defaultDir:YAHOO.widget.DataTable.CLASS_DESC}

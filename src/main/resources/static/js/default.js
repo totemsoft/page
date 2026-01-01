@@ -49,7 +49,7 @@ YAHOO.page = {
     initSection: function(elTab, elSection) {
         const w = YUD.getViewportWidth();
         const section = new YAHOO.widget.Panel(elSection,
-            { width: w + 'px', autofillheight: 'body', constraintoviewport: true, visible:true, draggable:!false, close:false } );
+            { width: w + 'px', autofillheight: 'body', constraintoviewport: true, visible:true, draggable:false, close:false } );
         section.beforeRenderEvent.subscribe(function() {
             YUE.onAvailable(section.id, function() {
                 YAHOO.page.initSubSections(section);
@@ -111,11 +111,14 @@ YAHOO.page = {
         // 1. access data before it gets added to RecordSet and rendered to the TBODY
         dataTable.doBeforeLoadData = function(oRequest, oResponse, oPayload) {
             const meta = oResponse.meta;
-            const oColumnDefs = meta.columns;
-            this.getDataSource().responseSchema.fields = oColumnDefs.map(columnDef => columnDef.key);
-            oColumnDefs.forEach((columnDef, index) => {
-                this.insertColumn(columnDef, index);
+            const columns = meta.columns;
+            columns.forEach((column, index) => {
+                if (column.formatter) {
+                    column.formatter = eval(column.formatter);
+                }
+                this.insertColumn(column, index);
             })
+            this.getDataSource().responseSchema.fields = columns.map(column => column.key);
             return true;
         };
         // 2. after each time the DataTable is updated with new data

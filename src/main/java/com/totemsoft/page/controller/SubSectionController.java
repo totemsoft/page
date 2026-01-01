@@ -1,7 +1,7 @@
 package com.totemsoft.page.controller;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.GetMapping;
@@ -39,7 +39,7 @@ class SubSectionController {
         return List.of(
             SeriesData.builder()
             .id(1)
-            .date(new Date())
+            .date(LocalDate.now())
             .value(new BigDecimal("1234.5678"))
             .title("Read Me Twice")
             .build()
@@ -55,11 +55,14 @@ class SubSectionController {
             ColumnDef.builder()
                 .key("date")
                 .label("Date")
-                .formatter("YAHOO.widget.DataTable.formatDate")
+                //.formatter("YAHOO.widget.DataTable.formatDate")
+                //.dateOptions("{format: '%d/%m/%Y', locale: 'en'}")
                 .build(),
             ColumnDef.builder()
                 .key("value")
                 .label("Value")
+                .formatter("YAHOO.widget.DataTable.formatCurrency")
+                //.currencyOptions("{}")
                 .build(),
             ColumnDef.builder()
                 .key("title")

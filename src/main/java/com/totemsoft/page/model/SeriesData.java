@@ -1,9 +1,8 @@
 package com.totemsoft.page.model;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDate;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
@@ -18,9 +17,8 @@ public class SeriesData {
 
     private long id;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy HH:mm:ss")
     //@JsonFormat(shape = JsonFormat.Shape.NUMBER)
-    private Date date;
+    private LocalDate date;
 
     private BigDecimal value;
 

@@ -12,9 +12,9 @@ import lombok.Data;
     key: 'date'
     label: 'Date'
     formatter: "YAHOO.widget.DataTable.formatDate"
+        currencyOptions: {}
         dateOptions: {format: '%d/%m/%Y', locale: 'en'}
         dropdownOptions:
-        currencyOptions:
     resizeable: true
     sortable: true
     sortOptions: {defaultDir:YAHOO.widget.DataTable.CLASS_DESC}
@@ -30,6 +30,10 @@ public class ColumnDef {
     private String label;
 
     private String formatter;
+
+    private String currencyOptions;
+
+    private String dateOptions;
 
     private boolean resizeable;
 

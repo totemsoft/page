@@ -70,12 +70,7 @@ YAHOO.page = {
             // via grid.css
             elSubSections.forEach((elSubSection, index) => {
                 const id = elSubSection.id; // subSection.{id}
-                var oColumnDefs = [
-                    {key:"id", sortable:true, resizeable:true},
-                    {key:"date", formatter:YAHOO.widget.DataTable.formatDate, sortable:true, sortOptions:{defaultDir:YAHOO.widget.DataTable.CLASS_DESC},resizeable:true},
-                    {key:"value", formatter:YAHOO.widget.DataTable.formatCurrency, sortable:true, resizeable:true},
-                    {key:"title", sortable:true, resizeable:true}
-                ];
+                var oColumnDefs = [];
                 const subSectionId = YAHOO.page.getId(id);
                 YAHOO.page.initDataTable(YUD.get('data.' + id), '/subSection/' + subSectionId, oColumnDefs);
             });
@@ -89,14 +84,13 @@ YAHOO.page = {
         const id = elSubSection.id; // data.subSection.{id}
         const subSectionId = YAHOO.page.getId(id);
         const caption = YUD.get('hd.subSection.' + subSectionId).innerText;
-        const fields = oColumnDefs.map(columnDef => columnDef.key);
         const dataSource = new YAHOO.util.XHRDataSource(oLiveData, {
             connXhrMode: 'queueRequests',
             maxCacheEntries: 0,
             responseType: YAHOO.util.XHRDataSource.TYPE_JSON,
             responseSchema: {
                 resultsList: 'records',
-                fields: fields,
+                //fields: oColumnDefs.map(columnDef => columnDef.key),
                 metaFields: {columns:'columns'}
             }
         });
@@ -114,6 +108,24 @@ YAHOO.page = {
         };
         const dataTable = new YAHOO.widget.DataTable(elSubSection,
             oColumnDefs, dataSource, dataTableConfig);
+        // 1. access data before it gets added to RecordSet and rendered to the TBODY
+        dataTable.doBeforeLoadData = function(oRequest, oResponse, oPayload) {
+            const meta = oResponse.meta;
+            const oColumnDefs = meta.columns;
+            this.getDataSource().responseSchema.fields = oColumnDefs.map(columnDef => columnDef.key);
+            oColumnDefs.forEach((columnDef, index) => {
+                this.insertColumn(columnDef, index);
+            })
+            return true;
+        };
+        // 2. after each time the DataTable is updated with new data
+        dataTable.handleDataReturnPayload = function(oRequest, oResponse, oPayload) {
+            return oPayload;
+        };
+        // 3. fired when the DataTable's DOM is rendered or dirty. 
+        dataTable.subscribe('renderEvent', function() {
+            // TODO: init subSection context menu
+        });
         return dataTable;
     },
     initSubSectionsLayout: function(section, elSubSections) {

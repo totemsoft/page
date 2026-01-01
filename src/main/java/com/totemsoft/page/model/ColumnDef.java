@@ -8,6 +8,7 @@ import lombok.Builder;
 import lombok.Data;
 
 /**
+ * @see https://yui.github.io/yui2/docs/yui_2.9.0/docs/YAHOO.widget.Column.html
     key: 'date'
     label: 'Date'
     formatter: YAHOO.widget.DataTable.formatDate
@@ -24,5 +25,13 @@ public class ColumnDef {
     private String key;
 
     private String label;
+
+    private String formatter;
+
+    private boolean resizeable;
+
+    private boolean sortable;
+
+    private String sortOptions;
 
 }

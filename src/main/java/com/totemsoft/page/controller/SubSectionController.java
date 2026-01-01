@@ -62,7 +62,7 @@ class SubSectionController {
                 .build(),
             ColumnDef.builder()
                 .key("title")
-                .label("Title")
+                .label("Name")
                 .build()
             );
     }

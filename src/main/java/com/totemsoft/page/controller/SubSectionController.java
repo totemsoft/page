@@ -39,8 +39,8 @@ class SubSectionController {
         return List.of(
             SeriesData.builder()
             .id(1)
-            .seriesDate(LocalDate.now())
-            .seriesValue(new BigDecimal("1234.5678"))
+            .date(LocalDate.now())
+            .value(new BigDecimal("1234.5678"))
             .title("Read Me Twice")
             .build()
         );

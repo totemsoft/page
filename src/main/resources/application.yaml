@@ -6,6 +6,8 @@
 spring:
   application:
     name: Page Builder
+  jackson:
+    default-property-inclusion: non_null
   jpa:
     open-in-view: false
   messages:

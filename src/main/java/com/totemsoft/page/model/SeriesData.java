@@ -3,10 +3,7 @@ package com.totemsoft.page.model;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.annotation.JsonProperty;
-
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -17,24 +14,23 @@ import lombok.Data;
 
 @Data
 @Builder
-@JsonInclude(Include.NON_NULL)
 @Entity
 public class SeriesData {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @JsonProperty("id")
+    @Column(name = "series_id")
     private long id;
 
-    @JsonProperty("date")
     //@JsonFormat(shape = JsonFormat.Shape.NUMBER)
-    private LocalDate seriesDate;
+    @Column(name = "series_date")
+    private LocalDate date;
 
-    @JsonProperty("value")
-    private BigDecimal seriesValue;
+    @Column(name = "series_value")
+    private BigDecimal value;
 
     @NotBlank
-    @JsonProperty("title")
+    @Column(name = "series_title")
     private String title;
 
 }

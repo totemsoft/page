@@ -51,6 +51,8 @@ class SubSectionController {
             ColumnDef.builder()
                 .key("id")
                 .label("ID")
+                //.hidden(true) // TODO: fix
+                .formatter("YAHOO.widget.DataTable.formatNumber")
                 .build(),
             ColumnDef.builder()
                 .key("date")

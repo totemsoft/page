@@ -35,6 +35,8 @@ public class ColumnDef {
 
     private String dateOptions;
 
+    private boolean hidden;
+
     private boolean resizeable;
 
     private boolean sortable;

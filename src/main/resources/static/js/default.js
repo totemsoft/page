@@ -112,13 +112,15 @@ YAHOO.page = {
         dataTable.doBeforeLoadData = function(oRequest, oResponse, oPayload) {
             const meta = oResponse.meta;
             const columns = meta.columns;
+            this.disable();
             columns.forEach((column, index) => {
                 if (column.formatter) {
-                    column.formatter = eval(column.formatter);
+                    column.formatter = eval(column.formatter); // string -> function
                 }
                 this.insertColumn(column, index);
             })
             this.getDataSource().responseSchema.fields = columns.map(column => column.key);
+            this.undisable();
             return true;
         };
         // 2. after each time the DataTable is updated with new data

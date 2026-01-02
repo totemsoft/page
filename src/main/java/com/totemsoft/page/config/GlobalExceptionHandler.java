@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import com.totemsoft.page.service.EntityNotFoundException;
+
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
@@ -14,6 +16,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public final ResponseEntity<ErrorResponse> defaultErrorHandler(Exception ex, WebRequest request) throws Exception {
         final HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
         return error(status, ex, "Unexpected Server Error");
+    }
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handle(EntityNotFoundException ex, WebRequest request) throws Exception {
+        final HttpStatus status = HttpStatus.NOT_FOUND;
+        return error(status, ex, null);
     }
 
     private ResponseEntity<ErrorResponse> error(HttpStatus status, Exception ex, String message) {

@@ -1,4 +1,4 @@
-package com.totemsoft.page.model;
+package com.totemsoft.page.model.entity;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
@@ -6,15 +6,11 @@ import lombok.Data;
 
 @Data
 @Builder
-public class SubSection {
+public class Tag {
 
     private long id;
 
     @NotBlank
     private String name;
-
-    private long sectionId;
-
-    private Tag tag;
 
 }

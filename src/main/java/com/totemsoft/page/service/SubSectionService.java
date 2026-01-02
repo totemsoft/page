@@ -5,9 +5,10 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.totemsoft.page.model.ColumnDef;
-import com.totemsoft.page.model.SeriesData;
+import com.totemsoft.page.model.entity.SeriesData;
 import com.totemsoft.page.repository.SeriesDataRepository;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -16,6 +17,7 @@ public class SubSectionService {
 
     private final SeriesDataRepository repository;
 
+    @Transactional()
     public List<SeriesData> findData(long subSectionId) {
         return repository.findAll();
     }

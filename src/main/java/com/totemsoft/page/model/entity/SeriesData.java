@@ -1,4 +1,4 @@
-package com.totemsoft.page.model;
+package com.totemsoft.page.model.entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;

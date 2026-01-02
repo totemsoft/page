@@ -1,8 +1,8 @@
 # https://docs.spring.io/spring-boot/docs/current/reference/html/appendix-application-properties.html
 
-# --------------------------------------------------------- #
-# IDENTITY (ContextIdApplicationContextInitializer)
-# --------------------------------------------------------- #
+logging:
+  level.com.totemsoft.page: DEBUG
+
 spring:
   application:
     name: Page Builder

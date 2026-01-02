@@ -1,5 +1,7 @@
 package com.totemsoft.page.config;
 
+import org.springframework.http.HttpStatus;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
@@ -11,8 +13,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ErrorResponse {
 
-    @JsonProperty("errorCode")
-    private int errorCode;
+    @JsonProperty("status")
+    private HttpStatus status;
 
     @JsonProperty("message")
     private String message;

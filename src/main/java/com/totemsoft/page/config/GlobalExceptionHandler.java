@@ -12,8 +12,8 @@ import com.totemsoft.page.service.EntityNotFoundException;
 @ControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler(Exception.class)
-    public final ResponseEntity<ErrorResponse> defaultErrorHandler(Exception ex, WebRequest request) throws Exception {
+    @ExceptionHandler(Throwable.class)
+    public final ResponseEntity<ErrorResponse> defaultErrorHandler(Throwable ex, WebRequest request) throws Exception {
         final HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
         return error(status, ex, "Unexpected Server Error");
     }
@@ -24,10 +24,10 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return error(status, ex, null);
     }
 
-    private ResponseEntity<ErrorResponse> error(HttpStatus status, Exception ex, String message) {
-        final ErrorResponse error = new ErrorResponse(
-                status.value(),
-                message != null ? message : ex.getMessage());
+    private ResponseEntity<ErrorResponse> error(HttpStatus status, Throwable ex, String message) {
+        final var error = new ErrorResponse(
+                status,
+                message == null ? ex.getMessage() : (message + ": " + ex.getMessage()));
         return new ResponseEntity<>(error, status);
     }
 

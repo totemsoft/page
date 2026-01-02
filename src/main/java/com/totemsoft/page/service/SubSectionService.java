@@ -5,7 +5,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.totemsoft.page.model.ColumnDef;
-import com.totemsoft.page.model.entity.SeriesData;
+import com.totemsoft.page.model.SeriesDataDto;
+import com.totemsoft.page.model.mapper.SeriesDataMapper;
 import com.totemsoft.page.repository.SeriesDataRepository;
 
 import jakarta.transaction.Transactional;
@@ -17,9 +18,11 @@ public class SubSectionService {
 
     private final SeriesDataRepository repository;
 
+    private final SeriesDataMapper mapper;
+
     @Transactional()
-    public List<SeriesData> findData(long subSectionId) {
-        return repository.findAll();
+    public List<SeriesDataDto> findData(long subSectionId) {
+        return mapper.map(repository.findAll());
     }
 
     public List<ColumnDef> findColumns() {

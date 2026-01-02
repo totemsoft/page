@@ -20,7 +20,6 @@ public class SeriesData {
     @Column(name = "series_id")
     private long id;
 
-    //@JsonFormat(shape = JsonFormat.Shape.NUMBER)
     @Column(name = "series_date")
     private LocalDate date;
 

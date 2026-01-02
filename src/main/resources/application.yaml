@@ -1,7 +1,8 @@
 # https://docs.spring.io/spring-boot/docs/current/reference/html/appendix-application-properties.html
 
 logging:
-  level.com.totemsoft.page: DEBUG
+  level:
+    com.totemsoft.page: DEBUG
 
 spring:
   application:

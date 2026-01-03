@@ -14,4 +14,7 @@ kill -9 PID
 
 # References
 [Spring Boot: Managed Dependency Coordinates](https://docs.spring.io/spring-boot/appendix/dependency-versions/coordinates.html)
+[Securing a Web Application](https://spring.io/guides/gs/securing-web)
+[MapStruct: Reference Guide](https://mapstruct.org/documentation/stable/reference/html/)
 [Tutorial: Using Thymeleaf](https://www.thymeleaf.org/doc/tutorials/3.1/usingthymeleaf.html)
+[Thymeleaf + Spring Security integration basics](https://www.thymeleaf.org/doc/articles/springsecurity.html)

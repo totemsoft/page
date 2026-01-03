@@ -1,19 +1,64 @@
 <!DOCTYPE HTML>
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Spring Security Example </title>
+    <title th:text="#{login.title}">TBD</title>
+    <style type="text/css">
+        #custom-doc {
+            margin: auto;
+            text-align: left;
+            width: 30em;
+            min-width: 300px;
+        }
+        .error {
+            color: red;
+        }
+        input[type=text],
+        input[type=password] {
+          width: 100%;
+          padding: 12px 20px;
+          margin: 8px 0;
+          display: inline-block;
+          border: 1px solid #ccc;
+          box-sizing: border-box;
+        }
+        input[type=submit] {
+          background-color: #04AA6D;
+          color: white;
+          padding: 14px 20px;
+          margin: 8px 0;
+          border: none;
+          cursor: pointer;
+          width: 100%;
+        }
+        input[type=submit]:hover {
+          opacity: 0.8;
+        }
+    </style>
 </head>
 <body>
-    <div th:if="${param.error}">
-        Invalid username and password.
+    <div id="custom-doc">
+        <h1 th:text="#{login.welcome}">TBD</h1>
+
+        <div th:if="${param.error}" class="error" th:text="#{login.error}"></div>
+        <div th:if="${param.logout}" class="warning" th:text="#{login.logout}"></div>
+
+        <form th:action="@{/login}" method="post">
+            <div>
+                <label>
+                    <b th:text="#{login.username.label}"></b>
+                    <input type="text" th:placeholder="#{login.username.placeholder}" name="username" value="user"/>
+                </label>
+            </div>
+            <div>
+                <label>
+                    <b th:text="#{login.password.label}"></b>
+                    <input type="password" th:placeholder="#{login.password.placeholder}" name="password" value="Passw0rd"/>
+                </label>
+            </div>
+            <div>
+                <input type="submit" th:value="#{login.submit}" />
+            </div>
+        </form>
     </div>
-    <div th:if="${param.logout}">
-        You have been logged out.
-    </div>
-    <form th:action="@{/login}" method="post">
-        <div><label> User Name : <input type="text" name="username" value="user"/> </label></div>
-        <div><label> Password: <input type="password" name="password" value="Passw0rd"/> </label></div>
-        <div><input type="submit" value="Sign In"/></div>
-    </form>
 </body>
 </html>

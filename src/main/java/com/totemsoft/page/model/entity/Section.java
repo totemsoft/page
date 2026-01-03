@@ -8,7 +8,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -54,7 +53,7 @@ public class Section {
     private long tabId;
 
     @Max(value = 3)
-    @OneToMany(mappedBy = "sectionId", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "sectionId")
     private List<SubSection> subSections;
 
     @Transient

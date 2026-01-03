@@ -4,11 +4,11 @@ import java.util.List;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -34,7 +34,8 @@ public class Tab {
     @Column(name = "page_id")
     private long pageId;
 
-    @OneToMany(mappedBy = "tabId", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "tabId")
+    @OrderBy("index")
     private List<Section> sections;
 
 }

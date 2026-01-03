@@ -70,27 +70,29 @@ YAHOO.page = {
             // via grid.css
             elSubSections.forEach((elSubSection, index) => {
                 const id = elSubSection.id; // subSection.{id}
-                var oColumnDefs = [];
                 const subSectionId = YAHOO.page.getId(id);
-                YAHOO.page.initDataTable(YUD.get('data.' + id), '/subSection/' + subSectionId, oColumnDefs);
+                YAHOO.page.initDataTable(YUD.get('data.' + id), '/subSection/' + subSectionId);
             });
             // via LayoutManager
             //YAHOO.page.initSubSectionsLayout(section, elSubSections);
-            // 
+            // via Panel
             //YAHOO.page.initSubSectionsPanel(section, elSubSections);
         }
     },
-    initDataTable: function(elSubSection, oLiveData, oColumnDefs) {
+    initDataTable: function(elSubSection, oLiveData) {
         const id = elSubSection.id; // data.subSection.{id}
         const subSectionId = YAHOO.page.getId(id);
-        const caption = YUD.get('hd.subSection.' + subSectionId).innerText;
+        const headerEl = YUD.get('hd.subSection.' + subSectionId); // hd.subSection.{id}
+        const caption = headerEl.innerText;
+        setTimeout(function(el) {
+            el.parentNode.removeChild(el);
+        }, 100, headerEl);
         const dataSource = new YAHOO.util.XHRDataSource(oLiveData, {
             connXhrMode: 'queueRequests',
             maxCacheEntries: 0,
             responseType: YAHOO.util.XHRDataSource.TYPE_JSON,
             responseSchema: {
                 resultsList: 'records',
-                //fields: oColumnDefs.map(columnDef => columnDef.key),
                 metaFields: {columns:'columns'}
             }
         });
@@ -106,6 +108,7 @@ YAHOO.page = {
             //initialRequest: '/columns', // oLiveData + initialRequest
             width: (r.width - 2) + 'px'
         };
+        const oColumnDefs = [];
         const dataTable = new YAHOO.widget.DataTable(elSubSection,
             oColumnDefs, dataSource, dataTableConfig);
         // 1. access data before it gets added to RecordSet and rendered to the TBODY

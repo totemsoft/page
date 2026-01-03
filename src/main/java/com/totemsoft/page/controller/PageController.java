@@ -17,9 +17,9 @@ class PageController {
 
     private final PageService pageService;
 
-    @GetMapping("/")
+    @GetMapping("/page")
     public String main(
-            @RequestParam(name = "pageId", required = false, defaultValue = "0") long pageId,
+            @RequestParam(name = "pageId", required = true, defaultValue = "0") long pageId,
             Model model) {
         log.debug("Loading page {} ...", pageId);
         final var page = pageService.findPage(pageId);

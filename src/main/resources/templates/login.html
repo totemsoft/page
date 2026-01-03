@@ -9,9 +9,9 @@
             width: 30em;
             min-width: 300px;
         }
-        .error {
-            color: red;
-        }
+        .bold { font-weight:bold; }
+        .italic { font-style:italic; }
+        .error { color: red; }
         input[type=text],
         input[type=password] {
           width: 100%;
@@ -44,16 +44,12 @@
 
         <form th:action="@{/login}" method="post">
             <div>
-                <label>
-                    <b th:text="#{login.username.label}"></b>
-                    <input type="text" th:placeholder="#{login.username.placeholder}" name="username" value="user"/>
-                </label>
+                <label for="username" th:text="#{login.username.label}" class="bold">TBD</label>
+                <input type="text" th:placeholder="#{login.username.placeholder}" name="username" value="user"/>
             </div>
             <div>
-                <label>
-                    <b th:text="#{login.password.label}"></b>
-                    <input type="password" th:placeholder="#{login.password.placeholder}" name="password" value="Passw0rd"/>
-                </label>
+                <label for="password" th:text="#{login.password.label}" class="bold">TBD</label>
+                <input type="password" th:placeholder="#{login.password.placeholder}" name="password" value="Passw0rd"/>
             </div>
             <div>
                 <input type="submit" th:value="#{login.submit}" />

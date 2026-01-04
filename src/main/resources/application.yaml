@@ -15,8 +15,6 @@ spring:
     open-in-view: false
   messages:
     basename: messages
-  # For non-embedded databases explicitly enable initialization (schema.sql, data.sql)
-  sql.init.mode: always
 
 # --------------------------------------------------------- #
 # EMBEDDED SERVER CONFIGURATION (ServerProperties)

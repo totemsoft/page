@@ -34,7 +34,7 @@ public class SeriesData {
     private String title;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "series_data_key_id")
+    @JoinColumn(name = "key_id")
     private Key key;
 
 }

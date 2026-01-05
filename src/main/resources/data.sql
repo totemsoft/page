@@ -62,12 +62,12 @@ insert into tag (tag_name, tag_title, tag_type_id) values
   ('TAG_TYPE_10', 'Tag Type 10',10)
   ;
 
-insert into series_data_key (series_data_key_name) values
-  ('KEY_01'),
-  ('KEY_02')
+insert into series_data_key (key_name, key_title) values
+  ('KEY_01', 'Key 01'),
+  ('KEY_02', 'Key 02')
   ;
 
-insert into series_data (series_data_date, series_data_value, series_data_title, series_data_key_id) values
+insert into series_data (series_data_date, series_data_value, series_data_title, key_id) values
   (CURRENT_DATE, RAND() * (10000 - 1000) + 1000, 'Read Me Once',  1),
   (CURRENT_DATE, RAND() * (20000 - 2000) + 2000, 'Read Me Twice', 2)
   ;

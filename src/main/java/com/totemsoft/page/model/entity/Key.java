@@ -25,19 +25,19 @@ public class Key {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "series_data_key_id")
+    @Column(name = "key_id")
     private long id;
 
     @NotBlank
-    @Column(name = "series_data_key_name")
+    @Column(name = "key_name")
     private String name;
 
-    @Column(name = "series_data_key_title")
+    @Column(name = "key_title")
     private String title;
 
     @ManyToMany
     @JoinTable(name = "key_tag",
-        joinColumns = @JoinColumn(name = "key_id", referencedColumnName = "series_data_key_id"),
+        joinColumns = @JoinColumn(name = "key_id", referencedColumnName = "key_id"),
         inverseJoinColumns = @JoinColumn(name = "tag_id", referencedColumnName = "tag_id"))
     private List<Tag> tags;
 

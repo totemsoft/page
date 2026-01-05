@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import com.totemsoft.page.model.ColumnDef;
 import com.totemsoft.page.model.SeriesDataDto;
+import com.totemsoft.page.model.entity.Key;
 import com.totemsoft.page.model.entity.SubSection;
 import com.totemsoft.page.model.mapper.SeriesDataMapper;
 import com.totemsoft.page.repository.SeriesDataRepository;
@@ -29,18 +30,19 @@ public class SubSectionService {
     @Transactional
     public List<SeriesDataDto> findData(long subSectionId) {
         log.trace("findData({}) ...", subSectionId);
-        final var subSection =repository.findById(subSectionId)
-            .orElseThrow(() -> new EntityNotFoundException(subSectionId, SubSection.class));
-        final var keys = subSection.getKeys();
+        final var keys = findKeys(subSectionId);
         if (keys.isEmpty()) {
             return List.of();
         }
         final var data = seriesDataRepository.findByKeyIn(keys);
-        //log.debug("findData({}): {}", subSectionId, data);
         return mapper.map(data);
     }
 
-    public List<ColumnDef> findColumns() {
+    @Transactional
+    public List<ColumnDef> findColumns(long subSectionId) {
+        log.trace("findColumns({}) ...", subSectionId);
+        //final var keys = findKeys(subSectionId);
+        //keys.stream().
         return List.of(
             ColumnDef.builder()
                 .key("tag")
@@ -70,6 +72,12 @@ public class SubSectionService {
                 .label("Name")
                 .build()
             );
+    }
+
+    private List<Key> findKeys(long subSectionId) {
+        final var subSection = repository.findById(subSectionId)
+            .orElseThrow(() -> new EntityNotFoundException(subSectionId, SubSection.class));
+        return subSection.getKeys();
     }
 
 }

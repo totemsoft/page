@@ -4,7 +4,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.totemsoft.page.model.SeriesDataResult;
+import com.totemsoft.page.model.SubSectionResult;
 import com.totemsoft.page.service.SubSectionService;
 
 import lombok.RequiredArgsConstructor;
@@ -18,19 +18,19 @@ class SubSectionController {
     private final SubSectionService subSectionService;
 
     @GetMapping("/subSection/{subSectionId}")
-    SeriesDataResult subSectionData(@PathVariable long subSectionId) {
+    SubSectionResult subSectionData(@PathVariable long subSectionId) {
         log.debug("Loading data for subSection {} ...", subSectionId);
-        return SeriesDataResult.builder()
+        return SubSectionResult.builder()
             .records(subSectionService.findData(subSectionId))
-            .columns(subSectionService.findColumns())
+            .columns(subSectionService.findColumns(subSectionId))
             .build();
     }
 
     @GetMapping("/subSection/{subSectionId}/columns")
-    SeriesDataResult subSectionColumns(@PathVariable long subSectionId) {
+    SubSectionResult subSectionColumns(@PathVariable long subSectionId) {
         log.debug("Loading column definitions for subSection {} ...", subSectionId);
-        return SeriesDataResult.builder()
-            .columns(subSectionService.findColumns())
+        return SubSectionResult.builder()
+            .columns(subSectionService.findColumns(subSectionId))
             .build();
     }
 

@@ -11,6 +11,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -35,6 +36,7 @@ public class Key {
     @Column(name = "key_title")
     private String title;
 
+    @Size(min = 2)
     @ManyToMany
     @JoinTable(name = "key_tag",
         joinColumns = @JoinColumn(name = "key_id", referencedColumnName = "key_id"),

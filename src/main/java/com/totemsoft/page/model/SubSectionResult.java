@@ -7,7 +7,7 @@ import lombok.Data;
 
 @Data
 @Builder
-public class SeriesDataResult {
+public class SubSectionResult {
 
     private List<ColumnDef> columns;
 

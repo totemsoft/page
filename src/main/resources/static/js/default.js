@@ -6,6 +6,7 @@ const YL  = YAHOO.lang,
       YUS = YAHOO.util.Selector;
 
 YAHOO.page = {
+    tabView: null,
     pageMap: new Map(), // <Tab, [Section]>
     getId: function(s) {
         return s.substring(s.lastIndexOf('.') + 1);
@@ -20,21 +21,18 @@ YAHOO.page = {
         // Add the custom formatter
         YAHOO.widget.DataTable.formatTag = this.formatTag;
         //
-        const tabView = YAHOO.page.initTabView(oContainer);
+        this.tabView = YAHOO.page.initTabView(oContainer);
         // init tab section(s)
-        const tabs = tabView.get('tabs');
-        tabs.forEach(tab => {
+        this.tabView.get('tabs').forEach(tab => {
             const elTab = tab.get('contentEl');
             const sections = YAHOO.page.initSections(elTab);
             YAHOO.page.pageMap.set(tab, sections);
         });
-        // show first tab
-        setTimeout(function() {
-            tabView.set('activeIndex', 0, false);
-        }, 100);
+        // TODO: show second tab (final step after all data loaded in DataTable(s))
+        //this.tabView.selectTab(1);
     },
     initTabView: function(oContainer) {
-        const tabView = new YAHOO.widget.TabView(oContainer);
+        const tabView = new YAHOO.widget.TabView(oContainer/*, {activeIndex: 0}*/);
         tabView.on('activeIndexChange', function(e) {
             const tab = this.getTab(e.newValue);
             const elTab = tab.get('contentEl');
@@ -60,13 +58,15 @@ YAHOO.page = {
     },
     initSection: function(elTab, elSection) {
         const w = YUD.getViewportWidth();
-        const section = new YAHOO.widget.Panel(elSection,
-            { width: w + 'px', autofillheight: 'body', constraintoviewport: true, visible:true, draggable:false, close:false } );
-        section.beforeRenderEvent.subscribe(function() {
-            YUE.onAvailable(section.id, function() {
-                YAHOO.page.initSubSections(section);
-            });
+        const section = new YAHOO.widget.Panel(elSection, { 
+            width: w + 'px',
+            autofillheight: 'body',
+            //constraintoviewport: true,
+            visible: true,
+            draggable: !false,
+            close: false
         });
+        YAHOO.page.initSubSections(section);
         section.render(elTab);
         return section;
     },
@@ -77,10 +77,10 @@ YAHOO.page = {
         // Layout max 3 subSection(s)
         if (size > 0) {
             // via grid.css
-            elSubSections.forEach((elSubSection, index) => {
+            elSubSections.forEach(elSubSection => {
                 const id = elSubSection.id; // subSection.{id}
                 const subSectionId = YAHOO.page.getId(id);
-                YAHOO.page.initDataTable(YUD.get('data.' + id), '/subSection/' + subSectionId);
+                const dataTable = YAHOO.page.initDataTable(YUD.get('data.' + id), '/subSection/' + subSectionId);
             });
             // via LayoutManager
             //YAHOO.page.initSubSectionsLayout(section, elSubSections);
@@ -111,7 +111,7 @@ YAHOO.page = {
         };
         const dataTableConfig = {
             caption: caption,
-            dynamicData: true,
+            //dynamicData: true,
             generateRequest: requestBuilder,
             //initialLoad: true,
             //initialRequest: '/columns', // oLiveData + initialRequest
@@ -124,15 +124,17 @@ YAHOO.page = {
         dataTable.doBeforeLoadData = function(oRequest, oResponse, oPayload) {
             const meta = oResponse.meta;
             const columnDefs = meta.columns;
-            this.disable();
-            columnDefs.forEach((columnDef, index) => {
-                if (columnDef.formatter && typeof columnDef.formatter === 'string') {
-                    columnDef.formatter = eval(columnDef.formatter); // string -> function
-                }
-                const column = this.insertColumn(columnDef, index);
-            })
-            this.getDataSource().responseSchema.fields = columnDefs.map(columnDef => columnDef.key);
-            this.undisable();
+            if (columnDefs) {
+                //this.disable();
+                columnDefs.forEach((columnDef, index) => {
+                    if (columnDef.formatter && typeof columnDef.formatter === 'string') {
+                        columnDef.formatter = eval(columnDef.formatter); // string -> function
+                    }
+                    const column = this.insertColumn(columnDef, index);
+                })
+                this.getDataSource().responseSchema.fields = columnDefs.map(columnDef => columnDef.key);
+                //this.undisable();
+            }
             return true;
         };
         // 2. after each time the DataTable is updated with new data

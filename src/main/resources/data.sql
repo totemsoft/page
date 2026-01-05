@@ -129,6 +129,7 @@ insert into sub_section_key (sub_section_id, key_id) values
 
 insert into key_tag (key_id, tag_id) values
   (1, 1),
+  (1, 2),
   (2, 1),
   (2, 2),
   (3, 1),

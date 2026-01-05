@@ -36,8 +36,8 @@ public class Key {
     private String title;
 
     @ManyToMany
-    @JoinTable(name = "series_data_key_tag",
-        joinColumns = @JoinColumn(name = "series_data_key_id", referencedColumnName = "series_data_key_id"),
+    @JoinTable(name = "key_tag",
+        joinColumns = @JoinColumn(name = "key_id", referencedColumnName = "series_data_key_id"),
         inverseJoinColumns = @JoinColumn(name = "tag_id", referencedColumnName = "tag_id"))
     private List<Tag> tags;
 

@@ -7,7 +7,19 @@ const YL  = YAHOO.lang,
 
 YAHOO.page = {
     pageMap: new Map(), // <Tab, [Section]>
+    getId: function(s) {
+        return s.substring(s.lastIndexOf('.') + 1);
+    },
+    formatTag: function(elLiner, oRecord, oColumn, oData) {
+        const el = elLiner.parentNode;
+        if (!YUD.hasClass(el, 'page-tag')) {
+            YUD.addClass(el, 'page-tag');
+        }
+    },
     init: function(oContainer) {
+        // Add the custom formatter
+        YAHOO.widget.DataTable.formatTag = this.formatTag;
+        //
         const tabView = YAHOO.page.initTabView(oContainer);
         // init tab section(s)
         const tabs = tabView.get('tabs');
@@ -57,9 +69,6 @@ YAHOO.page = {
         });
         section.render(elTab);
         return section;
-    },
-    getId: function(s) {
-        return s.substring(s.lastIndexOf('.') + 1);
     },
     initSubSections: function(section) {
         const elSection = section.element;
@@ -114,15 +123,15 @@ YAHOO.page = {
         // 1. access data before it gets added to RecordSet and rendered to the TBODY
         dataTable.doBeforeLoadData = function(oRequest, oResponse, oPayload) {
             const meta = oResponse.meta;
-            const columns = meta.columns;
+            const columnDefs = meta.columns;
             this.disable();
-            columns.forEach((column, index) => {
-                if (column.formatter) {
-                    column.formatter = eval(column.formatter); // string -> function
+            columnDefs.forEach((columnDef, index) => {
+                if (columnDef.formatter && typeof columnDef.formatter === 'string') {
+                    columnDef.formatter = eval(columnDef.formatter); // string -> function
                 }
-                this.insertColumn(column, index);
+                const column = this.insertColumn(columnDef, index);
             })
-            this.getDataSource().responseSchema.fields = columns.map(column => column.key);
+            this.getDataSource().responseSchema.fields = columnDefs.map(columnDef => columnDef.key);
             this.undisable();
             return true;
         };

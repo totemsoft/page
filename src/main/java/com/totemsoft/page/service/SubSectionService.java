@@ -32,6 +32,11 @@ public class SubSectionService {
     public List<ColumnDef> findColumns() {
         return List.of(
             ColumnDef.builder()
+                .key("tag")
+                .label("")
+                .formatter("YAHOO.widget.DataTable.formatTag")
+                .build(),
+            ColumnDef.builder()
                 .key("id")
                 .label("ID")
                 //.hidden(true) // TODO: fix

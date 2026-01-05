@@ -25,6 +25,7 @@ public class PageService {
         log.trace("findPage({}) ...", pageId);
         final var page = repository.findById(pageId)
             .orElseThrow(() -> new EntityNotFoundException(pageId, Page.class));
+        //log.debug("findPage({}): {}", pageId, page);
         return mapper.map(page);
     }
 

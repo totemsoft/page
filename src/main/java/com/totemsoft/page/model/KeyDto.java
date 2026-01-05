@@ -1,18 +1,20 @@
 package com.totemsoft.page.model;
 
+import java.util.List;
+
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
-public class SubSectionDto {
+public class KeyDto {
 
     private long id;
 
     @NotBlank
     private String name;
 
-    private long sectionId;
+    private String title;
 
-    //private List<KeyDto> keys;
+    private List<TagDto> tags;
 
 }

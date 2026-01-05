@@ -6,8 +6,10 @@ import org.springframework.stereotype.Service;
 
 import com.totemsoft.page.model.ColumnDef;
 import com.totemsoft.page.model.SeriesDataDto;
+import com.totemsoft.page.model.entity.SubSection;
 import com.totemsoft.page.model.mapper.SeriesDataMapper;
 import com.totemsoft.page.repository.SeriesDataRepository;
+import com.totemsoft.page.repository.SubSectionRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -18,14 +20,23 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class SubSectionService {
 
-    private final SeriesDataRepository repository;
+    private final SubSectionRepository repository;
+
+    private final SeriesDataRepository seriesDataRepository;
 
     private final SeriesDataMapper mapper;
 
     @Transactional
     public List<SeriesDataDto> findData(long subSectionId) {
-        final var data = repository.findAll();
-        log.trace("findData({}): {}", subSectionId, data);
+        log.trace("findData({}) ...", subSectionId);
+        final var subSection =repository.findById(subSectionId)
+            .orElseThrow(() -> new EntityNotFoundException(subSectionId, SubSection.class));
+        final var keys = subSection.getKeys();
+        if (keys.isEmpty()) {
+            return List.of();
+        }
+        final var data = seriesDataRepository.findByKeyIn(keys);
+        //log.debug("findData({}): {}", subSectionId, data);
         return mapper.map(data);
     }
 

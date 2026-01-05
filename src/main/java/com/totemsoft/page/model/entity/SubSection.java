@@ -1,11 +1,15 @@
 package com.totemsoft.page.model.entity;
 
+import java.util.List;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Transient;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -31,7 +35,10 @@ public class SubSection {
     @Column(name = "section_id")
     private long sectionId;
 
-    @Transient
-    private Tag tag;
+    @ManyToMany
+    @JoinTable(name = "sub_section_key",
+        joinColumns = @JoinColumn(name = "sub_section_id", referencedColumnName = "sub_section_id"),
+        inverseJoinColumns = @JoinColumn(name = "key_id", referencedColumnName = "key_id"))
+    private List<Key> keys;
 
 }

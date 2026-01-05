@@ -4,15 +4,13 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
-public class SubSectionDto {
+public class TagTypeDto {
 
-    private long id;
+    private int id;
 
     @NotBlank
     private String name;
 
-    private long sectionId;
-
-    //private List<KeyDto> keys;
+    private String title;
 
 }

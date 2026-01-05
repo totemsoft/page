@@ -19,21 +19,21 @@ insert into page_tab (tab_name, page_id) values
   ;
 
 insert into page_section (section_name, section_index, section_split_ratio, tab_id) values
-  ('Section 1',  0, 'ONE',       1),
-  ('Section 2',  1, 'HALF',      1),
-  ('Section 10', 0, 'ONE_THIRD', 2),
-  ('Section 20', 1, 'THIRD',     2)
+  ('Section 1', 0, 'ONE',       1),
+  ('Section 2', 1, 'HALF',      1),
+  ('Section 3', 0, 'ONE_THIRD', 2),
+  ('Section 4', 1, 'THIRD',     2)
   ;
 
 insert into page_sub_section (sub_section_name, section_id) values
   ('SubSection 1', 1),
   ('SubSection 2', 2),
   ('SubSection 3', 2),
-  ('SubSection 10', 3),
-  ('SubSection 20', 3),
-  ('SubSection 30', 4),
-  ('SubSection 40', 4),
-  ('SubSection 50', 4)
+  ('SubSection 4', 3),
+  ('SubSection 5', 3),
+  ('SubSection 6', 4),
+  ('SubSection 7', 4),
+  ('SubSection 8', 4)
   ;
 
 insert into tag_type (tag_type_name, tag_type_title) values
@@ -64,17 +64,114 @@ insert into tag (tag_name, tag_title, tag_type_id) values
 
 insert into series_data_key (key_name, key_title) values
   ('KEY_01', 'Key 01'),
-  ('KEY_02', 'Key 02')
+  ('KEY_02', 'Key 02'),
+  ('KEY_03', 'Key 03'),
+  ('KEY_04', 'Key 04'),
+  ('KEY_05', 'Key 05'),
+  ('KEY_06', 'Key 06'),
+  ('KEY_07', 'Key 07'),
+  ('KEY_08', 'Key 08'),
+  ('KEY_09', 'Key 09'),
+  ('KEY_10', 'Key 10')
   ;
 
 insert into series_data (series_data_date, series_data_value, series_data_title, key_id) values
   (CURRENT_DATE, RAND() * (10000 - 1000) + 1000, 'Read Me Once',  1),
-  (CURRENT_DATE, RAND() * (20000 - 2000) + 2000, 'Read Me Twice', 2)
+  (CURRENT_DATE, RAND() * (20000 - 2000) + 2000, 'Read Me Twice', 2),
+  (CURRENT_DATE, RAND() * (30000 - 3000) + 3000, 'Read Me 3', 3),
+  (CURRENT_DATE, RAND() * (40000 - 4000) + 4000, 'Read Me 4', 4),
+  (CURRENT_DATE, RAND() * (50000 - 5000) + 5000, 'Read Me 5', 5),
+  (CURRENT_DATE, RAND() * (60000 - 6000) + 6000, 'Read Me 6', 6),
+  (CURRENT_DATE, RAND() * (70000 - 7000) + 7000, 'Read Me 7', 7),
+  (CURRENT_DATE, RAND() * (80000 - 8000) + 8000, 'Read Me 8', 8),
+  (CURRENT_DATE, RAND() * (90000 - 9000) + 9000, 'Read Me 9', 9),
+  (CURRENT_DATE, RAND() * (100000 - 10000) + 10000, 'Read Me 10', 10)
+  ;
+
+insert into sub_section_key (sub_section_id, key_id) values
+--  (1, 1),
+  (2, 1),
+  (2, 2),
+  (3, 1),
+  (3, 2),
+  (3, 3),
+  (4, 1),
+  (4, 2),
+  (4, 3),
+  (4, 4),
+  (5, 1),
+  (5, 2),
+  (5, 3),
+  (5, 4),
+  (5, 5),
+  (6, 1),
+  (6, 2),
+  (6, 3),
+  (6, 4),
+  (6, 5),
+  (6, 6),
+  (7, 1),
+  (7, 2),
+  (7, 3),
+  (7, 4),
+  (7, 5),
+  (7, 6),
+  (7, 7),
+  (8, 1),
+  (8, 2),
+  (8, 3),
+  (8, 4),
+  (8, 5),
+  (8, 6),
+  (8, 7),
+  (8, 8)
   ;
 
 insert into key_tag (key_id, tag_id) values
   (1, 1),
-  (1, 2),
   (2, 1),
-  (2, 2)
+  (2, 2),
+  (3, 1),
+  (3, 2),
+  (3, 3),
+  (4, 1),
+  (4, 2),
+  (4, 3),
+  (4, 4),
+  (5, 1),
+  (5, 2),
+  (5, 3),
+  (5, 4),
+  (5, 5),
+  (6, 1),
+  (6, 2),
+  (6, 3),
+  (6, 4),
+  (6, 5),
+  (6, 6),
+  (7, 1),
+  (7, 2),
+  (7, 3),
+  (7, 4),
+  (7, 5),
+  (7, 6),
+  (7, 7),
+  (8, 1),
+  (8, 2),
+  (8, 3),
+  (8, 4),
+  (8, 5),
+  (8, 6),
+  (8, 7),
+  (8, 8),
+  (9, 1),
+  (9, 2),
+  (9, 3),
+  (9, 4),
+  (9, 5),
+  (9, 6),
+  (9, 7),
+  (9, 8),
+  (9, 9),
+  (10, 1)
   ;

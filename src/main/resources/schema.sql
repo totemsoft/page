@@ -80,10 +80,10 @@ create table key_tag (
   constraint key_tag_fk2 foreign key (tag_id) references tag (tag_id)
 );
 
-create table key_sub_section (
-  key_id bigint,
+create table sub_section_key (
   sub_section_id bigint,
+  key_id bigint,
   primary key (key_id, sub_section_id),
-  constraint key_sub_section_fk1 foreign key (key_id) references series_data_key (key_id),
-  constraint key_sub_section_fk2 foreign key (sub_section_id) references page_sub_section (sub_section_id)
+  constraint key_sub_section_fk1 foreign key (sub_section_id) references page_sub_section (sub_section_id),
+  constraint key_sub_section_fk2 foreign key (key_id) references series_data_key (key_id)
 );

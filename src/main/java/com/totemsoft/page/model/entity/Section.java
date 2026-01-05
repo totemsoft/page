@@ -12,7 +12,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.Transient;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -55,8 +54,5 @@ public class Section {
     @Max(value = 3)
     @OneToMany(mappedBy = "sectionId")
     private List<SubSection> subSections;
-
-    @Transient
-    private Tag tag;
 
 }

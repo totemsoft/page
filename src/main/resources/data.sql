@@ -36,7 +36,44 @@ insert into page_sub_section (sub_section_name, section_id) values
   ('SubSection 50', 4)
   ;
 
-insert into series_data (series_date, series_value, series_title) values
-  (CURRENT_DATE, RAND() * (1000 - 100) + 100, 'aaa'),
-  (CURRENT_DATE, '1234.5678', 'Read Me Twice')
+insert into tag_type (tag_type_name, tag_type_title) values
+  ('TAG_TYPE_01', 'Tag Type 01'),
+  ('TAG_TYPE_02', 'Tag Type 02'),
+  ('TAG_TYPE_03', 'Tag Type 03'),
+  ('TAG_TYPE_04', 'Tag Type 04'),
+  ('TAG_TYPE_05', 'Tag Type 05'),
+  ('TAG_TYPE_06', 'Tag Type 06'),
+  ('TAG_TYPE_07', 'Tag Type 07'),
+  ('TAG_TYPE_08', 'Tag Type 08'),
+  ('TAG_TYPE_09', 'Tag Type 09'),
+  ('TAG_TYPE_10', 'Tag Type 10')
+  ;
+
+insert into tag (tag_name, tag_title, tag_type_id) values
+  ('TAG_TYPE_01', 'Tag Type 01', 1),
+  ('TAG_TYPE_02', 'Tag Type 02', 2),
+  ('TAG_TYPE_03', 'Tag Type 03', 3),
+  ('TAG_TYPE_04', 'Tag Type 04', 4),
+  ('TAG_TYPE_05', 'Tag Type 05', 5),
+  ('TAG_TYPE_06', 'Tag Type 06', 6),
+  ('TAG_TYPE_07', 'Tag Type 07', 7),
+  ('TAG_TYPE_08', 'Tag Type 08', 8),
+  ('TAG_TYPE_09', 'Tag Type 09', 9),
+  ('TAG_TYPE_10', 'Tag Type 10',10)
+  ;
+
+insert into series_data_key (series_data_key_name) values
+  ('KEY_01'),
+  ('KEY_02')
+  ;
+
+insert into series_data_key_tag (series_data_key_id, tag_id) values
+  (1, 1),
+  (2, 1),
+  (2, 2)
+  ;
+
+insert into series_data (series_data_date, series_data_value, series_data_title, series_data_key_id) values
+  (CURRENT_DATE, RAND() * (10000 - 1000) + 1000, 'Read Me Once',  1),
+  (CURRENT_DATE, RAND() * (20000 - 2000) + 2000, 'Read Me Twice', 2)
   ;

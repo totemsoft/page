@@ -2,12 +2,9 @@ package com.totemsoft.page.model.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,23 +15,19 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Entity(name = "tag")
-public class Tag {
+@Entity(name = "tag_type")
+public class TagType {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "tag_id")
-    private long id;
+    @Column(name = "tag_type_id")
+    private int id;
 
     @NotBlank
-    @Column(name = "tag_name")
+    @Column(name = "tag_type_name")
     private String name;
 
-    @Column(name = "tag_title")
+    @Column(name = "tag_type_title")
     private String title;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "tag_type_id")
-    private TagType tagType;
 
 }

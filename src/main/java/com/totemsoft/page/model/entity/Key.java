@@ -1,13 +1,15 @@
 package com.totemsoft.page.model.entity;
 
+import java.util.List;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,23 +20,25 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Entity(name = "tag")
-public class Tag {
+@Entity(name = "series_data_key")
+public class Key {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "tag_id")
+    @Column(name = "series_data_key_id")
     private long id;
 
     @NotBlank
-    @Column(name = "tag_name")
+    @Column(name = "series_data_key_name")
     private String name;
 
-    @Column(name = "tag_title")
+    @Column(name = "series_data_key_title")
     private String title;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "tag_type_id")
-    private TagType tagType;
+    @ManyToMany
+    @JoinTable(name = "series_data_key_tag",
+        joinColumns = @JoinColumn(name = "series_data_key_id", referencedColumnName = "series_data_key_id"),
+        inverseJoinColumns = @JoinColumn(name = "tag_id", referencedColumnName = "tag_id"))
+    private List<Tag> tags;
 
 }

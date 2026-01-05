@@ -11,18 +11,22 @@ import com.totemsoft.page.repository.SeriesDataRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
 @Service
 @RequiredArgsConstructor
+@Log4j2
 public class SubSectionService {
 
     private final SeriesDataRepository repository;
 
     private final SeriesDataMapper mapper;
 
-    @Transactional()
+    @Transactional
     public List<SeriesDataDto> findData(long subSectionId) {
-        return mapper.map(repository.findAll());
+        final var data = repository.findAll();
+        log.trace("findData({}): {}", subSectionId, data);
+        return mapper.map(data);
     }
 
     public List<ColumnDef> findColumns() {

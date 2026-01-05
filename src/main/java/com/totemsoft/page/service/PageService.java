@@ -20,7 +20,7 @@ public class PageService {
 
     private final PageMapper mapper;
 
-    @Transactional()
+    @Transactional
     public PageDto findPage(long pageId) {
         log.trace("findPage({}) ...", pageId);
         final var page = repository.findById(pageId)

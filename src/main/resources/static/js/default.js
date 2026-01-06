@@ -18,32 +18,25 @@ YAHOO.page = {
         }
     },
     init: function(oContainer) {
-        // Add the custom formatter
-        YAHOO.widget.DataTable.formatTag = this.formatTag;
+        // Registry of cell formatting functions
+        // custom 'tag' column formatter
+        YAHOO.widget.DataTable.Formatter.tag = this.formatTag;
         //
-        this.tabView = YAHOO.page.initTabView(oContainer);
+        this.tabView = this.initTabView(oContainer);
         // init tab section(s)
         this.tabView.get('tabs').forEach(tab => {
             const elTab = tab.get('contentEl');
-            const sections = YAHOO.page.initSections(elTab);
-            YAHOO.page.pageMap.set(tab, sections);
+            const sections = this.initSections(elTab);
+            this.pageMap.set(tab, sections);
         });
-        // TODO: show second tab (final step after all data loaded in DataTable(s))
+        // FIXME: show second tab (final step after all data loaded in DataTable(s))
         //this.tabView.selectTab(1);
     },
     initTabView: function(oContainer) {
         const tabView = new YAHOO.widget.TabView(oContainer/*, {activeIndex: 0}*/);
         tabView.on('activeIndexChange', function(e) {
             const tab = this.getTab(e.newValue);
-            const elTab = tab.get('contentEl');
-            let r = YUD.getRegion(elTab.parentNode);
-            let y = r.top;
-            const sections = YAHOO.page.pageMap.get(tab);
-            sections.forEach(section => {
-                section.moveTo(0, y);
-                r = YUD.getRegion(section.element);
-                y = r.bottom;
-            });
+            YAHOO.page.moveSections(tab);
         });
         return tabView;
     },
@@ -51,7 +44,7 @@ YAHOO.page = {
         const elSections = YUS.query('div[id^=section.]', elTab);
         const sections = [];
         elSections.forEach(elSection => {
-            const section = YAHOO.page.initSection(elTab, elSection);
+            const section = this.initSection(elTab, elSection);
             sections.push(section);
         });
         return sections;
@@ -61,14 +54,25 @@ YAHOO.page = {
         const section = new YAHOO.widget.Panel(elSection, { 
             width: w + 'px',
             autofillheight: 'body',
-            //constraintoviewport: true,
+            constraintoviewport: true,
             visible: true,
-            draggable: !false,
+            draggable: false,
             close: false
         });
-        YAHOO.page.initSubSections(section);
+        this.initSubSections(section);
         section.render(elTab);
         return section;
+    },
+    moveSections: function(tab) {
+        const elTab = tab.get('contentEl');
+        let r = YUD.getRegion(elTab.parentNode);
+        let y = r.top;
+        const sections = this.pageMap.get(tab);
+        sections.forEach(section => {
+            section.moveTo(0, y);
+            r = YUD.getRegion(section.element);
+            y = r.bottom;
+        });
     },
     initSubSections: function(section) {
         const elSection = section.element;
@@ -79,18 +83,18 @@ YAHOO.page = {
             // via grid.css
             elSubSections.forEach(elSubSection => {
                 const id = elSubSection.id; // subSection.{id}
-                const subSectionId = YAHOO.page.getId(id);
-                const dataTable = YAHOO.page.initDataTable(YUD.get('data.' + id), '/subSection/' + subSectionId);
+                const subSectionId = this.getId(id);
+                const dataTable = this.initDataTable(YUD.get('data.' + id), '/subSection/' + subSectionId);
             });
             // via LayoutManager
-            //YAHOO.page.initSubSectionsLayout(section, elSubSections);
+            //this.initSubSectionsLayout(section, elSubSections);
             // via Panel
-            //YAHOO.page.initSubSectionsPanel(section, elSubSections);
+            //this.initSubSectionsPanel(section, elSubSections);
         }
     },
     initDataTable: function(elSubSection, oLiveData) {
         const id = elSubSection.id; // data.subSection.{id}
-        const subSectionId = YAHOO.page.getId(id);
+        const subSectionId = this.getId(id);
         const headerEl = YUD.get('hd.subSection.' + subSectionId); // hd.subSection.{id}
         const caption = headerEl.innerText;
         setTimeout(function(el) {
@@ -127,9 +131,6 @@ YAHOO.page = {
             if (columnDefs) {
                 //this.disable();
                 columnDefs.forEach((columnDef, index) => {
-                    if (columnDef.formatter && typeof columnDef.formatter === 'string') {
-                        columnDef.formatter = eval(columnDef.formatter); // string -> function
-                    }
                     const column = this.insertColumn(columnDef, index);
                 })
                 this.getDataSource().responseSchema.fields = columnDefs.map(columnDef => columnDef.key);
@@ -138,13 +139,13 @@ YAHOO.page = {
             return true;
         };
         // 2. after each time the DataTable is updated with new data
-        dataTable.handleDataReturnPayload = function(oRequest, oResponse, oPayload) {
-            return oPayload;
-        };
+        //dataTable.handleDataReturnPayload = function(oRequest, oResponse, oPayload) {
+        //    return oPayload || {};
+        //};
         // 3. fired when the DataTable's DOM is rendered or dirty. 
-        dataTable.subscribe('renderEvent', function() {
-            // TODO: init subSection context menu
-        });
+        //dataTable.subscribe('renderEvent', function() {
+        //    // TODO: init subSection context menu
+        //});
         return dataTable;
     },
     initSubSectionsLayout: function(section, elSubSections) {

@@ -47,24 +47,24 @@ public class SubSectionService {
             ColumnDef.builder()
                 .key("tag")
                 .label("")
-                .formatter("YAHOO.widget.DataTable.formatTag")
+                .formatter("tag")
                 .build(),
             ColumnDef.builder()
                 .key("id")
                 .label("ID")
                 //.hidden(true) // TODO: fix
-                .formatter("YAHOO.widget.DataTable.formatNumber")
+                .formatter("number")
                 .build(),
             ColumnDef.builder()
                 .key("date")
                 .label("Date")
-                //.formatter("YAHOO.widget.DataTable.formatDate")
+                //.formatter("date")
                 //.dateOptions("{format: '%d/%m/%Y', locale: 'en'}")
                 .build(),
             ColumnDef.builder()
                 .key("value")
                 .label("Value")
-                .formatter("YAHOO.widget.DataTable.formatCurrency")
+                .formatter("currency")
                 //.currencyOptions("{}")
                 .build(),
             ColumnDef.builder()

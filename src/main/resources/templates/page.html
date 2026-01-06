@@ -18,26 +18,27 @@
     </style>
 </head>
 <body class="yui-skin-sam">
-    <div style="float: right" th:fragment="logout" sec:authorize="isAuthenticated()">
-        <div>
-            <h1 th:inline="text"><span style="font-weight:bold">User: </span><span th:remove="tag" sec:authentication="name">TBD</span></h1>
+    <div class="yui-gc">
+        <div  class="yui-u first">
+            <h2 th:text="|#{page.welcome}: ${page.name}|">TBD</h2>
         </div>
-        <div style="float:right">
-            <form action="#" th:action="@{/logout}" method="post">
-                <input type="submit" value="Logout" />
-            </form>
+        <div class="yui-u" th:fragment="logout" sec:authorize="isAuthenticated()">
+            <div>
+                <h1 th:inline="text"><span style="font-weight:bold">User: </span><span th:remove="tag" sec:authentication="name">TBD</span></h1>
+            </div>
+            <div style="float:right">
+                <form action="#" th:action="@{/logout}" method="post">
+                    <input type="submit" value="Logout" />
+                </form>
+            </div>
+            <div>
+                <span class="bold">Default Authorities: </span><span sec:authentication="principal.authorities"></span>
+            </div>
+            <div>
+                <span class="bold">Mapped Authorities: </span><span sec:authentication="authorities"></span>
+            </div>
         </div>
-        <div>
-            <span style="font-weight:bold">Default Authorities: </span><span sec:authentication="principal.authorities"></span>
-        </div>
-        <div>
-            <span style="font-weight:bold">Mapped Authorities: </span><span sec:authentication="authorities"></span>
-        </div>
-        <div>&nbsp;</div>
     </div>
-
-    <h2 th:text="#{page.welcome}">TBD</h2>
-    <p th:text="${page.name}" />
 
     <div id="pageDiv" class="yui-navset">
         <ul class="yui-nav">

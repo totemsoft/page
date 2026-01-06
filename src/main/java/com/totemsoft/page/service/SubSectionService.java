@@ -54,6 +54,7 @@ public class SubSectionService {
                 .label("ID")
                 //.hidden(true) // TODO: fix
                 .formatter("number")
+                .className("right")
                 .build(),
             ColumnDef.builder()
                 .key("date")
@@ -66,6 +67,7 @@ public class SubSectionService {
                 .label("Value")
                 .formatter("currency")
                 //.currencyOptions("{}")
+                .className("right")
                 .build(),
             ColumnDef.builder()
                 .key("title")

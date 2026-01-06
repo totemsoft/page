@@ -9,18 +9,33 @@ YAHOO.page = {
     tabView: null,
     pageMap: new Map(), // <Tab, [Section]>
     getId: function(s) {
-        return s.substring(s.lastIndexOf('.') + 1);
+        return s.substring(s.lastIndexOf('.') + 1); // ##.##.id
     },
-    formatTag: function(elLiner, oRecord, oColumn, oData) {
-        const el = elLiner.parentNode;
-        if (!YUD.hasClass(el, 'page-tag')) {
-            YUD.addClass(el, 'page-tag');
+    formatTag: function(el, oRecord, oColumn, oData, oDataTable) {
+        this.addClass(el.parentNode, 'page-tag');
+    },
+    addClass : function(el, className) {
+        if (className && !YUD.hasClass(el, className)) {
+            YUD.addClass(el, className);
         }
+    },
+    formatCurrency : function(el, oRecord, oColumn, oData, oDataTable) {
+        const oDT = oDataTable || this;
+        el.innerHTML = YAHOO.util.Number.format(oData, oColumn.currencyOptions || oDT.get('currencyOptions'));
+        this.addClass(el.parentNode, oColumn.className || oData.className);
+    },
+    formatNumber : function(el, oRecord, oColumn, oData, oDataTable) {
+        const oDT = oDataTable || this;
+        el.innerHTML = YAHOO.util.Number.format(oData, oColumn.numberOptions || oDT.get("numberOptions"));
+        this.addClass(el.parentNode, oColumn.className || oData.className);
     },
     init: function(oContainer) {
         // Registry of cell formatting functions
         // custom 'tag' column formatter
         YAHOO.widget.DataTable.Formatter.tag = this.formatTag;
+        // customise builtin column formatter(s)
+        YAHOO.widget.DataTable.Formatter.currency = this.formatCurrency;
+        YAHOO.widget.DataTable.Formatter.number = this.formatNumber;
         //
         this.tabView = this.initTabView(oContainer);
         // init tab section(s)

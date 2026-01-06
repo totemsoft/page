@@ -43,4 +43,6 @@ public class ColumnDef {
 
     private String sortOptions;
 
+    private String className;
+
 }

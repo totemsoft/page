@@ -13,6 +13,4 @@ public class SubSectionDto {
 
     private long sectionId;
 
-    //private List<KeyDto> keys;
-
 }

@@ -11,23 +11,34 @@ YAHOO.page = {
     getId: function(s) {
         return s.substring(s.lastIndexOf('.') + 1); // ##.##.id
     },
-    formatTag: function(el, oRecord, oColumn, oData, oDataTable) {
-        this.addClass(el.parentNode, 'page-tag');
-    },
     addClass : function(el, className) {
         if (className && !YUD.hasClass(el, className)) {
             YUD.addClass(el, className);
         }
     },
+    formatTag: function(el, oRecord, oColumn, oData, oDataTable) {
+        //const oDT = oDataTable || this;
+        const value = (YL.isValue(oData)) ? oData : '';
+        el.innerHTML = YL.escapeHTML(value.toString());
+        YAHOO.page.addClass(el.parentNode, 'page-tag');
+    },
     formatCurrency : function(el, oRecord, oColumn, oData, oDataTable) {
         const oDT = oDataTable || this;
         el.innerHTML = YAHOO.util.Number.format(oData, oColumn.currencyOptions || oDT.get('currencyOptions'));
-        this.addClass(el.parentNode, oColumn.className || oData.className);
+        const className = oColumn.className || (oData ? oData.className : null);
+        YAHOO.page.addClass(el.parentNode, className);
     },
     formatNumber : function(el, oRecord, oColumn, oData, oDataTable) {
         const oDT = oDataTable || this;
         el.innerHTML = YAHOO.util.Number.format(oData, oColumn.numberOptions || oDT.get("numberOptions"));
-        this.addClass(el.parentNode, oColumn.className || oData.className);
+        const className = oColumn.className || (oData ? oData.className : null);
+        YAHOO.page.addClass(el.parentNode, className);
+    },
+    formatText : function(el, oRecord, oColumn, oData, oDataTable) {
+        const value = (YL.isValue(oData)) ? oData : '';
+        el.innerHTML = YL.escapeHTML(value.toString());
+        const className = oColumn.className || (oData ? oData.className : null);
+        YAHOO.page.addClass(el.parentNode, className);
     },
     init: function(oContainer) {
         // Registry of cell formatting functions
@@ -36,6 +47,7 @@ YAHOO.page = {
         // customise builtin column formatter(s)
         YAHOO.widget.DataTable.Formatter.currency = this.formatCurrency;
         YAHOO.widget.DataTable.Formatter.number = this.formatNumber;
+        YAHOO.widget.DataTable.Formatter.text = this.formatText;
         //
         this.tabView = this.initTabView(oContainer);
         // init tab section(s)
@@ -132,8 +144,6 @@ YAHOO.page = {
             caption: caption,
             //dynamicData: true,
             generateRequest: requestBuilder,
-            //initialLoad: true,
-            //initialRequest: '/columns', // oLiveData + initialRequest
             width: (r.width - 2) + 'px'
         };
         const oColumnDefs = [];

@@ -13,19 +13,27 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @Data
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@ToString(onlyExplicitlyIncluded = true)
 @Entity(name = "series_data")
 public class SeriesData {
 
+    @EqualsAndHashCode.Include
+    @ToString.Include
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "series_data_id")
     private long id;
 
+    @ToString.Include
     @Column(name = "series_data_date")
     private LocalDate date;
 
+    @ToString.Include
     @Column(name = "series_data_value")
     private BigDecimal value;
 

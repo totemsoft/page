@@ -2,15 +2,23 @@ package com.totemsoft.page.model;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
-public class SubSectionResult {
+public class SubSectionResult<T> {
 
+    @JsonProperty("columns")
     private List<ColumnDef> columns;
 
-    private List<SeriesDataDto> records;
+    @JsonProperty("records")
+    private List<T> data;
 
 }

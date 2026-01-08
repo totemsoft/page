@@ -1,13 +1,22 @@
 package com.totemsoft.page.service;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.springframework.stereotype.Service;
 
+import com.totemsoft.page.model.Cell;
 import com.totemsoft.page.model.ColumnDef;
+import com.totemsoft.page.model.Row;
 import com.totemsoft.page.model.SeriesDataDto;
-import com.totemsoft.page.model.entity.Key;
+import com.totemsoft.page.model.SubSectionResult;
+import com.totemsoft.page.model.entity.SeriesData;
 import com.totemsoft.page.model.entity.SubSection;
+import com.totemsoft.page.model.entity.Tag;
 import com.totemsoft.page.model.mapper.SeriesDataMapper;
 import com.totemsoft.page.repository.SeriesDataRepository;
 import com.totemsoft.page.repository.SubSectionRepository;
@@ -28,31 +37,85 @@ public class SubSectionService {
     private final SeriesDataMapper mapper;
 
     @Transactional
-    public List<SeriesDataDto> findData(long subSectionId) {
-        log.trace("findData({}) ...", subSectionId);
-        final var keys = findKeys(subSectionId);
+    public SubSectionResult<?> find(long subSectionId) {
+        log.trace("findRows({}) ...", subSectionId);
+        final var subSection = repository.findById(subSectionId)
+            .orElseThrow(() -> new EntityNotFoundException(subSectionId, SubSection.class));
+        // all keys from sub-section
+        final var keys = subSection.getKeys();
         if (keys.isEmpty()) {
-            return List.of();
+            log.warn("No key(s) found for sub-section {}.", subSectionId);
+            return null;
         }
+        log.debug("keys: {}", keys);
+        //
+        final var rowTagType = subSection.getRowTagType();
+        final var columnTagType = subSection.getColumnTagType();
         final var data = seriesDataRepository.findByKeyIn(keys);
-        return mapper.map(data);
+        if (rowTagType == null || columnTagType == null) {
+            log.warn("No RowTagType/ColumnTagType set for sub-section {}.", subSectionId);
+            return SubSectionResult.<SeriesDataDto>builder()
+                    .columns(findDefaultColumns())
+                    .data(mapper.map(data))
+                    .build();
+        }
+        // unique sub-section row/column tags
+        final var rowTags = new TreeSet<Tag>();
+        final var columnTags = new TreeSet<Tag>();
+        keys.forEach(key -> {
+            key.findTag(rowTagType).ifPresent(rowTags::add);
+            key.findTag(columnTagType).ifPresent(columnTags::add);
+        });
+        log.debug("rowTags: {}", rowTags);
+        log.debug("columnTags: {}", columnTags);
+        //
+        final var result = new ArrayList<Row>();
+        //final var dataTags = data.stream().flatMap(d -> d.getKey().getTags().stream()).toList();
+        rowTags.forEach(rowTag -> result.add(
+            Row.builder()
+                .cells(cells(data.stream().filter(d -> d.getKey().anyMatch(rowTag)).toList(), rowTag, columnTags))
+                .build())
+        );
+        return SubSectionResult.<Row>builder()
+            .columns(findColumns(columnTags))
+            .data(result)
+            .build();
     }
 
-    @Transactional
-    public List<ColumnDef> findColumns(long subSectionId) {
-        log.trace("findColumns({}) ...", subSectionId);
-        //final var keys = findKeys(subSectionId);
-        //keys.stream().
+    private Map<String, Cell<?>> cells(List<SeriesData> data, Tag rowTag, Set<Tag> columnTags) {
+        final var cells = new HashMap<String, Cell<?>>(1 + columnTags.size());
+        cells.put("TAG", Cell.<String>builder()
+            .id(rowTag.getId())
+            .value(rowTag.getTitle())
+            .build());
+        columnTags.forEach(columnTag -> data.stream()
+            .filter(d -> d.getKey().anyMatch(columnTag))
+            .forEach(d -> cells.put(columnTag.getName(), mapper.map(d)))
+        );
+        return cells;
+    }
+
+    private List<ColumnDef> findColumns(Set<Tag> columnTags) {
+        final var columnDefs = new ArrayList<ColumnDef>();
+        columnDefs.add(ColumnDef.builder()
+            .key("TAG")
+            .label("")
+            .formatter("tag")
+            .build());
+        columnTags.forEach(t -> columnDefs.add(ColumnDef.builder()
+            .key(t.getName())
+            .label(t.getTitle())
+            .formatter("currency")
+            .build()));
+        return columnDefs;
+    }
+
+    private List<ColumnDef> findDefaultColumns() {
         return List.of(
-            ColumnDef.builder()
-                .key("tag")
-                .label("")
-                .formatter("tag")
-                .build(),
             ColumnDef.builder()
                 .key("id")
                 .label("ID")
-                //.hidden(true) // TODO: fix
+                //.hidden(true) // TODO: fix dataTable.doBeforeLoadData insertColumn issue
                 .formatter("number")
                 .className("right")
                 .build(),
@@ -74,12 +137,6 @@ public class SubSectionService {
                 .label("Name")
                 .build()
             );
-    }
-
-    private List<Key> findKeys(long subSectionId) {
-        final var subSection = repository.findById(subSectionId)
-            .orElseThrow(() -> new EntityNotFoundException(subSectionId, SubSection.class));
-        return subSection.getKeys();
     }
 
 }

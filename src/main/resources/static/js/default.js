@@ -5,7 +5,11 @@ const YL  = YAHOO.lang,
       YUG = YAHOO.util.Get,
       YUS = YAHOO.util.Selector;
 
+YAHOO.namespace('page');
+
+(function() {
 YAHOO.page = {
+    pageReadyEvent: new YAHOO.util.CustomEvent('pageReady'),
     tabView: null,
     pageMap: new Map(), // <Tab, [Section]>
     getId: function(s) {
@@ -58,7 +62,9 @@ YAHOO.page = {
             this.pageMap.set(tab, sections);
         });
         // FIXME: show second tab (final step after all data loaded in DataTable(s))
-        //this.tabView.selectTab(1);
+        this.tabView.selectTab(0);
+        // fire the custom event
+        YAHOO.page.pageReadyEvent.fire({tabView: this.tabView}); 
     },
     initTabView: function(oContainer) {
         const tabView = new YAHOO.widget.TabView(oContainer/*, {activeIndex: 0}*/);
@@ -71,7 +77,7 @@ YAHOO.page = {
     initSections: function(elTab) {
         const elSections = YUS.query('div[id^=section.]', elTab);
         const sections = [];
-        elSections.forEach(elSection => {
+        elSections.forEach((elSection, index, array) => {
             const section = this.initSection(elTab, elSection);
             sections.push(section);
         });
@@ -79,7 +85,8 @@ YAHOO.page = {
     },
     initSection: function(elTab, elSection) {
         const w = YUD.getViewportWidth();
-        const section = new YAHOO.widget.Panel(elSection, { 
+        const section = new YAHOO.widget.Panel(elSection, {
+            zIndex: 2,
             width: w + 'px',
             autofillheight: 'body',
             constraintoviewport: true,
@@ -109,7 +116,7 @@ YAHOO.page = {
         // Layout max 3 subSection(s)
         if (size > 0) {
             // via grid.css
-            elSubSections.forEach(elSubSection => {
+            elSubSections.forEach((elSubSection, index, array) => {
                 const id = elSubSection.id; // subSection.{id}
                 const subSectionId = this.getId(id);
                 const dataTable = this.initDataTable(YUD.get('data.' + id), '/subSection/' + subSectionId);
@@ -224,7 +231,7 @@ YAHOO.page = {
     }
 };
 
-(function() {
+//(function() {
     const loader = new YAHOO.util.YUILoader({
         base: 'js/yui/',
         skin: {

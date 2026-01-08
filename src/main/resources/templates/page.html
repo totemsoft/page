@@ -6,6 +6,7 @@
     <link type="text/css" rel="stylesheet" href="/css/yui-combine.css" />
     <script type="text/javascript" src="/js/yui/yui-combine.js"></script>
     <script type="text/javascript" src="/js/default.js"></script>
+    <script type="text/javascript" th:src="@{/js/admin.js}" sec:authorize="hasRole('ROLE_ADMIN')"></script>
     <style type="text/css">
         .bold { font-weight: bold !important; }
         .italic { font-style: italic !important; }

@@ -19,3 +19,4 @@ kill -9 PID
 [MapStruct: Reference Guide](https://mapstruct.org/documentation/stable/reference/html/)
 [Tutorial: Using Thymeleaf](https://www.thymeleaf.org/doc/tutorials/3.1/usingthymeleaf.html)
 [Thymeleaf + Spring Security integration basics](https://www.thymeleaf.org/doc/articles/springsecurity.html)
+[How to use Thymeleaf for JavaScript in Spring Boot](https://stackoverflow.com/questions/77024439/how-to-use-thymeleaf-for-javascript-in-spring-boot)

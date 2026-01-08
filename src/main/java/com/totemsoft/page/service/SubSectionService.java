@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 
 import com.totemsoft.page.model.Cell;
 import com.totemsoft.page.model.ColumnDef;
+import com.totemsoft.page.model.ColumnDef.FORMATTER;
+import com.totemsoft.page.model.CssClasName;
 import com.totemsoft.page.model.Row;
 import com.totemsoft.page.model.SeriesDataDto;
 import com.totemsoft.page.model.SubSectionResult;
@@ -47,7 +49,7 @@ public class SubSectionService {
             log.warn("No key(s) found for sub-section {}.", subSectionId);
             return null;
         }
-        log.debug("keys: {}", keys);
+        log.debug("#{} keys: {}", subSectionId, keys);
         //
         final var rowTagType = subSection.getRowTagType();
         final var columnTagType = subSection.getColumnTagType();
@@ -66,8 +68,8 @@ public class SubSectionService {
             key.findTag(rowTagType).ifPresent(rowTags::add);
             key.findTag(columnTagType).ifPresent(columnTags::add);
         });
-        log.debug("rowTags: {}", rowTags);
-        log.debug("columnTags: {}", columnTags);
+        log.debug("#{} rowTags: {}", subSectionId, rowTags);
+        log.debug("#{} columnTags: {}", subSectionId, columnTags);
         //
         final var result = new ArrayList<Row>();
         //final var dataTags = data.stream().flatMap(d -> d.getKey().getTags().stream()).toList();
@@ -100,12 +102,14 @@ public class SubSectionService {
         columnDefs.add(ColumnDef.builder()
             .key("TAG")
             .label("")
-            .formatter("tag")
+            .formatter(FORMATTER.TAG.name().toLowerCase())
+            .className(CssClasName.TAG)
             .build());
         columnTags.forEach(t -> columnDefs.add(ColumnDef.builder()
             .key(t.getName())
             .label(t.getTitle())
-            .formatter("currency")
+            .formatter(FORMATTER.CURRENCY.name().toLowerCase())
+            .className(CssClasName.RIGHT)
             .build()));
         return columnDefs;
     }
@@ -116,21 +120,21 @@ public class SubSectionService {
                 .key("id")
                 .label("ID")
                 //.hidden(true) // TODO: fix dataTable.doBeforeLoadData insertColumn issue
-                .formatter("number")
-                .className("right")
+                .formatter(FORMATTER.NUMBER.name().toLowerCase())
+                .className(CssClasName.RIGHT)
                 .build(),
             ColumnDef.builder()
                 .key("date")
                 .label("Date")
-                //.formatter("date")
+                //.formatter(FORMATTER.DATE.name().toLowerCase())
                 //.dateOptions("{format: '%d/%m/%Y', locale: 'en'}")
                 .build(),
             ColumnDef.builder()
                 .key("value")
                 .label("Value")
-                .formatter("currency")
+                .formatter(FORMATTER.CURRENCY.name().toLowerCase())
                 //.currencyOptions("{}")
-                .className("right")
+                .className(CssClasName.RIGHT)
                 .build(),
             ColumnDef.builder()
                 .key("title")

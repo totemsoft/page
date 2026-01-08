@@ -8,7 +8,7 @@ import lombok.Data;
  * @see https://yui.github.io/yui2/docs/yui_2.9.0/docs/YAHOO.widget.Column.html
     key: 'date'
     label: 'Date'
-    formatter: "YAHOO.widget.DataTable.formatDate"
+    formatter: 'date'
         currencyOptions: {}
         dateOptions: {format: '%d/%m/%Y', locale: 'en'}
         dropdownOptions:
@@ -19,6 +19,10 @@ import lombok.Data;
 @Data
 @Builder
 public class ColumnDef {
+
+    public enum FORMATTER {
+        CURRENCY, DATE, NUMBER, TAG
+    }
 
     @NotBlank
     private String key;

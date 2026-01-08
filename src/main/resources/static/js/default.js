@@ -20,7 +20,8 @@ YAHOO.page = {
         //const oDT = oDataTable || this;
         const value = (YL.isValue(oData)) ? oData : '';
         el.innerHTML = YL.escapeHTML(value.toString());
-        YAHOO.page.addClass(el.parentNode, 'page-tag');
+        const className = oColumn.className || (oData ? oData.className : null);
+        YAHOO.page.addClass(el.parentNode, className);
     },
     formatCurrency : function(el, oRecord, oColumn, oData, oDataTable) {
         const oDT = oDataTable || this;

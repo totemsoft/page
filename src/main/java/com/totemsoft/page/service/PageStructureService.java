@@ -22,7 +22,7 @@ public class PageStructureService {
 
     @Transactional
     public void editTab(TabDto tabDto) {
-        log.debug("saving: {}", tabDto);
+        log.trace("saving: {}", tabDto);
         final var tabId = tabDto.getId();
         final Tab tab;
         if (tabId == null) {
@@ -32,7 +32,7 @@ public class PageStructureService {
                 .orElseThrow(() -> new EntityNotFoundException(tabId, Tab.class));
             tab.setName(tabDto.getName());
         }
-        log.debug("saving: {}", tab);
+        log.trace("saving: {}", tab);
         tabRepository.save(tab);
     }
 

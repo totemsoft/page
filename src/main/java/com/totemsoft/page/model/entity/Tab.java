@@ -18,7 +18,6 @@ import lombok.NoArgsConstructor;
 
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-//@ToString(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -26,7 +25,6 @@ import lombok.NoArgsConstructor;
 public class Tab {
 
     @EqualsAndHashCode.Include
-    //@ToString.Include
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "tab_id")

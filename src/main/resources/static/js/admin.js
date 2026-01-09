@@ -31,8 +31,10 @@ YAHOO.page.admin = {
         }
     },
     fnSubscriberPageReady: function(type, args) {
-        // init context menu(s)
         //const tabView = args[0].tabView;
+        YAHOO.page.admin.initTabContextMenu();
+    },
+    initTabContextMenu: function() {
         // tab-menu.{id}
         const elTabs = YUS.query('li[id^=tab-menu.]', 'pageDiv');
         const tabViewMenu = new YAHOO.widget.ContextMenu('tabViewMenu', {

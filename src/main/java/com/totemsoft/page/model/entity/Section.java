@@ -53,7 +53,7 @@ public class Section {
     @Builder.Default
     @Enumerated(EnumType.STRING)
     @Column(name = "section_split_ratio")
-    private SplitRatioEnum splitRatio = SplitRatioEnum.NONE;
+    private SplitRatioEnum splitRatio = SplitRatioEnum.ONE;
 
     @Column(name = "tab_id")
     private long tabId;

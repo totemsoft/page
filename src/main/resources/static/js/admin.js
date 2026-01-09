@@ -127,8 +127,7 @@ YAHOO.page.admin = {
         console.log('editTab: tabId=' + tabId + ', tabName=' + tabName);
         tabName = window.prompt('Edit the tab label:', tabName);
         if (tabName) {
-            const pageId = YAHOO.page.admin.getPageId();
-            const tabDto = {pageId: pageId, id: tabId, name: tabName};
+            const tabDto = {id: tabId, name: tabName};
             YAHOO.page.admin.sendPostRequest('/page/tab', YAHOO.page.admin.reloadWindowCallback, tabDto);
         }
     },
@@ -137,25 +136,41 @@ YAHOO.page.admin = {
         const tabName = window.prompt('Enter the new tab label:');
         if (tabName) {
             const pageId = YAHOO.page.admin.getPageId();
-            const tabDto = {pageId: pageId, id: null, name: tabName};
+            const tabDto = {pageId: pageId, name: tabName};
             YAHOO.page.admin.sendPostRequest('/page/tab', YAHOO.page.admin.reloadWindowCallback, tabDto);
         }
     },
     editSection: function(sectionId, sectionName) {
         console.log('editSection: sectionId=' + sectionId + ', sectionName=' + sectionName);
-        
+        sectionName = window.prompt('Edit the section name:', sectionName);
+        if (sectionName) {
+            const sectionDto = {id: sectionId, name: sectionName};
+            YAHOO.page.admin.sendPostRequest('/page/section', YAHOO.page.admin.reloadWindowCallback, sectionDto);
+        }
     },
     addSection: function(tabId) {
         console.log('addSection: tabId=' + tabId);
-        
+        const sectionName = window.prompt('Enter the new section name:');
+        if (sectionName) {
+            const sectionDto = {tabId: tabId, name: sectionName};
+            YAHOO.page.admin.sendPostRequest('/page/section', YAHOO.page.admin.reloadWindowCallback, sectionDto);
+        }
     },
     editSubSection: function(subSectionId, subSectionName) {
         console.log('editSubSection: subSectionId=' + subSectionId + ', subSectionName=' + subSectionName);
-    
+        subSectionName = window.prompt('Edit the sub-section name:', subSectionName);
+        if (subSectionName) {
+            const subSectionDto = {id: subSectionId, name: subSectionName};
+            YAHOO.page.admin.sendPostRequest('/page/subSection', YAHOO.page.admin.reloadWindowCallback, subSectionDto);
+        }
     },
     addSubSection: function(sectionId) {
         console.log('addSubSection: sectionId=' + sectionId);
-        
+        const subSectionName = window.prompt('Enter the new sub-section name:');
+        if (subSectionName) {
+            const subSectionDto = {sectionId: sectionId, name: subSectionName};
+            YAHOO.page.admin.sendPostRequest('/page/subSection', YAHOO.page.admin.reloadWindowCallback, subSectionDto);
+        }
     }
 };
 

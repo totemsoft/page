@@ -7,7 +7,6 @@ const YL  = YAHOO.lang,
 
 YAHOO.namespace('page');
 
-(function() {
 YAHOO.page = {
     pageReadyEvent: new YAHOO.util.CustomEvent('pageReady'),
     tabView: null,
@@ -231,7 +230,7 @@ YAHOO.page = {
     }
 };
 
-//(function() {
+(function() {
     const loader = new YAHOO.util.YUILoader({
         base: 'js/yui/',
         skin: {

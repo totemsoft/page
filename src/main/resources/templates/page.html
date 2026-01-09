@@ -24,8 +24,8 @@
     </style>
 </head>
 <body class="yui-skin-sam">
-    <input type="hidden" id="pageId" th:value="${page.id}" />
-    <input type="hidden" id="pageName" th:value="${page.name}" />
+    <input type="hidden" id="pageId" th:value="${page.id}" sec:authorize="hasRole('ROLE_ADMIN')" />
+    <input type="hidden" id="pageName" th:value="${page.name}" sec:authorize="hasRole('ROLE_ADMIN')" />
     <div class="yui-gc">
         <div  class="yui-u first">
             <h2 th:text="|#{page.welcome}: ${page.name}|">TBD</h2>

@@ -9,7 +9,6 @@ YAHOO.namespace('page');
 
 YAHOO.page = {
     pageReadyEvent: new YAHOO.util.CustomEvent('pageReady'),
-    tabView: null,
     pageMap: new Map(), // <Tab, [Section]>
     getId: function(s) {
         return parseInt(s.substring(s.lastIndexOf('.') + 1)); // ##.##.id
@@ -53,17 +52,17 @@ YAHOO.page = {
         YAHOO.widget.DataTable.Formatter.number = this.formatNumber;
         YAHOO.widget.DataTable.Formatter.text = this.formatText;
         //
-        this.tabView = this.initTabView(oContainer);
+        const tabView = this.initTabView(oContainer);
         // init tab section(s)
-        this.tabView.get('tabs').forEach(tab => {
+        tabView.get('tabs').forEach(tab => {
             const elTab = tab.get('contentEl');
             const sections = this.initSections(elTab);
             this.pageMap.set(tab, sections);
         });
         // FIXME: show second tab (final step after all data loaded in DataTable(s))
-        this.tabView.selectTab(0);
+        tabView.selectTab(0);
         // fire the custom event
-        YAHOO.page.pageReadyEvent.fire({tabView: this.tabView}); 
+        YAHOO.page.pageReadyEvent.fire({tabView: tabView}); 
     },
     initTabView: function(oContainer) {
         const tabView = new YAHOO.widget.TabView(oContainer/*, {activeIndex: 0}*/);

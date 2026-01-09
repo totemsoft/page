@@ -33,38 +33,98 @@ YAHOO.page.admin = {
     fnSubscriberPageReady: function(type, args) {
         //const tabView = args[0].tabView;
         YAHOO.page.admin.initTabContextMenu();
+        YAHOO.page.admin.initSectionContextMenu();
     },
     initTabContextMenu: function() {
-        // tab-menu.{id}
+        // li[@id=tab-menu.{id}]
         const elTabs = YUS.query('li[id^=tab-menu.]', 'pageDiv');
-        const tabViewMenu = new YAHOO.widget.ContextMenu('tabViewMenu', {
+        const tabMenu = new YAHOO.widget.ContextMenu('tabMenu', {
             trigger: elTabs,
             zIndex: 3,
             lazyload: true,
             itemdata: [
-                {text: 'Edit Tab', disabled: false},
-                {text: 'Add Tab', disabled: false}
+                [
+                    {text: 'Edit Tab', disabled: false},
+                    {text: 'Add Tab', disabled: false}
+                ],
+                [
+                    {text: 'Add Section', disabled: false}
+                ]
             ]
         });
-        tabViewMenu.subscribe('click', function(oType, oArgs) {
+        tabMenu.subscribe('click', function(oType, oArgs) {
             const oEvent = oArgs[0];
             const oItem = oArgs[1];
             if (!oItem.cfg.getProperty('disabled')) {
                 const oTarget = this.contextEventTarget;
                 const tabId = YAHOO.page.getId(oTarget.parentNode.parentNode.id);
                 const tabName = oTarget.innerText;
-                switch (oItem.index) {
+                switch (oItem.groupIndex) {
                 case 0:
-                    YAHOO.page.admin.editTab(tabId, tabName);
+                    switch (oItem.index) {
+                    case 0:
+                        YAHOO.page.admin.editTab(tabId, tabName);
+                        break;
+                    case 1:
+                        YAHOO.page.admin.addTab();
+                        break;
+                    }
                     break;
                 case 1:
-                    YAHOO.page.admin.addTab();
+                    switch (oItem.index) {
+                    case 0:
+                        YAHOO.page.admin.addSection(tabId);
+                        break;
+                    }
+                    break;
+                }
+            }
+        });
+    },
+    initSectionContextMenu: function() {
+        // div[@id=section.{id}_c]/div[@id=section.{id}]
+        const elSections = YUS.query('div[id^=section.] div[id^=section.]', 'pageDiv');
+        const sectionMenu = new YAHOO.widget.ContextMenu('sectionMenu', {
+            trigger: elSections,
+            zIndex: 3,
+            lazyload: true,
+            itemdata: [
+                [
+                    {text: 'Edit Section', disabled: false}
+                ],
+                [
+                    {text: 'Add Sub-Section', disabled: false}
+                ]
+            ]
+        });
+        sectionMenu.subscribe('click', function(oType, oArgs) {
+            const oEvent = oArgs[0];
+            const oItem = oArgs[1];
+            if (!oItem.cfg.getProperty('disabled')) {
+                const oTarget = this.contextEventTarget;
+                const sectionId = YAHOO.page.getId(oTarget.parentNode.id);
+                const sectionName = oTarget.innerText;
+                switch (oItem.groupIndex) {
+                case 0:
+                    switch (oItem.index) {
+                    case 0:
+                        YAHOO.page.admin.editSection(sectionId, sectionName);
+                        break;
+                    }
+                    break;
+                case 1:
+                    switch (oItem.index) {
+                    case 0:
+                        YAHOO.page.admin.addSubSection(sectionId);
+                        break;
+                    }
                     break;
                 }
             }
         });
     },
     editTab: function(tabId, tabName) {
+        console.log('editTab: tabId=' + tabId + ', tabName=' + tabName);
         tabName = window.prompt('Edit the tab label:', tabName);
         if (tabName) {
             const pageId = YAHOO.page.admin.getPageId();
@@ -73,16 +133,32 @@ YAHOO.page.admin = {
         }
     },
     addTab: function() {
+        console.log('addTab:');
         const tabName = window.prompt('Enter the new tab label:');
         if (tabName) {
             const pageId = YAHOO.page.admin.getPageId();
             const tabDto = {pageId: pageId, id: null, name: tabName};
             YAHOO.page.admin.sendPostRequest('/page/tab', YAHOO.page.admin.reloadWindowCallback, tabDto);
         }
+    },
+    editSection: function(sectionId, sectionName) {
+        console.log('editSection: sectionId=' + sectionId + ', sectionName=' + sectionName);
+        
+    },
+    addSection: function(tabId) {
+        console.log('addSection: tabId=' + tabId);
+        
+    },
+    editSubSection: function(subSectionId, subSectionName) {
+        console.log('editSubSection: subSectionId=' + subSectionId + ', subSectionName=' + subSectionName);
+    
+    },
+    addSubSection: function(sectionId) {
+        console.log('addSubSection: sectionId=' + sectionId);
+        
     }
 };
 
 (function() {
-    // subscribe our Custom Event handler
     YAHOO.page.pageReadyEvent.subscribe(YAHOO.page.admin.fnSubscriberPageReady);
 })();

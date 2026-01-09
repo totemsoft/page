@@ -12,9 +12,9 @@ YAHOO.page = {
     tabView: null,
     pageMap: new Map(), // <Tab, [Section]>
     getId: function(s) {
-        return s.substring(s.lastIndexOf('.') + 1); // ##.##.id
+        return parseInt(s.substring(s.lastIndexOf('.') + 1)); // ##.##.id
     },
-    addClass : function(el, className) {
+    addClass: function(el, className) {
         if (className && !YUD.hasClass(el, className)) {
             YUD.addClass(el, className);
         }
@@ -26,19 +26,19 @@ YAHOO.page = {
         const className = oColumn.className || (oData ? oData.className : null);
         YAHOO.page.addClass(el.parentNode, className);
     },
-    formatCurrency : function(el, oRecord, oColumn, oData, oDataTable) {
+    formatCurrency: function(el, oRecord, oColumn, oData, oDataTable) {
         const oDT = oDataTable || this;
         el.innerHTML = YAHOO.util.Number.format(oData, oColumn.currencyOptions || oDT.get('currencyOptions'));
         const className = oColumn.className || (oData ? oData.className : null);
         YAHOO.page.addClass(el.parentNode, className);
     },
-    formatNumber : function(el, oRecord, oColumn, oData, oDataTable) {
+    formatNumber: function(el, oRecord, oColumn, oData, oDataTable) {
         const oDT = oDataTable || this;
         el.innerHTML = YAHOO.util.Number.format(oData, oColumn.numberOptions || oDT.get("numberOptions"));
         const className = oColumn.className || (oData ? oData.className : null);
         YAHOO.page.addClass(el.parentNode, className);
     },
-    formatText : function(el, oRecord, oColumn, oData, oDataTable) {
+    formatText: function(el, oRecord, oColumn, oData, oDataTable) {
         const value = (YL.isValue(oData)) ? oData : '';
         el.innerHTML = YL.escapeHTML(value.toString());
         const className = oColumn.className || (oData ? oData.className : null);

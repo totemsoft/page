@@ -13,19 +13,24 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Data
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+//@ToString(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Entity(name = "page_tab")
 public class Tab {
 
+    @EqualsAndHashCode.Include
+    //@ToString.Include
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "tab_id")
-    private long id;
+    private Long id;
 
     @NotBlank
     @Column(name = "tab_name")

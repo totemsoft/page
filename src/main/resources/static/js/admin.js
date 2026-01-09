@@ -66,16 +66,16 @@ YAHOO.page.admin = {
         tabName = window.prompt('Edit the tab label:', tabName);
         if (tabName) {
             const pageId = YAHOO.page.admin.getPageId();
-            const postData = {pageId: pageId, tabId: tabId, tabName: tabName};
-            YAHOO.page.admin.sendPostRequest('/page/tab', YAHOO.page.admin.reloadWindowCallback);
+            const tabDto = {pageId: pageId, id: tabId, name: tabName};
+            YAHOO.page.admin.sendPostRequest('/page/tab', YAHOO.page.admin.reloadWindowCallback, tabDto);
         }
     },
     addTab: function() {
         const tabName = window.prompt('Enter the new tab label:');
         if (tabName) {
             const pageId = YAHOO.page.admin.getPageId();
-            const postData = {pageId: pageId, tabId: null, tabName: tabName};
-            YAHOO.page.admin.sendPostRequest('/page/tab', YAHOO.page.admin.reloadWindowCallback);
+            const tabDto = {pageId: pageId, id: null, name: tabName};
+            YAHOO.page.admin.sendPostRequest('/page/tab', YAHOO.page.admin.reloadWindowCallback, tabDto);
         }
     }
 };

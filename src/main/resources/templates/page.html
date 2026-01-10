@@ -72,7 +72,7 @@
         <div class="yui-content">
             <div th:each="tab: ${page.tabs}" th:id="|tab.${tab.id}|">
                 <div th:each="s: ${tab.sections}" th:id="|section.${s.id}|">
-                    <div class="hd" th:text="${s.name}"></div>
+                    <div class="hd" th:id="|section-menu.${s.id}|" th:text="${s.name}"></div>
                     <div th:class="|bd ${s.splitRatio.cssClass}|" th:id="|bd.section.${s.id}|">
                         <div th:each="ss, iterStat: ${s.subSections}"
                              th:class="${iterStat.first}? 'yui-u first' : 'yui-u'"

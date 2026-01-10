@@ -57,9 +57,9 @@ YAHOO.page.admin = {
     },
     initPageContextMenu: function() {
         // h2[@id=page.{id}]
-        const elPage = YUS.query('h2[id^=page.]');
+        const triggerNode = YUS.query('h2[id^=page.]');
         const pageMenu = new YAHOO.widget.ContextMenu('pageMenu', {
-            trigger: elPage,
+            trigger: triggerNode,
             zIndex: 3,
             lazyload: true,
             itemdata: [
@@ -93,9 +93,9 @@ YAHOO.page.admin = {
     },
     initTabContextMenu: function() {
         // li[@id=tab-menu.{id}]
-        const elTabs = YUS.query('li[id^=tab-menu.]', 'pageDiv');
+        const triggerNodes = YUS.query('li[id^=tab-menu.]', 'pageDiv');
         const tabMenu = new YAHOO.widget.ContextMenu('tabMenu', {
-            trigger: elTabs,
+            trigger: triggerNodes,
             zIndex: 3,
             lazyload: true,
             itemdata: [
@@ -138,10 +138,10 @@ YAHOO.page.admin = {
         });
     },
     initSectionContextMenu: function() {
-        // div[@id=section.{id}_c]/div[@id=section.{id}]
-        const elSections = YUS.query('div[id^=section.] div[id^=section.]', 'pageDiv');
+        // div[@id=section-menu.{id}]
+        const triggerNodes = YUS.query('div[id^=section-menu.]', 'pageDiv');
         const sectionMenu = new YAHOO.widget.ContextMenu('sectionMenu', {
-            trigger: elSections,
+            trigger: triggerNodes,
             zIndex: 3,
             lazyload: true,
             itemdata: [
@@ -180,10 +180,10 @@ YAHOO.page.admin = {
         });
     },
     initSubSectionContextMenu: function() {
-        // div[@id=subSection.{id}]
-        const elSubSections = YUS.query('div[id^=subSection.]', 'pageDiv');
+        // div[@id=subSection.{id}]/caption
+        const triggerNodes = YUS.query('div[id^=subSection.] caption', 'pageDiv');
         const subSectionMenu = new YAHOO.widget.ContextMenu('subSectionMenu', {
-            trigger: elSubSections,
+            trigger: triggerNodes,
             zIndex: 3,
             lazyload: true,
             itemdata: [

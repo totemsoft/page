@@ -11,7 +11,7 @@ import lombok.Data;
 @Data
 public class SectionDto {
 
-    private long id;
+    private Long id;
 
     @NotBlank
     private String name;
@@ -22,7 +22,7 @@ public class SectionDto {
     private int index;
 
     @NotNull
-    private SplitRatioEnum splitRatio = SplitRatioEnum.NONE;
+    private SplitRatioEnum splitRatio = SplitRatioEnum.ONE;
 
     private long tabId;
 

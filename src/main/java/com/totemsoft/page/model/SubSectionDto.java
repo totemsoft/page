@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 public class SubSectionDto {
 
-    private long id;
+    private Long id;
 
     @NotBlank
     private String name;

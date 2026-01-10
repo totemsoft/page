@@ -15,20 +15,33 @@
         .left { text-align: left !important; }
         .center { text-align: center !important; }
         .right { text-align: right !important; }
+        /* revert change from: yui-combine.css:21 */
+        h2 {
+            font-size: 1.5em;
+            margin-block-start: 0.83em;
+            margin-block-end: 0.83em;
+            font-weight: bold;
+        }
         .yui-dt-data .page-tag {
             background: transparent url(../js/yui/assets/skins/sam/sprite.png) repeat-x scroll 0 -200px;
         }
         .yui-skin-sam .yui-panel .bd { padding: inherit; }
         .yui-skin-sam .yui-dt table { width:100%; }
-        /*.yui-skin-sam .yui-dt caption { text-align: inherit; }*/
+        /* copy from: .yui-skin-sam .yui-panel .hd */
+        .yui-skin-sam .yui-dt caption {
+            padding: 0 10px;
+            font-size: 93%;
+            line-height: 2;
+            font-weight: bold;
+            background: url(../js/yui/assets/skins/sam/sprite.png) repeat-x 0 -200px;
+        }
     </style>
 </head>
 <body class="yui-skin-sam">
-    <input type="hidden" id="pageId" th:value="${page.id}" sec:authorize="hasRole('ROLE_ADMIN')" />
-    <input type="hidden" id="pageName" th:value="${page.name}" sec:authorize="hasRole('ROLE_ADMIN')" />
     <div class="yui-gc">
         <div  class="yui-u first">
-            <h2 th:text="|#{page.welcome}: ${page.name}|">TBD</h2>
+            <input type="hidden" id="pageId" th:value="${page.id}" />
+            <h2 th:id="|page.${page.id}|" th:text="${page.name}">TBD</h2>
         </div>
         <div class="yui-u" th:fragment="logout" sec:authorize="isAuthenticated()">
             <div>
@@ -58,14 +71,14 @@
         </ul>
         <div class="yui-content">
             <div th:each="tab: ${page.tabs}" th:id="|tab.${tab.id}|">
-                <div th:each="s: ${tab.sections}" th:id="|section.${s.id}|"
-                     th:class="${s.splitRatio.cssClass}">
+                <div th:each="s: ${tab.sections}" th:id="|section.${s.id}|">
                     <div class="hd" th:text="${s.name}"></div>
-                    <div class="bd" th:id="|bd.section.${s.id}|">
-                        <div th:each="ss, iterStat: ${s.subSections}" th:id="|subSection.${ss.id}|"
-                             th:class="${iterStat.first}? 'yui-u first' : 'yui-u'">
-                            <div th:id="|hd.subSection.${ss.id}|" th:text="${ss.name}"></div>
-                            <div th:id="|bd.subSection.${ss.id}|">
+                    <div th:class="|bd ${s.splitRatio.cssClass}|" th:id="|bd.section.${s.id}|">
+                        <div th:each="ss, iterStat: ${s.subSections}"
+                             th:class="${iterStat.first}? 'yui-u first' : 'yui-u'"
+                             th:id="|subSection.${ss.id}|">
+                            <div class="hd" th:id="|hd.subSection.${ss.id}|" th:text="${ss.name}"></div>
+                            <div class="bd" th:id="|bd.subSection.${ss.id}|">
                                 <div th:id="|data.subSection.${ss.id}|"></div>
                             </div>
                         </div>
@@ -74,5 +87,6 @@
             </div>
         </div>
     </div>
+    <div th:insert="~{admin :: page-structure}" sec:authorize="hasRole('ROLE_ADMIN')" style="display: none;"></div>
 </body>
 </html>

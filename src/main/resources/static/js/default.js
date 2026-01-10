@@ -4,6 +4,7 @@ const YL  = YAHOO.lang,
       YUE = YAHOO.util.Event,
       YUG = YAHOO.util.Get,
       YUS = YAHOO.util.Selector;
+const tabViewActiveTabCookie = 'YAHOO.page.tabView.activeIndex';
 
 YAHOO.namespace('page');
 
@@ -12,6 +13,10 @@ YAHOO.page = {
     pageMap: new Map(), // <Tab, [Section]>
     getId: function(s) {
         return parseInt(s.substring(s.lastIndexOf('.') + 1)); // ##.##.id
+    },
+    getPageId: function() {
+        const el = YUD.get('pageId');
+        return el && el.value ? parseInt(el.value) : '';
     },
     addClass: function(el, className) {
         if (className && !YUD.hasClass(el, className)) {
@@ -59,15 +64,20 @@ YAHOO.page = {
             const sections = this.initSections(elTab);
             this.pageMap.set(tab, sections);
         });
-        // FIXME: show second tab (final step after all data loaded in DataTable(s))
-        tabView.selectTab(0);
+        const subName = '' + YAHOO.page.getPageId();
+        var activeIndex = parseInt(YAHOO.util.Cookie.getSub(tabViewActiveTabCookie, subName));
+        activeIndex = !activeIndex || isNaN(activeIndex) ? 0 : activeIndex;
+        tabView.selectTab(activeIndex);
         // fire the custom event
-        YAHOO.page.pageReadyEvent.fire({tabView: tabView}); 
+        YAHOO.page.pageReadyEvent.fire({tabView: tabView});
     },
     initTabView: function(oContainer) {
         const tabView = new YAHOO.widget.TabView(oContainer/*, {activeIndex: 0}*/);
         tabView.on('activeIndexChange', function(e) {
-            const tab = this.getTab(e.newValue);
+            const activeIndex = e.newValue;
+            const subName = '' + YAHOO.page.getPageId();
+            YAHOO.util.Cookie.setSub(tabViewActiveTabCookie, subName, '' + activeIndex, {expires: new Date(Date.now() + 30*60*1000)});
+            const tab = this.getTab(activeIndex);
             YAHOO.page.moveSections(tab);
         });
         return tabView;
@@ -120,16 +130,14 @@ YAHOO.page = {
                 const dataTable = this.initDataTable(YUD.get('data.' + id), '/subSection/' + subSectionId);
             });
             // via LayoutManager
-            //this.initSubSectionsLayout(section, elSubSections);
-            // via Panel
-            //this.initSubSectionsPanel(section, elSubSections);
+            //YAHOO.page.optional.initSubSectionsLayout(section, elSubSections);
         }
     },
     initDataTable: function(elSubSection, oLiveData) {
         const id = elSubSection.id; // data.subSection.{id}
         const subSectionId = this.getId(id);
         const headerEl = YUD.get('hd.subSection.' + subSectionId); // hd.subSection.{id}
-        const caption = headerEl.innerText;
+        const caption = headerEl.innerHTML; //innerText;
         setTimeout(function(el) {
             el.parentNode.removeChild(el);
         }, 100, headerEl);
@@ -178,54 +186,6 @@ YAHOO.page = {
         //    // TODO: init subSection context menu
         //});
         return dataTable;
-    },
-    initSubSectionsLayout: function(section, elSubSections) {
-        // LayoutUnit positions
-        const positions = [
-            ['center'],
-            ['center', 'right'],
-            ['left', 'center', 'right']
-        ];
-        const width = YUD.getViewportWidth();
-        const units = [];
-        // max 3 subSection(s) [left, center, right]
-        const size = elSubSections.length;
-        elSubSections.forEach((elSubSection, index) => {
-            const id = elSubSection.id;
-            const headerEl = YUD.get('hd.' + id);
-            const header = headerEl.innerHTML;
-            setTimeout(function(el) {
-                el.parentNode.removeChild(el);
-            }, 100, headerEl.parentNode);
-            units.push({
-                position: positions[size - 1][index],
-                // The html to use as the Header of the Unit (sets via innerHTML)
-                header: header,
-                // The content for the footer. If we find an element in the page with an id that matches the passed option we will move that element into the footer of this unit. (sets via innerHTML)
-                //footer: 'ft.' + id,
-                // The content for the body. If we find an element in the page with an id that matches the passed option we will move that element into the body of this unit. (sets via innerHTML)
-                body: 'bd.' + id,
-                //grids: true,
-                width: width / size,
-                gutter: '2'
-            });
-        });
-        const subSectionLayout = new YAHOO.widget.Layout('bd.' + section.id, {
-            height: section.body.offsetHeight, //clientHeight,
-            width: width,
-            units: units
-        });
-        subSectionLayout.render();
-    },
-    initSubSectionsPanel: function(section, elSubSections) {
-        const width = YUD.getViewportWidth();
-        const size = elSubSections.length;
-        elSubSections.forEach((elSubSection) => {
-            const w = width / size;
-            const subSection = new YAHOO.widget.Panel(elSubSection,
-                { width: w + 'px', autofillheight: 'body', constraintoviewport: true, visible:true, draggable:!false, close:false } );
-            subSection.render(section.body);
-        });
     }
 };
 

@@ -9,7 +9,6 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public enum SplitRatioEnum {
 
-    NONE(null, ""),
     ONE("1", ""), // div#doc3 creates a 100% page width
     HALF("1/2 - 1/2",         "yui-g"),
     THIRD("1/3 - 1/3 - 1/3",  "yui-gb"),
@@ -39,7 +38,7 @@ public enum SplitRatioEnum {
             }
         }
         log.warn("Unhandled id [{}]", id);
-        return NONE;
+        return ONE;
     }
 
 }

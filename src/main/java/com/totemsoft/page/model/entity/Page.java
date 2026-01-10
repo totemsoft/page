@@ -24,7 +24,7 @@ public class Page {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "page_id")
-    private long id;
+    private Long id;
 
     @NotBlank
     @Column(name = "page_name")

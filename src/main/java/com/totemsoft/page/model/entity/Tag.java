@@ -30,7 +30,7 @@ public class Tag implements Comparable<Tag> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "tag_id")
-    private long id;
+    private Long id;
 
     @ToString.Include
     @NotBlank

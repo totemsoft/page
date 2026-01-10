@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 public class TagDto {
 
-    private long id;
+    private Long id;
 
     @NotBlank
     private String name;

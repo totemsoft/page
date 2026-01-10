@@ -27,7 +27,7 @@ public class SubSection {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "sub_section_id")
-    private long id;
+    private Long id;
 
     @NotBlank
     @Column(name = "sub_section_name")

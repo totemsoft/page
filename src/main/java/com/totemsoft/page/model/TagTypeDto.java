@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 public class TagTypeDto {
 
-    private int id;
+    private Integer id;
 
     @NotBlank
     private String name;

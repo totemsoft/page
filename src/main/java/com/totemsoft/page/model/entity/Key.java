@@ -34,7 +34,7 @@ public class Key {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "key_id")
-    private long id;
+    private Long id;
 
     @ToString.Include
     @NotBlank

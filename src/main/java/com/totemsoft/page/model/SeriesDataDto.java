@@ -9,7 +9,7 @@ import lombok.Data;
 @Data
 public class SeriesDataDto {
 
-    private long id;
+    private Long id;
 
     //@JsonFormat(shape = JsonFormat.Shape.NUMBER)
     private LocalDate date;

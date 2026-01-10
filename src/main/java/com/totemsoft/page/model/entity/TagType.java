@@ -27,7 +27,7 @@ public class TagType {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "tag_type_id")
-    private int id;
+    private Integer id;
 
     @ToString.Include
     @NotBlank

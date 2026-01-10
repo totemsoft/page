@@ -36,7 +36,7 @@ public class Section {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "section_id")
-    private long id;
+    private Long id;
 
     @ToString.Include
     @NotBlank

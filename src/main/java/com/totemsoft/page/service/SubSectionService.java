@@ -45,17 +45,19 @@ public class SubSectionService {
             .orElseThrow(() -> new EntityNotFoundException(subSectionId, SubSection.class));
         // all keys from sub-section
         final var keys = subSection.getKeys();
+        log.trace("#{} keys: {}", subSectionId, keys);
+        final List<SeriesData> data;
         if (keys.isEmpty()) {
             log.warn("No key(s) found for sub-section {}.", subSectionId);
-            return null;
+            data = List.of();
+        } else {
+            data = seriesDataRepository.findByKeyIn(keys);
         }
-        log.debug("#{} keys: {}", subSectionId, keys);
         //
         final var rowTagType = subSection.getRowTagType();
         final var columnTagType = subSection.getColumnTagType();
-        final var data = seriesDataRepository.findByKeyIn(keys);
         if (rowTagType == null || columnTagType == null) {
-            log.warn("No RowTagType/ColumnTagType set for sub-section {}.", subSectionId);
+            log.trace("No RowTagType/ColumnTagType set for sub-section {}.", subSectionId);
             return SubSectionResult.<SeriesDataDto>builder()
                     .columns(findDefaultColumns())
                     .data(mapper.map(data))
@@ -68,8 +70,8 @@ public class SubSectionService {
             key.findTag(rowTagType).ifPresent(rowTags::add);
             key.findTag(columnTagType).ifPresent(columnTags::add);
         });
-        log.debug("#{} rowTags: {}", subSectionId, rowTags);
-        log.debug("#{} columnTags: {}", subSectionId, columnTags);
+        log.trace("#{} rowTags: {}", subSectionId, rowTags);
+        log.trace("#{} columnTags: {}", subSectionId, columnTags);
         //
         final var result = new ArrayList<Row>();
         //final var dataTags = data.stream().flatMap(d -> d.getKey().getTags().stream()).toList();

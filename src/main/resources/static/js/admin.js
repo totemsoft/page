@@ -1,9 +1,20 @@
 YAHOO.namespace('page.admin');
 
 YAHOO.page.admin = {
-    getPageId: function() {
-        const el = YUD.get('pageId');
-        return el && el.value ? parseInt(el.value) : '';
+    parseJsonData: function(oData, ignoreErrors) {
+        if (!oData) {
+            return null;
+        }
+        // encode Back Slashes
+        oData = oData.replace(/\\/g, '\\\\');
+        try {
+            return YAHOO.lang.JSON.parse(oData);
+        } catch (e) {
+            if (ignoreErrors) {
+                return null;
+            }
+            throw e;
+        }
     },
     sendGetRequest: function(action, callback) {
         YUC.asyncRequest('GET', action, callback); 
@@ -22,7 +33,14 @@ YAHOO.page.admin = {
         cache: false,
         success: function(oResponse) {
             const win = window.parent ? window.parent : window;
-            win.location.reload();
+            const data = YAHOO.page.admin.parseJsonData(oResponse.responseText, true);
+            if (data && data.pageId)  {
+                const url = new URL(win.location.href);
+                url.searchParams.set('pageId', data.pageId);
+                win.location.href = url.toString();
+            } else {
+                win.location.reload();
+            }
         },
         failure: function(oResponse) {
             const status = oResponse && oResponse.status ? oResponse.status : '';
@@ -32,8 +50,46 @@ YAHOO.page.admin = {
     },
     fnSubscriberPageReady: function(type, args) {
         //const tabView = args[0].tabView;
+        YAHOO.page.admin.initPageContextMenu();
         YAHOO.page.admin.initTabContextMenu();
         YAHOO.page.admin.initSectionContextMenu();
+        YAHOO.page.admin.initSubSectionContextMenu();
+    },
+    initPageContextMenu: function() {
+        // h2[@id=page.{id}]
+        const elPage = YUS.query('h2[id^=page.]');
+        const pageMenu = new YAHOO.widget.ContextMenu('pageMenu', {
+            trigger: elPage,
+            zIndex: 3,
+            lazyload: true,
+            itemdata: [
+                [
+                    {text: 'Edit Page', disabled: false},
+                    {text: 'Add Page', disabled: false}
+                ]
+            ]
+        });
+        pageMenu.subscribe('click', function(oType, oArgs) {
+            const oEvent = oArgs[0];
+            const oItem = oArgs[1];
+            if (!oItem.cfg.getProperty('disabled')) {
+                const oTarget = this.contextEventTarget;
+                const pageId = YAHOO.page.getPageId();
+                const pageName = oTarget.innerText;
+                switch (oItem.groupIndex) {
+                case 0:
+                    switch (oItem.index) {
+                    case 0:
+                        YAHOO.page.admin.editPage(pageId, pageName);
+                        break;
+                    case 1:
+                        YAHOO.page.admin.addPage();
+                        break;
+                    }
+                    break;
+                }
+            }
+        });
     },
     initTabContextMenu: function() {
         // li[@id=tab-menu.{id}]
@@ -123,6 +179,54 @@ YAHOO.page.admin = {
             }
         });
     },
+    initSubSectionContextMenu: function() {
+        // div[@id=subSection.{id}]
+        const elSubSections = YUS.query('div[id^=subSection.]', 'pageDiv');
+        const subSectionMenu = new YAHOO.widget.ContextMenu('subSectionMenu', {
+            trigger: elSubSections,
+            zIndex: 3,
+            lazyload: true,
+            itemdata: [
+                [
+                    {text: 'Edit Sub-Section', disabled: false}
+                ]
+            ]
+        });
+        subSectionMenu.subscribe('click', function(oType, oArgs) {
+            const oEvent = oArgs[0];
+            const oItem = oArgs[1];
+            if (!oItem.cfg.getProperty('disabled')) {
+                const oTarget = this.contextEventTarget;
+                const subSectionId = YAHOO.page.getId(oTarget.parentNode.id);
+                const subSectionName = oTarget.innerText;
+                switch (oItem.groupIndex) {
+                case 0:
+                    switch (oItem.index) {
+                    case 0:
+                        YAHOO.page.admin.editSubSection(subSectionId, subSectionName);
+                        break;
+                    }
+                    break;
+                }
+            }
+        });
+    },
+    editPage: function(pageId, pageName) {
+        console.log('editPage: pageId=' + pageId + ', pageName=' + pageName);
+        pageName = window.prompt('Edit the page name:', pageName);
+        if (pageName) {
+            const pageDto = {id: pageId, name: pageName};
+            YAHOO.page.admin.sendPostRequest('/page', YAHOO.page.admin.reloadWindowCallback, pageDto);
+        }
+    },
+    addPage: function() {
+        console.log('addPage:');
+        const pageName = window.prompt('Enter the new page name:');
+        if (pageName) {
+            const pageDto = {name: pageName};
+            YAHOO.page.admin.sendPostRequest('/page', YAHOO.page.admin.reloadWindowCallback, pageDto);
+        }
+    },
     editTab: function(tabId, tabName) {
         console.log('editTab: tabId=' + tabId + ', tabName=' + tabName);
         tabName = window.prompt('Edit the tab label:', tabName);
@@ -135,7 +239,7 @@ YAHOO.page.admin = {
         console.log('addTab:');
         const tabName = window.prompt('Enter the new tab label:');
         if (tabName) {
-            const pageId = YAHOO.page.admin.getPageId();
+            const pageId = YAHOO.page.getPageId();
             const tabDto = {pageId: pageId, name: tabName};
             YAHOO.page.admin.sendPostRequest('/page/tab', YAHOO.page.admin.reloadWindowCallback, tabDto);
         }

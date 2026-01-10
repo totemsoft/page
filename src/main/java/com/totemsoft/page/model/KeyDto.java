@@ -8,7 +8,7 @@ import lombok.Data;
 @Data
 public class KeyDto {
 
-    private long id;
+    private Long id;
 
     @NotBlank
     private String name;

@@ -27,7 +27,7 @@ public class SeriesData {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "series_data_id")
-    private long id;
+    private Long id;
 
     @ToString.Include
     @Column(name = "series_data_date")

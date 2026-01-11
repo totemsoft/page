@@ -49,7 +49,7 @@ YAHOO.page.admin = {
         }
     },
     fnSubscriberPageReady: function(type, args) {
-        //const tabView = args[0].tabView;
+        YAHOO.page.admin.tabView = args[0].tabView;
         YAHOO.page.admin.initPageContextMenu();
         YAHOO.page.admin.initTabContextMenu();
         YAHOO.page.admin.initSectionContextMenu();
@@ -211,54 +211,133 @@ YAHOO.page.admin = {
             }
         });
     },
+    openEditDialog: function(el, fnSubmitHandler) {
+        const dialog = new YAHOO.widget.SimpleDialog(el, {
+            close: true,
+            draggable: true,
+            fixedcenter: true,
+            visible: false,
+            modal: false,
+            icon: null,
+            autofillheight: 'body',
+            constraintoviewport: true,
+            context: ['showbtn', 'tl', 'bl'],
+            buttons: [
+                {text: 'Save', isDefault: true, handler: fnSubmitHandler},
+                {text: 'Cancel', handler: function() {
+                    this.cancel();
+                }}
+            ]
+        });
+        dialog.cfg.queueProperty('keylisteners', new YAHOO.util.KeyListener(
+            document,
+            { keys: 27 },
+            { fn: function() {this.cancel();}, scope: dialog, correctScope: true }
+        ));
+        dialog.render(document.body);
+        return dialog;
+    },
     editPage: function(pageId, pageName) {
         console.log('editPage: pageId=' + pageId + ', pageName=' + pageName);
-        pageName = window.prompt('Edit the page name:', pageName);
-        if (pageName) {
-            const pageDto = {id: pageId, name: pageName};
-            YAHOO.page.admin.sendPostRequest('/page', YAHOO.page.admin.reloadWindowCallback, pageDto);
+        if (!YAHOO.page.admin.editPageDialog) {
+            const fnSubmitHandler = function() {
+                const pageDto = {
+                    id: pageId,
+                    name: YUD.get('page.name').value
+                };
+                YAHOO.page.admin.sendPostRequest('/page', YAHOO.page.admin.reloadWindowCallback, pageDto);
+            };
+            YAHOO.page.admin.editPageDialog = YAHOO.page.admin.openEditDialog('editPageDialog', fnSubmitHandler);
         }
+        YUD.get('page.name').value = pageName;
+        YAHOO.page.admin.editPageDialog.bringToTop();
+        YAHOO.page.admin.editPageDialog.show();
     },
     addPage: function() {
         console.log('addPage:');
-        const pageName = window.prompt('Enter the new page name:');
-        if (pageName) {
-            const pageDto = {name: pageName};
-            YAHOO.page.admin.sendPostRequest('/page', YAHOO.page.admin.reloadWindowCallback, pageDto);
+        if (!YAHOO.page.admin.editPageDialog) {
+            const fnSubmitHandler = function() {
+                const pageDto = {
+                    name: YUD.get('page.name').value
+                };
+                YAHOO.page.admin.sendPostRequest('/page', YAHOO.page.admin.reloadWindowCallback, pageDto);
+            };
+            YAHOO.page.admin.editPageDialog = YAHOO.page.admin.openEditDialog('editPageDialog', fnSubmitHandler);
         }
+        YUD.get('page.name').value = '';
+        YAHOO.page.admin.editPageDialog.bringToTop();
+        YAHOO.page.admin.editPageDialog.show();
     },
     editTab: function(tabId, tabName) {
         console.log('editTab: tabId=' + tabId + ', tabName=' + tabName);
-        tabName = window.prompt('Edit the tab label:', tabName);
-        if (tabName) {
-            const tabDto = {id: tabId, name: tabName};
-            YAHOO.page.admin.sendPostRequest('/page/tab', YAHOO.page.admin.reloadWindowCallback, tabDto);
+        if (!YAHOO.page.admin.editTabDialog) {
+            const fnSubmitHandler = function() {
+                const tabDto = {
+                    id: tabId,
+                    name: YUD.get('tab.name').value
+                };
+                YAHOO.page.admin.sendPostRequest('/page/tab', YAHOO.page.admin.reloadWindowCallback, tabDto);
+            };
+            YAHOO.page.admin.editTabDialog = YAHOO.page.admin.openEditDialog('editTabDialog', fnSubmitHandler);
         }
+        YUD.get('tab.name').value = tabName;
+        YAHOO.page.admin.editTabDialog.bringToTop();
+        YAHOO.page.admin.editTabDialog.show();
     },
     addTab: function() {
         console.log('addTab:');
-        const tabName = window.prompt('Enter the new tab label:');
-        if (tabName) {
-            const pageId = YAHOO.page.getPageId();
-            const tabDto = {pageId: pageId, name: tabName};
-            YAHOO.page.admin.sendPostRequest('/page/tab', YAHOO.page.admin.reloadWindowCallback, tabDto);
+        if (!YAHOO.page.admin.editTabDialog) {
+            const fnSubmitHandler = function() {
+                const tabDto = {
+                    pageId: YAHOO.page.getPageId(),
+                    name: YUD.get('tab.name').value
+                };
+                YAHOO.page.admin.sendPostRequest('/page/tab', YAHOO.page.admin.reloadWindowCallback, tabDto);
+            };
+            YAHOO.page.admin.editTabDialog = YAHOO.page.admin.openEditDialog('editTabDialog', fnSubmitHandler);
         }
+        YUD.get('tab.name').value = '';
+        YAHOO.page.admin.editTabDialog.bringToTop();
+        YAHOO.page.admin.editTabDialog.show();
+    },
+    openEditSectionDialog: function() {
+        if (!YAHOO.page.admin.editSectionDialog) {
+            const fnSubmitHandler = function() {
+                const elSplitRatio = YUD.get('section.splitRatio');
+                YAHOO.page.admin.sendPostRequest('/page/section', YAHOO.page.admin.reloadWindowCallback, {
+                    id: YUD.get('section.id').value,
+                    name: YUD.get('section.name').value,
+                    index: YUD.get('section.index').value,
+                    splitRatio: elSplitRatio.value,
+                    tabId: YUD.get('section.tabId').value
+                });
+            };
+            YAHOO.page.admin.editSectionDialog = YAHOO.page.admin.openEditDialog('editSectionDialog', fnSubmitHandler);
+        }
+        return YAHOO.page.admin.editSectionDialog;
     },
     editSection: function(sectionId, sectionName) {
         console.log('editSection: sectionId=' + sectionId + ', sectionName=' + sectionName);
-        sectionName = window.prompt('Edit the section name:', sectionName);
-        if (sectionName) {
-            const sectionDto = {id: sectionId, name: sectionName};
-            YAHOO.page.admin.sendPostRequest('/page/section', YAHOO.page.admin.reloadWindowCallback, sectionDto);
-        }
+        YUD.get('section.id').value = sectionId;
+        YUD.get('section.name').value = sectionName;
+        YUD.get('section.index').value = YUD.get('section.index.' + sectionId).value;
+        const elSplitRatio = YUD.get('section.splitRatio');
+        elSplitRatio.value = YUD.get('section.splitRatio.' + sectionId).value;
+        const dialog = YAHOO.page.admin.openEditSectionDialog();
+        dialog.bringToTop();
+        dialog.show();
     },
     addSection: function(tabId) {
         console.log('addSection: tabId=' + tabId);
-        const sectionName = window.prompt('Enter the new section name:');
-        if (sectionName) {
-            const sectionDto = {tabId: tabId, name: sectionName};
-            YAHOO.page.admin.sendPostRequest('/page/section', YAHOO.page.admin.reloadWindowCallback, sectionDto);
-        }
+        YUD.get('section.id').value = '';
+        YUD.get('section.name').value = '';
+        YUD.get('section.index').value = '1';
+        const elSplitRatio = YUD.get('section.splitRatio');
+        elSplitRatio.selectedIndex = 0;
+        YUD.get('section.tabId').value = tabId;
+        const dialog = YAHOO.page.admin.openEditSectionDialog();
+        dialog.bringToTop();
+        dialog.show();
     },
     editSubSection: function(subSectionId, subSectionName) {
         console.log('editSubSection: subSectionId=' + subSectionId + ', subSectionName=' + subSectionName);

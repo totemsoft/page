@@ -55,8 +55,9 @@ public class Section {
     @Column(name = "section_split_ratio")
     private SplitRatioEnum splitRatio = SplitRatioEnum.ONE;
 
+    @NotNull
     @Column(name = "tab_id")
-    private long tabId;
+    private Long tabId;
 
     @Size(max = 3)
     @OneToMany(mappedBy = "sectionId")

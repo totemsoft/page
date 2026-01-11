@@ -12,6 +12,7 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -33,8 +34,9 @@ public class SubSection {
     @Column(name = "sub_section_name")
     private String name;
 
+    @NotNull
     @Column(name = "section_id")
-    private long sectionId;
+    private Long sectionId;
 
     @ManyToOne
     @JoinColumn(name = "row_tag_type_id")

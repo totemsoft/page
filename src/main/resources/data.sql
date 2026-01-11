@@ -47,10 +47,10 @@ insert into page_tab (tab_name, page_id) values
   ;
 
 insert into page_section (section_name, section_index, section_split_ratio, tab_id) values
-  ('Section 1', 0, 'ONE',       1),
-  ('Section 2', 1, 'HALF',      1),
-  ('Section 3', 0, 'ONE_THIRD', 2),
-  ('Section 4', 1, 'THIRD',     2)
+  ('Section 1', 1, 'ONE',       1),
+  ('Section 2', 2, 'HALF',      1),
+  ('Section 3', 1, 'ONE_THIRD', 2),
+  ('Section 4', 2, 'THIRD',     2)
   ;
 
 insert into page_sub_section (sub_section_name, section_id, row_tag_type_id, column_tag_type_id) values

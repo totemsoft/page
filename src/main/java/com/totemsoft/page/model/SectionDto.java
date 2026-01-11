@@ -24,7 +24,7 @@ public class SectionDto {
     @NotNull
     private SplitRatioEnum splitRatio = SplitRatioEnum.ONE;
 
-    private long tabId;
+    private Long tabId;
 
     private List<SubSectionDto> subSections;
 

@@ -88,6 +88,8 @@ public class PageStructureService {
             section = sectionRepository.findById(sectionId)
                 .orElseThrow(() -> new EntityNotFoundException(sectionId, Section.class));
             section.setName(sectionDto.getName());
+            section.setIndex(sectionDto.getIndex());
+            section.setSplitRatio(sectionDto.getSplitRatio());
         }
         log.trace("saving: {}", section);
         sectionRepository.save(section);

@@ -10,6 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OrderBy;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -34,8 +35,9 @@ public class Tab {
     @Column(name = "tab_name")
     private String name;
 
+    @NotNull
     @Column(name = "page_id")
-    private long pageId;
+    private Long pageId;
 
     @OneToMany(mappedBy = "tabId")
     @OrderBy("index")

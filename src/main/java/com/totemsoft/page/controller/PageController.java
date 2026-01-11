@@ -5,6 +5,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.totemsoft.page.model.refdata.SplitRatioEnum;
 import com.totemsoft.page.service.PageService;
 
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,7 @@ class PageController {
         final var page = pageService.findPage(pageId);
         log.trace("Found page {}.", page);
         model.addAttribute("page", page);
+        model.addAttribute("splitRatios", SplitRatioEnum.values());
         return "page";
     }
 

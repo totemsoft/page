@@ -11,6 +11,6 @@ public class SubSectionDto {
     @NotBlank
     private String name;
 
-    private long sectionId;
+    private Long sectionId;
 
 }

@@ -29,6 +29,7 @@ public interface PageMapper {
 
     Section map(SectionDto sectionDto);
 
+    // WARN: Unmapped target properties: "rowTagType, columnTagType, keys"
     SubSection map(SubSectionDto subSectionDto);
 
 }

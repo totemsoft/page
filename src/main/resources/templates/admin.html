@@ -2,7 +2,70 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <body>
     <div th:fragment="page-structure">
-        TODO: page-structure edit Panels
+        <div id="editPageDialog">
+            <div class="hd">Edit Page</div>
+            <div class="bd">
+                <div class="table-container">
+                    <div>
+                        <div>Name:</div>
+                        <div><input id="page.name" /></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="editTabDialog">
+            <div class="hd">Edit Tab</div>
+            <div class="bd">
+                <div class="table-container">
+                    <div>
+                        <div>Name:</div>
+                        <div><input id="tab.name" /></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="editSectionDialog">
+            <div class="hd">Edit Section</div>
+            <div class="bd">
+                <div class="table-container">
+                    <div class="hidden">
+                        <div>ID:</div>
+                        <div><input id="section.id" disabled="disabled" readonly="readonly" /></div>
+                    </div>
+                    <div>
+                        <div>Name:</div>
+                        <div><input id="section.name" /></div>
+                    </div>
+                    <div>
+                        <div>Index:</div>
+                        <div><input id="section.index" type="number" min="1" max="10" /></div>
+                    </div>
+                    <div>
+                        <div>Split Ratio:</div>
+                        <div>
+                            <select id="section.splitRatio">
+                                <option th:each="item: ${splitRatios}" th:value="${item.name}" th:text="${item.title}"></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="hidden">
+                        <div>Tab Id:</div>
+                        <div><input id="section.tabId" disabled="disabled" /></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="editSubSectionDialog">
+            <div class="hd">Edit Section</div>
+            <div class="bd">
+                <div class="table-container">
+                    <div>
+                        <div>Name:</div>
+                        <div><input id="subSection.name" /></div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </body>
 </html>

@@ -13,6 +13,6 @@ public class TagDto {
 
     private String title;
 
-    private TagTypeDto tagTypeDto;
+    private TagTypeDto tagType;
 
 }

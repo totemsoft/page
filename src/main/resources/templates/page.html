@@ -15,6 +15,18 @@
         .left { text-align: left !important; }
         .center { text-align: center !important; }
         .right { text-align: right !important; }
+        .hidden { display: none !important; }
+        .table-container {
+            display: table;
+            width: 100%;
+        }
+        .table-container div {
+            display: table-row;
+        }
+        .table-container div div {
+            display: table-cell;
+            padding: 8px;
+        }
         /* revert change from: yui-combine.css:21 */
         h2 {
             font-size: 1.5em;
@@ -72,6 +84,8 @@
         <div class="yui-content">
             <div th:each="tab: ${page.tabs}" th:id="|tab.${tab.id}|">
                 <div th:each="s: ${tab.sections}" th:id="|section.${s.id}|">
+                    <input type="hidden" th:id="|section.index.${s.id}|" th:value="${s.index}" />
+                    <input type="hidden" th:id="|section.splitRatio.${s.id}|" th:value="${s.splitRatio.name}" />
                     <div class="hd" th:id="|section-menu.${s.id}|" th:text="${s.name}"></div>
                     <div th:class="|bd ${s.splitRatio.cssClass}|" th:id="|bd.section.${s.id}|">
                         <div th:each="ss, iterStat: ${s.subSections}"
@@ -87,6 +101,6 @@
             </div>
         </div>
     </div>
-    <div th:insert="~{admin :: page-structure}" sec:authorize="hasRole('ROLE_ADMIN')" style="display: none;"></div>
+    <div th:insert="~{admin :: page-structure}" sec:authorize="hasRole('ROLE_ADMIN')" class="hidden"></div>
 </body>
 </html>

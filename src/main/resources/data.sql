@@ -20,6 +20,7 @@ insert into tag_type (tag_type_name, tag_type_title) values
   ('TAG_TYPE_08', 'Tag Type 08'),
   ('TAG_TYPE_09', 'Tag Type 09'),
   ('TAG_TYPE_10', 'Tag Type 10')
+  ,('TAG_TYPE_00', 'Tag Type 00')
   ;
 
 insert into tag (tag_name, tag_title, tag_type_id) values

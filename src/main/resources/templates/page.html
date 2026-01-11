@@ -91,6 +91,9 @@
                         <div th:each="ss, iterStat: ${s.subSections}"
                              th:class="${iterStat.first}? 'yui-u first' : 'yui-u'"
                              th:id="|subSection.${ss.id}|">
+                            <input type="hidden" th:id="|subSection.sectionId.${ss.id}|" th:value="${s.id}" />
+                            <input type="hidden" th:id="|subSection.rowTagTypeId.${ss.id}|" th:value="${ss.rowTagTypeId}" />
+                            <input type="hidden" th:id="|subSection.columnTagTypeId.${ss.id}|" th:value="${ss.columnTagTypeId}" />
                             <div class="hd" th:id="|hd.subSection.${ss.id}|" th:text="${ss.name}"></div>
                             <div class="bd" th:id="|bd.subSection.${ss.id}|">
                                 <div th:id="|data.subSection.${ss.id}|"></div>

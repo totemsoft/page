@@ -181,7 +181,7 @@ YAHOO.page.admin = {
     },
     initSubSectionContextMenu: function() {
         // div[@id=subSection.{id}]/caption
-        const triggerNodes = YUS.query('div[id^=subSection.] caption', 'pageDiv');
+        const triggerNodes = YUS.query('div[id^=data.subSection.] table caption', 'pageDiv');
         const subSectionMenu = new YAHOO.widget.ContextMenu('subSectionMenu', {
             trigger: triggerNodes,
             zIndex: 3,
@@ -197,7 +197,7 @@ YAHOO.page.admin = {
             const oItem = oArgs[1];
             if (!oItem.cfg.getProperty('disabled')) {
                 const oTarget = this.contextEventTarget;
-                const subSectionId = YAHOO.page.getId(oTarget.parentNode.id);
+                const subSectionId = YAHOO.page.getId(oTarget.parentNode.parentNode.id);
                 const subSectionName = oTarget.innerText;
                 switch (oItem.groupIndex) {
                 case 0:
@@ -339,21 +339,48 @@ YAHOO.page.admin = {
         dialog.bringToTop();
         dialog.show();
     },
+    openEditSubSectionDialog: function() {
+        if (!YAHOO.page.admin.editSubSectionDialog) {
+            const fnSubmitHandler = function() {
+                const elRowTagType = YUD.get('subSection.rowTagType');
+                const elColumnTagType = YUD.get('subSection.columnTagType');
+                YAHOO.page.admin.sendPostRequest('/page/subSection', YAHOO.page.admin.reloadWindowCallback, {
+                    id: YUD.get('subSection.id').value,
+                    name: YUD.get('subSection.name').value,
+                    sectionId: YUD.get('subSection.sectionId').value,
+                    rowTagTypeId: elRowTagType.value,
+                    columnTagTypeId: elColumnTagType.value,
+                });
+            };
+            YAHOO.page.admin.editSubSectionDialog = YAHOO.page.admin.openEditDialog('editSubSectionDialog', fnSubmitHandler);
+        }
+        return YAHOO.page.admin.editSubSectionDialog;
+    },
     editSubSection: function(subSectionId, subSectionName) {
         console.log('editSubSection: subSectionId=' + subSectionId + ', subSectionName=' + subSectionName);
-        subSectionName = window.prompt('Edit the sub-section name:', subSectionName);
-        if (subSectionName) {
-            const subSectionDto = {id: subSectionId, name: subSectionName};
-            YAHOO.page.admin.sendPostRequest('/page/subSection', YAHOO.page.admin.reloadWindowCallback, subSectionDto);
-        }
+        YUD.get('subSection.id').value = subSectionId;
+        YUD.get('subSection.name').value = subSectionName;
+        YUD.get('subSection.sectionId').value = YUD.get('subSection.sectionId.' + subSectionId).value;
+        const elRowTagType = YUD.get('subSection.rowTagType');
+        elRowTagType.value = YUD.get('subSection.rowTagTypeId.' + subSectionId).value;
+        const elColumnTagType = YUD.get('subSection.columnTagType');
+        elColumnTagType.value = YUD.get('subSection.columnTagTypeId.' + subSectionId).value;
+        const dialog = YAHOO.page.admin.openEditSubSectionDialog();
+        dialog.bringToTop();
+        dialog.show();
     },
     addSubSection: function(sectionId) {
         console.log('addSubSection: sectionId=' + sectionId);
-        const subSectionName = window.prompt('Enter the new sub-section name:');
-        if (subSectionName) {
-            const subSectionDto = {sectionId: sectionId, name: subSectionName};
-            YAHOO.page.admin.sendPostRequest('/page/subSection', YAHOO.page.admin.reloadWindowCallback, subSectionDto);
-        }
+        YUD.get('subSection.id').value = '';
+        YUD.get('subSection.name').value = '';
+        YUD.get('subSection.sectionId').value = sectionId;
+        const elRowTagType = YUD.get('subSection.rowTagType');
+        elRowTagType.selectedIndex = 0;
+        const elColumnTagType = YUD.get('subSection.columnTagType');
+        elColumnTagType.selectedIndex = 0;
+        const dialog = YAHOO.page.admin.openEditSubSectionDialog();
+        dialog.bringToTop();
+        dialog.show();
     }
 };
 

@@ -38,12 +38,18 @@ public class SubSection {
     @Column(name = "section_id")
     private Long sectionId;
 
+    @Column(name = "row_tag_type_id")
+    private Integer rowTagTypeId;
+
+    @Column(name = "column_tag_type_id")
+    private Integer columnTagTypeId;
+
     @ManyToOne
-    @JoinColumn(name = "row_tag_type_id")
+    @JoinColumn(name = "row_tag_type_id", insertable = false, updatable = false)
     private TagType rowTagType;
 
     @ManyToOne
-    @JoinColumn(name = "column_tag_type_id")
+    @JoinColumn(name = "column_tag_type_id", insertable = false, updatable = false)
     private TagType columnTagType;
 
     @ManyToMany

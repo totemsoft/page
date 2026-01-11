@@ -13,4 +13,8 @@ public class SubSectionDto {
 
     private Long sectionId;
 
+    private Integer rowTagTypeId;
+
+    private Integer columnTagTypeId;
+
 }

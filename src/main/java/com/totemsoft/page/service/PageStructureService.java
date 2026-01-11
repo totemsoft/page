@@ -106,6 +106,8 @@ public class PageStructureService {
             subSection = subSectionRepository.findById(subSectionId)
                 .orElseThrow(() -> new EntityNotFoundException(subSectionId, SubSection.class));
             subSection.setName(subSectionDto.getName());
+            subSection.setRowTagTypeId(subSectionDto.getRowTagTypeId());
+            subSection.setColumnTagTypeId(subSectionDto.getColumnTagTypeId());
         }
         log.trace("saving: {}", subSection);
         subSectionRepository.save(subSection);

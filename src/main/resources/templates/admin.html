@@ -56,12 +56,38 @@
             </div>
         </div>
         <div id="editSubSectionDialog">
-            <div class="hd">Edit Section</div>
+            <div class="hd">Edit Sub-Section</div>
             <div class="bd">
                 <div class="table-container">
+                    <div class="hidden">
+                        <div>ID:</div>
+                        <div><input id="subSection.id" disabled="disabled" readonly="readonly" /></div>
+                    </div>
                     <div>
                         <div>Name:</div>
                         <div><input id="subSection.name" /></div>
+                    </div>
+                    <div class="hidden">
+                        <div>Section Id:</div>
+                        <div><input id="subSection.sectionId" disabled="disabled" /></div>
+                    </div>
+                    <div>
+                        <div>Row Tag Type:</div>
+                        <div>
+                            <select id="subSection.rowTagType">
+                                <option value="" th:text="#{option.null}"></option>
+                                <option th:each="item: ${tagTypes}" th:value="${item.id}" th:text="${item.title}"></option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <div>Column Tag Type:</div>
+                        <div>
+                            <select id="subSection.columnTagType">
+                                <option value="" th:text="#{option.null}"></option>
+                                <option th:each="item: ${tagTypes}" th:value="${item.id}" th:text="${item.title}"></option>
+                            </select>
+                        </div>
                     </div>
                 </div>
             </div>

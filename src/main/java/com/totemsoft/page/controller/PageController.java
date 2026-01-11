@@ -27,6 +27,7 @@ class PageController {
         log.trace("Found page {}.", page);
         model.addAttribute("page", page);
         model.addAttribute("splitRatios", SplitRatioEnum.values());
+        model.addAttribute("tagTypes", pageService.findTagTypes());
         return "page";
     }
 

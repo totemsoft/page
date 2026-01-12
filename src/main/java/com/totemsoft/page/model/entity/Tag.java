@@ -9,6 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -40,8 +41,12 @@ public class Tag implements Comparable<Tag> {
     @Column(name = "tag_title")
     private String title;
 
+    @NotNull
+    @Column(name = "tag_type_id")
+    private Integer tagTypeId;
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "tag_type_id")
+    @JoinColumn(name = "tag_type_id", insertable = false, updatable = false)
     private TagType tagType;
 
     @Override

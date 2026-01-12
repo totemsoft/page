@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import com.totemsoft.page.model.entity.TagType;
 
 @Repository
-public interface TagTypeRepository extends JpaRepository<TagType, Long> {
+public interface TagTypeRepository extends JpaRepository<TagType, Integer> {
 
 }

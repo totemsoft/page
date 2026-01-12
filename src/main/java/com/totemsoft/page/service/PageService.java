@@ -6,10 +6,12 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.totemsoft.page.model.PageDto;
+import com.totemsoft.page.model.TagDto;
 import com.totemsoft.page.model.TagTypeDto;
 import com.totemsoft.page.model.entity.Page;
 import com.totemsoft.page.model.mapper.PageMapper;
 import com.totemsoft.page.repository.PageRepository;
+import com.totemsoft.page.repository.TagRepository;
 import com.totemsoft.page.repository.TagTypeRepository;
 
 import jakarta.transaction.Transactional;
@@ -20,6 +22,8 @@ import lombok.RequiredArgsConstructor;
 public class PageService {
 
     private final PageRepository repository;
+
+    private final TagRepository tagRepository;
 
     private final TagTypeRepository tagTypeRepository;
 
@@ -32,9 +36,16 @@ public class PageService {
         return mapper.map(page);
     }
 
+    @Transactional
     public List<TagTypeDto> findTagTypes() {
         final var tagTypes = tagTypeRepository.findAll(Sort.by("title"));
         return mapper.mapTagTypes(tagTypes);
+    }
+
+    @Transactional
+    public List<TagDto> findTags(int tagTypeId, String title) {
+        final var tags = tagRepository.findByTagTypeIdAndTitleContainingIgnoreCase(tagTypeId, title);
+        return mapper.mapTags(tags);
     }
 
 }

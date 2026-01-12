@@ -92,6 +92,49 @@
                 </div>
             </div>
         </div>
+        <div id="mapSubSectionKeysDialog">
+            <div class="hd">Map Sub-Section Keys</div>
+            <div class="bd">
+                <div id="subSectionKeysSearch" class="table-container">
+                    <div th:each="item: ${tagTypes}">
+                        <div th:text="${item.title}"></div>
+                        <div th:id="|subSectionKeys.tagType.${item.id}|">
+                            <input th:id="|input.subSectionKeys.tagType.${item.id}|" />
+                            <div th:id="|container.subSectionKeys.tagType.${item.id}|"></div>
+                        </div>
+                    </div>
+                </div>
+                <div id="subSectionKeysSearchResult">
+                TODO: DataTable here
+                </div>
+                <div id="subSectionKeysConfig">
+                    <div class="hd">Row/Column Config</div>
+                    <div class="bd table-container">
+                        <div class="hidden">
+                            <div>ID:</div>
+                            <div><input id="subSectionKeys.id" disabled="disabled" readonly="readonly" /></div>
+                        </div>
+                        <div>
+                            <div>
+                                <div>Row Tag Type:</div>
+                                <select id="subSectionKeys.rowTagType">
+                                    <option value="" th:text="#{option.null}"></option>
+                                    <option th:each="item: ${tagTypes}" th:value="${item.id}" th:text="${item.title}"></option>
+                                </select>
+                            </div>
+                            <div>
+                                <div>Column Tag Type:</div>
+                                <select id="subSectionKeys.columnTagType">
+                                    <option value="" th:text="#{option.null}"></option>
+                                    <option th:each="item: ${tagTypes}" th:value="${item.id}" th:text="${item.title}"></option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div id="subSectionKeysPreview" class="hidden"></div>
+            </div>
+        </div>
     </div>
 </body>
 </html>

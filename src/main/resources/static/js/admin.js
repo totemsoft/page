@@ -188,7 +188,8 @@ YAHOO.page.admin = {
             lazyload: true,
             itemdata: [
                 [
-                    {text: 'Edit Sub-Section', disabled: false}
+                    {text: 'Edit Sub-Section', disabled: false},
+                    {text: 'Map Sub-Section Keys', disabled: false}
                 ]
             ]
         });
@@ -204,6 +205,9 @@ YAHOO.page.admin = {
                     switch (oItem.index) {
                     case 0:
                         YAHOO.page.admin.editSubSection(subSectionId, subSectionName);
+                        break;
+                    case 1:
+                        YAHOO.page.admin.mapSubSectionKeys(subSectionId, subSectionName);
                         break;
                     }
                     break;
@@ -349,7 +353,7 @@ YAHOO.page.admin = {
                     name: YUD.get('subSection.name').value,
                     sectionId: YUD.get('subSection.sectionId').value,
                     rowTagTypeId: elRowTagType.value,
-                    columnTagTypeId: elColumnTagType.value,
+                    columnTagTypeId: elColumnTagType.value
                 });
             };
             YAHOO.page.admin.editSubSectionDialog = YAHOO.page.admin.openEditDialog('editSubSectionDialog', fnSubmitHandler);
@@ -379,6 +383,62 @@ YAHOO.page.admin = {
         const elColumnTagType = YUD.get('subSection.columnTagType');
         elColumnTagType.selectedIndex = 0;
         const dialog = YAHOO.page.admin.openEditSubSectionDialog();
+        dialog.bringToTop();
+        dialog.show();
+    },
+    openMapSubSectionKeysDialog: function() {
+        if (!YAHOO.page.admin.mapSubSectionKeysDialog) {
+            const fnSubmitHandler = function() {
+                const elRowTagType = YUD.get('subSectionKeys.rowTagType');
+                const elColumnTagType = YUD.get('subSectionKeys.columnTagType');
+                YAHOO.page.admin.sendPostRequest('/page/subSection/map', YAHOO.page.admin.reloadWindowCallback, {
+                    id: YUD.get('subSectionKeys.id').value,
+                    rowTagTypeId: elRowTagType.value,
+                    columnTagTypeId: elColumnTagType.value
+                });
+            };
+            YAHOO.page.admin.mapSubSectionKeysDialog = YAHOO.page.admin.openEditDialog('mapSubSectionKeysDialog', fnSubmitHandler);
+        }
+        return YAHOO.page.admin.mapSubSectionKeysDialog;
+    },
+    initAutoCompletes: function() {
+        // div[@id=subSectionKeys.tagType.{id}]
+        const elAutoCompletes = YUS.query('div[id^=subSectionKeys.tagType.]');
+        elAutoCompletes.forEach(elAutoComplete => {
+            const id = elAutoComplete.id; // subSectionKeys.tagType.{id}
+            const tagTypeId = YAHOO.page.getId(id);
+            const input = YUD.get('input.' + id);
+            const container = YUD.get('container.' + id);
+            const ds = new YAHOO.util.XHRDataSource('/page/tag/' + tagTypeId);
+            //ds.connMethodPost = true;
+            ds.responseType = YAHOO.util.XHRDataSource.TYPE_JSON;
+            ds.responseSchema = {
+                resultsList: 'records',
+                fields: ['title', 'id']
+            };
+            const ac = new YAHOO.widget.AutoComplete(input, container, ds, {
+                prehighlightClassName: 'yui-ac-prehighlight',
+                autoHighlight: false, // Do not automatically highlight the first result item in the container
+                allowBrowserAutocomplete: false, // Disable the browser's built-in autocomplete caching mechanism
+                forceSelection: false,
+                queryDelay: .5,
+                minQueryLength: 2,
+                maxResultsDisplayed: 100,
+                animVert: true,
+                animSpeed: 0.4
+            });
+        });
+    },
+    mapSubSectionKeys: function(subSectionId, subSectionName) {
+        console.log('mapSubSectionKeys: subSectionId=' + subSectionId + ', subSectionName=' + subSectionName);
+        YAHOO.page.admin.initAutoCompletes();
+        // TODO:
+        YUD.get('subSectionKeys.id').value = subSectionId;
+        const elRowTagType = YUD.get('subSectionKeys.rowTagType');
+        elRowTagType.value = YUD.get('subSection.rowTagTypeId.' + subSectionId).value;
+        const elColumnTagType = YUD.get('subSectionKeys.columnTagType');
+        elColumnTagType.value = YUD.get('subSection.columnTagTypeId.' + subSectionId).value;
+        const dialog = YAHOO.page.admin.openMapSubSectionKeysDialog();
         dialog.bringToTop();
         dialog.show();
     }

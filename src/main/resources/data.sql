@@ -153,5 +153,6 @@ insert into key_tag (key_id, tag_id) values
   (4, 2),
   (4, 9),
   (5, 2),
-  (5, 10)
+  (5, 10),
+  (6, 10)
   ;

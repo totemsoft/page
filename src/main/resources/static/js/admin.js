@@ -22,6 +22,10 @@ YAHOO.page.admin = {
     sendPostRequest: function(action, callback, postdata) {
         YUC.setDefaultPostHeader(true);
         if (postdata && YL.isObject(postdata)) {
+            if (postdata instanceof Map) {
+                // Convert the Map to a plain object
+                postdata = Object.fromEntries(postdata);
+            }
             postdata = YL.JSON.stringify(postdata);
             YUC.setDefaultPostHeader(false);
             //YUC.initHeader('Accept', 'application/json');
@@ -42,11 +46,12 @@ YAHOO.page.admin = {
                 win.location.reload();
             }
         },
-        failure: function(oResponse) {
-            const status = oResponse && oResponse.status ? oResponse.status : '';
-            const message = oResponse && oResponse.responseText ? oResponse.responseText : oResponse.statusText;
-            console.log('Failure: ' + status + '<br/>' + message);
-        }
+        failure: YAHOO.page.admin.failureHandler
+    },
+    failureHandler: function(oResponse) {
+        const status = oResponse && oResponse.status ? oResponse.status : '';
+        const message = oResponse && oResponse.responseText ? oResponse.responseText : oResponse.statusText;
+        console.log('Failure: ' + status + '<br/>' + message);
     },
     fnSubscriberPageReady: function(type, args) {
         YAHOO.page.admin.tabView = args[0].tabView;
@@ -215,7 +220,7 @@ YAHOO.page.admin = {
             }
         });
     },
-    openEditDialog: function(el, fnSubmitHandler) {
+    openEditDialog: function(el, fnSubmitHandler, height, width) {
         const dialog = new YAHOO.widget.SimpleDialog(el, {
             close: true,
             draggable: true,
@@ -223,6 +228,8 @@ YAHOO.page.admin = {
             visible: false,
             modal: false,
             icon: null,
+            height: height ? height : null,
+            width: width ? width : null,
             autofillheight: 'body',
             constraintoviewport: true,
             context: ['showbtn', 'tl', 'bl'],
@@ -251,7 +258,8 @@ YAHOO.page.admin = {
                 };
                 YAHOO.page.admin.sendPostRequest('/page', YAHOO.page.admin.reloadWindowCallback, pageDto);
             };
-            YAHOO.page.admin.editPageDialog = YAHOO.page.admin.openEditDialog('editPageDialog', fnSubmitHandler);
+            YAHOO.page.admin.editPageDialog = YAHOO.page.admin.openEditDialog('editPageDialog',
+                fnSubmitHandler);
         }
         YUD.get('page.name').value = pageName;
         YAHOO.page.admin.editPageDialog.bringToTop();
@@ -266,7 +274,8 @@ YAHOO.page.admin = {
                 };
                 YAHOO.page.admin.sendPostRequest('/page', YAHOO.page.admin.reloadWindowCallback, pageDto);
             };
-            YAHOO.page.admin.editPageDialog = YAHOO.page.admin.openEditDialog('editPageDialog', fnSubmitHandler);
+            YAHOO.page.admin.editPageDialog = YAHOO.page.admin.openEditDialog('editPageDialog',
+                fnSubmitHandler);
         }
         YUD.get('page.name').value = '';
         YAHOO.page.admin.editPageDialog.bringToTop();
@@ -282,7 +291,8 @@ YAHOO.page.admin = {
                 };
                 YAHOO.page.admin.sendPostRequest('/page/tab', YAHOO.page.admin.reloadWindowCallback, tabDto);
             };
-            YAHOO.page.admin.editTabDialog = YAHOO.page.admin.openEditDialog('editTabDialog', fnSubmitHandler);
+            YAHOO.page.admin.editTabDialog = YAHOO.page.admin.openEditDialog('editTabDialog',
+                fnSubmitHandler);
         }
         YUD.get('tab.name').value = tabName;
         YAHOO.page.admin.editTabDialog.bringToTop();
@@ -298,7 +308,8 @@ YAHOO.page.admin = {
                 };
                 YAHOO.page.admin.sendPostRequest('/page/tab', YAHOO.page.admin.reloadWindowCallback, tabDto);
             };
-            YAHOO.page.admin.editTabDialog = YAHOO.page.admin.openEditDialog('editTabDialog', fnSubmitHandler);
+            YAHOO.page.admin.editTabDialog = YAHOO.page.admin.openEditDialog('editTabDialog',
+                fnSubmitHandler);
         }
         YUD.get('tab.name').value = '';
         YAHOO.page.admin.editTabDialog.bringToTop();
@@ -316,7 +327,8 @@ YAHOO.page.admin = {
                     tabId: YUD.get('section.tabId').value
                 });
             };
-            YAHOO.page.admin.editSectionDialog = YAHOO.page.admin.openEditDialog('editSectionDialog', fnSubmitHandler);
+            YAHOO.page.admin.editSectionDialog = YAHOO.page.admin.openEditDialog('editSectionDialog',
+                fnSubmitHandler);
         }
         return YAHOO.page.admin.editSectionDialog;
     },
@@ -356,7 +368,8 @@ YAHOO.page.admin = {
                     columnTagTypeId: elColumnTagType.value
                 });
             };
-            YAHOO.page.admin.editSubSectionDialog = YAHOO.page.admin.openEditDialog('editSubSectionDialog', fnSubmitHandler);
+            YAHOO.page.admin.editSubSectionDialog = YAHOO.page.admin.openEditDialog('editSubSectionDialog',
+                fnSubmitHandler);
         }
         return YAHOO.page.admin.editSubSectionDialog;
     },
@@ -388,6 +401,8 @@ YAHOO.page.admin = {
     },
     openMapSubSectionKeysDialog: function() {
         if (!YAHOO.page.admin.mapSubSectionKeysDialog) {
+            YAHOO.page.admin.initSearchKeys();
+            // dialog
             const fnSubmitHandler = function() {
                 const elRowTagType = YUD.get('subSectionKeys.rowTagType');
                 const elColumnTagType = YUD.get('subSectionKeys.columnTagType');
@@ -397,20 +412,33 @@ YAHOO.page.admin = {
                     columnTagTypeId: elColumnTagType.value
                 });
             };
-            YAHOO.page.admin.mapSubSectionKeysDialog = YAHOO.page.admin.openEditDialog('mapSubSectionKeysDialog', fnSubmitHandler);
+            YAHOO.page.admin.mapSubSectionKeysDialog = YAHOO.page.admin.openEditDialog('mapSubSectionKeysDialog',
+                fnSubmitHandler);
+        } else {
+            // clear subSectionKeysSearch UI/data
+            YAHOO.page.admin.autoCompletes.forEach(ac => {
+                const input = ac.getInputEl();
+                input.value = '';
+            });
+            YAHOO.page.admin.tagTypeMap.clear();
+            // delete all rows
+            const length = YAHOO.page.admin.keysDataTable.getRecordSet().getLength();
+            YAHOO.page.admin.keysDataTable.deleteRows(0, length);
         }
         return YAHOO.page.admin.mapSubSectionKeysDialog;
     },
-    initAutoCompletes: function() {
+    initSearchKeys: function(subSectionId) {
+        YAHOO.page.admin.tagTypeMap = new Map(); // <tagTypeId, tagName/tagId>
+        YAHOO.page.admin.autoCompletes = [];
         // div[@id=subSectionKeys.tagType.{id}]
         const elAutoCompletes = YUS.query('div[id^=subSectionKeys.tagType.]');
         elAutoCompletes.forEach(elAutoComplete => {
             const id = elAutoComplete.id; // subSectionKeys.tagType.{id}
             const tagTypeId = YAHOO.page.getId(id);
             const input = YUD.get('input.' + id);
+            const hidden = YUD.get('hidden.' + id);
             const container = YUD.get('container.' + id);
             const ds = new YAHOO.util.XHRDataSource('/page/tag/' + tagTypeId);
-            //ds.connMethodPost = true;
             ds.responseType = YAHOO.util.XHRDataSource.TYPE_JSON;
             ds.responseSchema = {
                 resultsList: 'records',
@@ -418,20 +446,76 @@ YAHOO.page.admin = {
             };
             const ac = new YAHOO.widget.AutoComplete(input, container, ds, {
                 prehighlightClassName: 'yui-ac-prehighlight',
-                autoHighlight: false, // Do not automatically highlight the first result item in the container
-                allowBrowserAutocomplete: false, // Disable the browser's built-in autocomplete caching mechanism
+                autoHighlight: false,
+                allowBrowserAutocomplete: false,
                 forceSelection: false,
                 queryDelay: .5,
-                minQueryLength: 2,
+                minQueryLength: 1,
                 maxResultsDisplayed: 100,
                 animVert: true,
                 animSpeed: 0.4
             });
+            ac.dataRequestEvent.subscribe(function(type, args) {
+                const ac = args[0]; // The AutoComplete instance
+                //const query = args[1] <String> The query string
+                //const request = args[2] <Object> The request
+                const input = ac.getInputEl();
+                const tagTypeId = YAHOO.page.getId(input.id);
+                YAHOO.page.admin.tagTypeMap.set(tagTypeId, input.value);
+            });
+            ac.itemSelectEvent.subscribe(function(type, args) {
+                const ac = args[0]; // The AutoComplete instance
+                //const elLI = args[1]; // The selected <li> element item
+                const oData = args[2]; // The data returned for the item, either as an object, or mapped from the schema into an array
+                // update with the selected item's ID
+                const input = ac.getInputEl();
+                const tagTypeId = YAHOO.page.getId(input.id);
+                YAHOO.page.admin.tagTypeMap.set(tagTypeId, oData[1]);
+            });
+            YAHOO.page.admin.autoCompletes.push(ac);
         });
+        //
+        YAHOO.page.admin.keysDataTable = YAHOO.page.admin.initKeysDataTable([]);
+        //
+        const button = new YAHOO.widget.Button('subSectionKeysSearchButton');
+        button.on('click', function(e) {
+            YAHOO.page.admin.findKeys();
+        });
+    },
+    initKeysDataTable: function(records) {
+        const dataSource = new YAHOO.util.DataSource(records, {
+            responseType: YAHOO.util.XHRDataSource.TYPE_JSARRAY,
+            responseSchema: {fields: ['id', 'name', 'title']}
+        });
+        const columnDefs = [
+            {key: 'id', label: 'ID'},
+            {key: 'name', label: 'Name'},
+            {key: 'title', label: 'Title'}
+        ];
+        const dataTable = new YAHOO.widget.ScrollingDataTable('subSectionKeysSearchResult',
+            columnDefs,
+            dataSource, {
+                caption: '',
+                height: '200px'
+            }
+        );
+        return dataTable;
+    },
+    findKeys: function() {
+        YAHOO.page.admin.sendPostRequest('/page/key',
+            YAHOO.page.admin.findKeysCallback,
+            YAHOO.page.admin.tagTypeMap);
+    },
+    findKeysCallback: {
+        cache: false,
+        success: function(oResponse) {
+            const data = YAHOO.page.admin.parseJsonData(oResponse.responseText, true);
+            YAHOO.page.admin.keysDataTable.addRows(data.records);
+        },
+        failure: YAHOO.page.admin.failureHandler
     },
     mapSubSectionKeys: function(subSectionId, subSectionName) {
         console.log('mapSubSectionKeys: subSectionId=' + subSectionId + ', subSectionName=' + subSectionName);
-        YAHOO.page.admin.initAutoCompletes();
         // TODO:
         YUD.get('subSectionKeys.id').value = subSectionId;
         const elRowTagType = YUD.get('subSectionKeys.rowTagType');

@@ -1,5 +1,7 @@
 package com.totemsoft.page.controller;
 
+import java.util.Map;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -7,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.totemsoft.page.model.KeyDto;
 import com.totemsoft.page.model.PageDto;
 import com.totemsoft.page.model.PageResponse;
 import com.totemsoft.page.model.SearchResult;
@@ -18,9 +21,11 @@ import com.totemsoft.page.service.PageService;
 import com.totemsoft.page.service.PageStructureService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
 @RestController
 @RequiredArgsConstructor
+@Log4j2
 class PageStructureController {
 
     private final PageStructureService pageStructureService;
@@ -53,6 +58,14 @@ class PageStructureController {
             @RequestParam(name = "query") String title) {
         return SearchResult.<TagDto>builder()
             .data(pageService.findTags(tagTypeId, title))
+            .build();
+    }
+
+    @PostMapping("/page/key")
+    SearchResult<KeyDto> findKeys(@RequestBody Map<Integer, Object> tagTypeMap) {
+        log.debug("findKeys: {}", tagTypeMap);
+        return SearchResult.<KeyDto>builder()
+            .data(pageService.findKeys(tagTypeMap))
             .build();
     }
 

@@ -95,23 +95,24 @@
         <div id="mapSubSectionKeysDialog">
             <div class="hd">Map Sub-Section Keys</div>
             <div class="bd">
-                <div id="subSectionKeysSearch" class="table-container">
-                    <div th:each="item, iterStat: ${tagTypes}">
-                        <div th:text="${item.title}"></div>
-                        <div th:id="|subSectionKeys.tagType.${item.id}|">
-                            <input th:id="|input.subSectionKeys.tagType.${item.id}|" />
-                            <div th:id="|container.subSectionKeys.tagType.${item.id}|"></div>
+                <div class="yui-gd">
+                    <div id="subSectionKeysSearch" class="yui-u first">
+                        <div th:each="item, iterStat: ${tagTypes}">
+                            <label th:for="|input.subSectionKeys.tagType.${item.id}|" th:text="${item.title}"></label>
+                            <div th:id="|subSectionKeys.tagType.${item.id}|">
+                                <input th:id="|input.subSectionKeys.tagType.${item.id}|" />
+                                <div th:id="|container.subSectionKeys.tagType.${item.id}|"></div>
+                            </div>
                         </div>
                     </div>
-                    <div>
-                        <div></div>
-                        <div style="float: right;">
-                            <button type="button" id="subSectionKeysSearchButton" title="Search &amp; Add to Search Results">Search &amp; Add</button>
-                        </div>
+                    <div class="yui-u">
+                        <div id="subSectionKeysSearchResult"></div>
                     </div>
                 </div>
-
-                <div id="subSectionKeysSearchResult"></div>
+                <div style="float: right;">
+                    <button type="button" id="subSectionKeysClearButton" title="Clear Search Results">Clear</button>
+                    <button type="button" id="subSectionKeysSearchButton" title="Search &amp; Add to Search Results">Search &amp; Add</button>
+                </div>
 
                 <div id="subSectionKeysConfig">
                     <div class="hd">Row/Column Config</div>

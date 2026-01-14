@@ -220,7 +220,7 @@ YAHOO.page.admin = {
             }
         });
     },
-    openEditDialog: function(el, fnSubmitHandler, height, width) {
+    openEditDialog: function(el, fnSubmitHandler, oEventDef) {
         const dialog = new YAHOO.widget.SimpleDialog(el, {
             close: true,
             draggable: true,
@@ -228,8 +228,6 @@ YAHOO.page.admin = {
             visible: false,
             modal: false,
             icon: null,
-            height: height ? height : null,
-            width: width ? width : null,
             autofillheight: 'body',
             constraintoviewport: true,
             context: ['showbtn', 'tl', 'bl'],
@@ -245,6 +243,9 @@ YAHOO.page.admin = {
             { keys: 27 },
             { fn: function() {this.cancel();}, scope: dialog, correctScope: true }
         ));
+        if (oEventDef) {
+            dialog.subscribe(oEventDef.name, oEventDef.handler);
+        }
         dialog.render(document.body);
         return dialog;
     },
@@ -412,18 +413,22 @@ YAHOO.page.admin = {
                     columnTagTypeId: elColumnTagType.value
                 });
             };
+            const oEventDef = {
+                name:'beforeShow',
+                handler: function(oType, oArgs) {
+                    YAHOO.page.admin.initKeysDataTable([]);
+                }
+            };
             YAHOO.page.admin.mapSubSectionKeysDialog = YAHOO.page.admin.openEditDialog('mapSubSectionKeysDialog',
-                fnSubmitHandler);
+                fnSubmitHandler, oEventDef);
         } else {
-            // clear subSectionKeysSearch UI/data
+            // clear subSectionKeysSearch UI/data/rows
             YAHOO.page.admin.autoCompletes.forEach(ac => {
                 const input = ac.getInputEl();
                 input.value = '';
             });
             YAHOO.page.admin.tagTypeMap.clear();
-            // delete all rows
-            const length = YAHOO.page.admin.keysDataTable.getRecordSet().getLength();
-            YAHOO.page.admin.keysDataTable.deleteRows(0, length);
+            YAHOO.page.admin.clearKeys();
         }
         return YAHOO.page.admin.mapSubSectionKeysDialog;
     },
@@ -475,31 +480,38 @@ YAHOO.page.admin = {
             YAHOO.page.admin.autoCompletes.push(ac);
         });
         //
-        YAHOO.page.admin.keysDataTable = YAHOO.page.admin.initKeysDataTable([]);
-        //
-        const button = new YAHOO.widget.Button('subSectionKeysSearchButton');
-        button.on('click', function(e) {
+        new YAHOO.widget.Button('subSectionKeysClearButton').on('click', function(e) {
+            YAHOO.page.admin.clearKeys();
+        });
+        new YAHOO.widget.Button('subSectionKeysSearchButton').on('click', function(e) {
             YAHOO.page.admin.findKeys();
         });
     },
     initKeysDataTable: function(records) {
-        const dataSource = new YAHOO.util.DataSource(records, {
-            responseType: YAHOO.util.XHRDataSource.TYPE_JSARRAY,
-            responseSchema: {fields: ['id', 'name', 'title']}
-        });
-        const columnDefs = [
-            {key: 'id', label: 'ID'},
-            {key: 'name', label: 'Name'},
-            {key: 'title', label: 'Title'}
-        ];
-        const dataTable = new YAHOO.widget.ScrollingDataTable('subSectionKeysSearchResult',
-            columnDefs,
-            dataSource, {
+        if (!YAHOO.page.admin.keysDataTable) {
+            const columnDefs = [
+                {key: 'id', label: 'ID'},
+                {key: 'name', label: 'Name'},
+                {key: 'title', label: 'Title'}
+            ];
+            const fields = columnDefs.map(columnDef => columnDef.key);
+            const dataSource = new YAHOO.util.DataSource(records, {
+                responseType: YAHOO.util.XHRDataSource.TYPE_JSARRAY,
+                responseSchema: {fields: fields}
+            });
+            const r = YUD.getRegion('subSectionKeysSearch');
+            const dataTableConfig = {
                 caption: '',
-                height: '200px'
-            }
-        );
-        return dataTable;
+                height: r.height + 'px'
+            };
+            YAHOO.page.admin.keysDataTable = new YAHOO.widget.ScrollingDataTable('subSectionKeysSearchResult',
+                columnDefs, dataSource, dataTableConfig
+            );
+        }
+    },
+    clearKeys: function() {
+        const length = YAHOO.page.admin.keysDataTable.getRecordSet().getLength();
+        YAHOO.page.admin.keysDataTable.deleteRows(0, length);
     },
     findKeys: function() {
         YAHOO.page.admin.sendPostRequest('/page/key',

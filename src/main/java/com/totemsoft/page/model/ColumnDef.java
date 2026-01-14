@@ -45,4 +45,10 @@ public class ColumnDef {
 
     private String className;
 
+    private Integer width;
+
+    private Integer minWidth;
+
+    private Integer maxAutoWidth;
+
 }

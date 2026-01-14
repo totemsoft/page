@@ -220,7 +220,7 @@ YAHOO.page.admin = {
             }
         });
     },
-    openEditDialog: function(el, fnSubmitHandler, oEventDef) {
+    openEditDialog: function(el, fnSubmitHandler, oEventDef, oConfig) {
         const dialog = new YAHOO.widget.SimpleDialog(el, {
             close: true,
             draggable: true,
@@ -228,6 +228,8 @@ YAHOO.page.admin = {
             visible: false,
             modal: false,
             icon: null,
+            height: oConfig && oConfig.height ? oConfig.height : null,
+            width: oConfig && oConfig.width ? oConfig.width : null,
             autofillheight: 'body',
             constraintoviewport: true,
             context: ['showbtn', 'tl', 'bl'],
@@ -419,8 +421,9 @@ YAHOO.page.admin = {
                     YAHOO.page.admin.initKeysDataTable([]);
                 }
             };
+            const w = YUD.getViewportWidth();
             YAHOO.page.admin.mapSubSectionKeysDialog = YAHOO.page.admin.openEditDialog('mapSubSectionKeysDialog',
-                fnSubmitHandler, oEventDef);
+                fnSubmitHandler, oEventDef, {width: (w / 3) + 'px'});
         } else {
             // clear subSectionKeysSearch UI/data/rows
             YAHOO.page.admin.autoCompletes.forEach(ac => {
@@ -490,19 +493,20 @@ YAHOO.page.admin = {
     initKeysDataTable: function(records) {
         if (!YAHOO.page.admin.keysDataTable) {
             const columnDefs = [
-                {key: 'id', label: 'ID'},
-                {key: 'name', label: 'Name'},
-                {key: 'title', label: 'Title'}
+                {key: 'id', label: 'ID', width: 10},
+                {key: 'name', label: 'Name', width: 50},
+                {key: 'title', label: 'Title', width: 100}
             ];
             const fields = columnDefs.map(columnDef => columnDef.key);
             const dataSource = new YAHOO.util.DataSource(records, {
                 responseType: YAHOO.util.XHRDataSource.TYPE_JSARRAY,
                 responseSchema: {fields: fields}
             });
-            const r = YUD.getRegion('subSectionKeysSearch');
+            const r = YUD.getRegion('subSectionKeys');
             const dataTableConfig = {
                 caption: '',
-                height: r.height + 'px'
+                height: r.height + 'px',
+                width: Math.floor(r.width * 0.66) + 'px' // yui-gd 1/3 - 2/3, 32% - 66%
             };
             YAHOO.page.admin.keysDataTable = new YAHOO.widget.ScrollingDataTable('subSectionKeysSearchResult',
                 columnDefs, dataSource, dataTableConfig
@@ -523,6 +527,7 @@ YAHOO.page.admin = {
         success: function(oResponse) {
             const data = YAHOO.page.admin.parseJsonData(oResponse.responseText, true);
             YAHOO.page.admin.keysDataTable.addRows(data.records);
+            YAHOO.page.admin.keysDataTable.validateColumnWidths(null);
         },
         failure: YAHOO.page.admin.failureHandler
     },

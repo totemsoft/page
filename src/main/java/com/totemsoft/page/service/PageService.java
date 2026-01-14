@@ -1,5 +1,6 @@
 package com.totemsoft.page.service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -84,7 +85,7 @@ public class PageService {
             }
         });
         log.trace("tagIds: {}, tagTitles: {}", tagIds, tagTitles);
-        final var keys = new HashSet<Key>();
+        final var keys = new ArrayList<Key>();
         if (!tagIds.isEmpty()) {
             keys.addAll(keyTagRepository.findByTagIdIn(tagIds));
         }

@@ -1,5 +1,7 @@
 package com.totemsoft.page.model;
 
+import java.util.List;
+
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
@@ -16,5 +18,7 @@ public class SubSectionDto {
     private Integer rowTagTypeId;
 
     private Integer columnTagTypeId;
+
+    private List<KeyDto> keys;
 
 }

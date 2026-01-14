@@ -409,10 +409,19 @@ YAHOO.page.admin = {
             const fnSubmitHandler = function() {
                 const elRowTagType = YUD.get('subSectionKeys.rowTagType');
                 const elColumnTagType = YUD.get('subSectionKeys.columnTagType');
+                const rs = YAHOO.page.admin.keysDataTable.getRecordSet();
+                const keyIds = new Set();
+                for (var r = 0; r < rs.getLength(); r++) {
+                    const row = rs.getRecord(r);
+                    const data = row.getData();
+                    keyIds.add(data.id);
+                }
+                const keys = Array.from(keyIds).map(keyId => ({id: keyId}));
                 YAHOO.page.admin.sendPostRequest('/page/subSection/map', YAHOO.page.admin.reloadWindowCallback, {
                     id: YUD.get('subSectionKeys.id').value,
                     rowTagTypeId: elRowTagType.value,
-                    columnTagTypeId: elColumnTagType.value
+                    columnTagTypeId: elColumnTagType.value,
+                    keys: keys
                 });
             };
             const oEventDef = {
@@ -494,7 +503,7 @@ YAHOO.page.admin = {
     initKeysDataTable: function(records) {
         if (!YAHOO.page.admin.keysDataTable) {
             const columnDefs = [
-                {key: 'id', label: 'ID', sortable: true, width: 10},
+                {key: 'id', label: 'ID', sortable: true, width: 20},
                 {key: 'name', label: 'Name', sortable: true, width: 50},
                 {key: 'title', label: 'Title', sortable: true, width: 100},
                 {key: 'tagSummary', label: 'Tag Summary', width: 200}
@@ -504,11 +513,11 @@ YAHOO.page.admin = {
                 responseType: YAHOO.util.XHRDataSource.TYPE_JSARRAY,
                 responseSchema: {fields: fields}
             });
-            const r = YUD.getRegion('subSectionKeys');
+            const r = YUD.getRegion('subSectionKeys'); // yui-gd 1/3 - 2/3, 32% - 66%
             const dataTableConfig = {
                 caption: '',
                 height: r.height + 'px',
-                width: Math.floor(r.width * 0.66) + 'px' // yui-gd 1/3 - 2/3, 32% - 66%
+                width: Math.floor(r.width * 0.66) + 'px'
             };
             YAHOO.page.admin.keysDataTable = new YAHOO.widget.ScrollingDataTable('subSectionKeysSearchResult',
                 columnDefs, dataSource, dataTableConfig

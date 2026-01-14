@@ -33,23 +33,28 @@ class PageStructureController {
     private final PageService pageService;
 
     @PostMapping("/page")
-    PageResponse editPage(@RequestBody PageDto pageDto) {
-        return pageStructureService.editPage(pageDto);
+    PageResponse savePage(@RequestBody PageDto pageDto) {
+        return pageStructureService.savePage(pageDto);
     }
 
     @PostMapping("/page/tab")
-    void editTab(@RequestBody TabDto tabDto) {
-        pageStructureService.editTab(tabDto);
+    void saveTab(@RequestBody TabDto tabDto) {
+        pageStructureService.saveTab(tabDto);
     }
 
     @PostMapping("/page/section")
-    void editSection(@RequestBody SectionDto sectionDto) {
-        pageStructureService.editSection(sectionDto);
+    void saveSection(@RequestBody SectionDto sectionDto) {
+        pageStructureService.saveSection(sectionDto);
     }
 
     @PostMapping("/page/subSection")
-    void editSubSection(@RequestBody SubSectionDto subSectionDto) {
-        pageStructureService.editSubSection(subSectionDto);
+    void saveSubSection(@RequestBody SubSectionDto subSectionDto) {
+        pageStructureService.saveSubSection(subSectionDto);
+    }
+
+    @PostMapping("/page/subSection/map")
+    void mapSubSection(@RequestBody SubSectionDto subSectionDto) {
+        pageStructureService.mapSubSection(subSectionDto);
     }
 
     @GetMapping("/page/tag/{tagTypeId}")

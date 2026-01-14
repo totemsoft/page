@@ -1,7 +1,7 @@
 package com.totemsoft.page.model.entity;
 
+import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -51,7 +51,7 @@ public class Key {
     @JoinTable(name = "key_tag",
         joinColumns = @JoinColumn(name = "key_id", referencedColumnName = "key_id"),
         inverseJoinColumns = @JoinColumn(name = "tag_id", referencedColumnName = "tag_id"))
-    private Set<Tag> tags;
+    private List<Tag> tags;
 
     public Optional<Tag> findTag(TagType tagType) {
         return tags.stream().filter(t -> t.getTagType().equals(tagType)).findFirst();

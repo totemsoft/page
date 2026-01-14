@@ -76,7 +76,7 @@
                         <div>
                             <select id="subSection.rowTagType">
                                 <option value="" th:text="#{option.null}"></option>
-                                <option th:each="item: ${tagTypes}" th:value="${item.id}" th:text="${item.title}"></option>
+                                <option th:each="item: ${tagTypes}" th:value="${item.id}" th:text="${item.name}"></option>
                             </select>
                         </div>
                     </div>
@@ -85,7 +85,7 @@
                         <div>
                             <select id="subSection.columnTagType">
                                 <option value="" th:text="#{option.null}"></option>
-                                <option th:each="item: ${tagTypes}" th:value="${item.id}" th:text="${item.title}"></option>
+                                <option th:each="item: ${tagTypes}" th:value="${item.id}" th:text="${item.name}"></option>
                             </select>
                         </div>
                     </div>
@@ -98,7 +98,7 @@
                 <div id="subSectionKeys" class="yui-gd">
                     <div id="subSectionKeysSearch" class="yui-u first">
                         <div th:each="item: ${tagTypes}">
-                            <label th:for="|input.subSectionKeys.tagType.${item.id}|" th:text="${item.title}" class="bold"></label>
+                            <label th:for="|input.subSectionKeys.tagType.${item.id}|" th:text="${item.name}" class="bold"></label>
                             <div th:id="|subSectionKeys.tagType.${item.id}|">
                                 <input th:id="|input.subSectionKeys.tagType.${item.id}|" />
                                 <div th:id="|container.subSectionKeys.tagType.${item.id}|"></div>
@@ -130,21 +130,18 @@
                                 <div>Row Tag Type:</div>
                                 <select id="subSectionKeys.rowTagType">
                                     <option value="" th:text="#{option.null}"></option>
-                                    <option th:each="item: ${tagTypes}" th:value="${item.id}" th:text="${item.title}"></option>
+                                    <option th:each="item: ${tagTypes}" th:value="${item.id}" th:text="${item.name}"></option>
                                 </select>
                             </div>
                             <div>
                                 <div>Column Tag Type:</div>
                                 <select id="subSectionKeys.columnTagType">
                                     <option value="" th:text="#{option.null}"></option>
-                                    <option th:each="item: ${tagTypes}" th:value="${item.id}" th:text="${item.title}"></option>
+                                    <option th:each="item: ${tagTypes}" th:value="${item.id}" th:text="${item.name}"></option>
                                 </select>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div id="subSectionPreview" class="hidden">
-                    TODO: DataTable here
                 </div>
             </div>
         </div>

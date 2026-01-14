@@ -43,16 +43,7 @@ public class SubSectionService {
         log.trace("findRows({}) ...", subSectionId);
         final var subSection = subSectionRepository.findById(subSectionId)
             .orElseThrow(() -> new EntityNotFoundException(subSectionId, SubSection.class));
-        // all keys from sub-section
-        final var keys = subSection.getKeys();
-        log.trace("#{} keys: {}", subSectionId, keys);
-        final List<SeriesData> data;
-        if (keys.isEmpty()) {
-            log.warn("No key(s) found for sub-section {}.", subSectionId);
-            data = List.of();
-        } else {
-            data = seriesDataRepository.findByKeyIn(keys);
-        }
+        final var data = findSeriesData(subSection);
         //
         final var rowTagType = subSection.getRowTagType();
         final var columnTagType = subSection.getColumnTagType();
@@ -63,6 +54,8 @@ public class SubSectionService {
                     .data(mapper.map(data))
                     .build();
         }
+        // all keys from sub-section
+        final var keys = subSection.getKeys();
         // unique sub-section row/column tags
         final var rowTags = new TreeSet<Tag>();
         final var columnTags = new TreeSet<Tag>();
@@ -75,15 +68,24 @@ public class SubSectionService {
         //
         final var result = new ArrayList<Row>();
         //final var dataTags = data.stream().flatMap(d -> d.getKey().getTags().stream()).toList();
-        rowTags.forEach(rowTag -> result.add(
-            Row.builder()
-                .cells(cells(data.stream().filter(d -> d.getKey().anyMatch(rowTag)).toList(), rowTag, columnTags))
-                .build())
+        rowTags.forEach(rowTag -> result.add(Row.builder()
+            .cells(cells(data.stream().filter(d -> d.getKey().anyMatch(rowTag)).toList(), rowTag, columnTags))
+            .build())
         );
         return SubSectionResult.<Row>builder()
             .columns(findColumns(columnTags))
             .data(result)
             .build();
+    }
+
+    private List<SeriesData> findSeriesData(SubSection subSection) {
+        // all keys from sub-section
+        final var keys = subSection.getKeys();
+        if (keys.isEmpty()) {
+            log.warn("No key(s) found for sub-section {}.", subSection.getId());
+            return List.of();
+        }
+        return seriesDataRepository.findByKeyIn(keys);
     }
 
     private Map<String, Cell<?>> cells(List<SeriesData> data, Tag rowTag, Set<Tag> columnTags) {

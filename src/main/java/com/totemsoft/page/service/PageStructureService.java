@@ -34,7 +34,7 @@ public class PageStructureService {
     private final TabRepository tabRepository;
 
     @Transactional
-    public PageResponse editPage(PageDto pageDto) {
+    public PageResponse savePage(final PageDto pageDto) {
         log.trace("saving: {}", pageDto);
         final var pageId = pageDto.getId();
         Page page;
@@ -62,7 +62,7 @@ public class PageStructureService {
     }
 
     @Transactional
-    public void editTab(TabDto tabDto) {
+    public void saveTab(final TabDto tabDto) {
         log.trace("saving: {}", tabDto);
         final var tabId = tabDto.getId();
         final Tab tab;
@@ -78,7 +78,7 @@ public class PageStructureService {
     }
 
     @Transactional
-    public void editSection(SectionDto sectionDto) {
+    public void saveSection(final SectionDto sectionDto) {
         log.trace("saving: {}", sectionDto);
         final var sectionId = sectionDto.getId();
         final Section section;
@@ -96,7 +96,7 @@ public class PageStructureService {
     }
 
     @Transactional
-    public void editSubSection(SubSectionDto subSectionDto) {
+    public void saveSubSection(final SubSectionDto subSectionDto) {
         log.trace("saving: {}", subSectionDto);
         final var subSectionId = subSectionDto.getId();
         final SubSection subSection;
@@ -110,6 +110,16 @@ public class PageStructureService {
             subSection.setColumnTagTypeId(subSectionDto.getColumnTagTypeId());
         }
         log.trace("saving: {}", subSection);
+        subSectionRepository.save(subSection);
+    }
+
+    @Transactional
+    public void mapSubSection(final SubSectionDto subSectionDto) {
+        final var subSection = subSectionRepository.findById(subSectionDto.getId())
+                .orElseThrow(() -> new EntityNotFoundException(subSectionDto.getId(), SubSection.class));
+        subSection.setRowTagTypeId(subSectionDto.getRowTagTypeId());
+        subSection.setColumnTagTypeId(subSectionDto.getColumnTagTypeId());
+        subSection.setKeys(pageMapper.mapKeyDtos(subSectionDto.getKeys()));
         subSectionRepository.save(subSection);
     }
 

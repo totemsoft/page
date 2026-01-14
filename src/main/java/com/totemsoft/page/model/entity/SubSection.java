@@ -1,6 +1,6 @@
 package com.totemsoft.page.model.entity;
 
-import java.util.Set;
+import java.util.List;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -58,6 +58,6 @@ public class SubSection {
     @JoinTable(name = "sub_section_key",
         joinColumns = @JoinColumn(name = "sub_section_id", referencedColumnName = "sub_section_id"),
         inverseJoinColumns = @JoinColumn(name = "key_id", referencedColumnName = "key_id"))
-    private Set<Key> keys;
+    private List<Key> keys;
 
 }

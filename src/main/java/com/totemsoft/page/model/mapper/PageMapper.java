@@ -1,9 +1,9 @@
 package com.totemsoft.page.model.mapper;
 
 import java.util.List;
-import java.util.Set;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 
 import com.totemsoft.page.model.KeyDto;
@@ -24,7 +24,8 @@ import com.totemsoft.page.model.entity.TagType;
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface PageMapper {
 
-    List<KeyDto> mapKeys(Set<Key> keys);
+    List<KeyDto> mapKeys(List<Key> keys);
+    List<Key> mapKeyDtos(List<KeyDto> keys);
 
     PageDto map(Page page);
     Page map(PageDto pageDto);
@@ -33,13 +34,16 @@ public interface PageMapper {
 
     TagDto map(Tag tag);
     List<TagDto> mapTags(List<Tag> tags);
+    @Mapping(target = "tagType", ignore = true)
+    Tag map(TagDto tagDto);
 
     TagTypeDto map(TagType tagType);
     List<TagTypeDto> mapTagTypes(List<TagType> tagTypes);
 
     Section map(SectionDto sectionDto);
 
-    // WARN: Unmapped target properties: "rowTagType, columnTagType, keys"
+    @Mapping(target = "rowTagType", ignore = true)
+    @Mapping(target = "columnTagType", ignore = true)
     SubSection map(SubSectionDto subSectionDto);
 
 }

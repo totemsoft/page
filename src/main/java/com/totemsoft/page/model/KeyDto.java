@@ -1,6 +1,7 @@
 package com.totemsoft.page.model;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -23,5 +24,11 @@ public class KeyDto {
 
     @JsonIgnore
     private List<TagDto> tags;
+
+    public String getTagSummary() {
+        return tags.stream()
+            .map(TagDto::getName)
+            .collect(Collectors.joining(", "));
+    }
 
 }

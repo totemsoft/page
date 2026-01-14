@@ -402,7 +402,7 @@ YAHOO.page.admin = {
         dialog.bringToTop();
         dialog.show();
     },
-    openMapSubSectionKeysDialog: function() {
+    openMapSubSectionKeysDialog: function(subSectionId) {
         if (!YAHOO.page.admin.mapSubSectionKeysDialog) {
             YAHOO.page.admin.initSearchKeys();
             // dialog
@@ -419,6 +419,7 @@ YAHOO.page.admin = {
                 name:'beforeShow',
                 handler: function(oType, oArgs) {
                     YAHOO.page.admin.initKeysDataTable([]);
+                    YAHOO.page.admin.findSubSectionKeys(subSectionId);
                 }
             };
             const w = YUD.getViewportWidth();
@@ -450,7 +451,7 @@ YAHOO.page.admin = {
             ds.responseType = YAHOO.util.XHRDataSource.TYPE_JSON;
             ds.responseSchema = {
                 resultsList: 'records',
-                fields: ['title', 'id']
+                fields: ['name', 'id']
             };
             const ac = new YAHOO.widget.AutoComplete(input, container, ds, {
                 prehighlightClassName: 'yui-ac-prehighlight',
@@ -493,9 +494,10 @@ YAHOO.page.admin = {
     initKeysDataTable: function(records) {
         if (!YAHOO.page.admin.keysDataTable) {
             const columnDefs = [
-                {key: 'id', label: 'ID', width: 10},
-                {key: 'name', label: 'Name', width: 50},
-                {key: 'title', label: 'Title', width: 100}
+                {key: 'id', label: 'ID', sortable: true, width: 10},
+                {key: 'name', label: 'Name', sortable: true, width: 50},
+                {key: 'title', label: 'Title', sortable: true, width: 100},
+                {key: 'tagSummary', label: 'Tag Summary', width: 200}
             ];
             const fields = columnDefs.map(columnDef => columnDef.key);
             const dataSource = new YAHOO.util.DataSource(records, {
@@ -517,6 +519,10 @@ YAHOO.page.admin = {
         const length = YAHOO.page.admin.keysDataTable.getRecordSet().getLength();
         YAHOO.page.admin.keysDataTable.deleteRows(0, length);
     },
+    findSubSectionKeys: function(subSectionId) {
+        YAHOO.page.admin.sendGetRequest('/page/key/' + subSectionId,
+            YAHOO.page.admin.findKeysCallback);
+    },
     findKeys: function() {
         YAHOO.page.admin.sendPostRequest('/page/key',
             YAHOO.page.admin.findKeysCallback,
@@ -526,8 +532,10 @@ YAHOO.page.admin = {
         cache: false,
         success: function(oResponse) {
             const data = YAHOO.page.admin.parseJsonData(oResponse.responseText, true);
-            YAHOO.page.admin.keysDataTable.addRows(data.records);
-            YAHOO.page.admin.keysDataTable.validateColumnWidths(null);
+            const dataTable = YAHOO.page.admin.keysDataTable;
+            dataTable.addRows(data.records);
+            dataTable.sortColumn(dataTable.getColumn('id'), YAHOO.widget.DataTable.CLASS_ASC);
+            //dataTable.validateColumnWidths(null);
         },
         failure: YAHOO.page.admin.failureHandler
     },
@@ -539,7 +547,7 @@ YAHOO.page.admin = {
         elRowTagType.value = YUD.get('subSection.rowTagTypeId.' + subSectionId).value;
         const elColumnTagType = YUD.get('subSectionKeys.columnTagType');
         elColumnTagType.value = YUD.get('subSection.columnTagTypeId.' + subSectionId).value;
-        const dialog = YAHOO.page.admin.openMapSubSectionKeysDialog();
+        const dialog = YAHOO.page.admin.openMapSubSectionKeysDialog(subSectionId);
         dialog.bringToTop();
         dialog.show();
     }

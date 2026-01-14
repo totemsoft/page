@@ -32,7 +32,7 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class SubSectionService {
 
-    private final SubSectionRepository repository;
+    private final SubSectionRepository subSectionRepository;
 
     private final SeriesDataRepository seriesDataRepository;
 
@@ -41,7 +41,7 @@ public class SubSectionService {
     @Transactional
     public SubSectionResult<?> find(long subSectionId) {
         log.trace("findRows({}) ...", subSectionId);
-        final var subSection = repository.findById(subSectionId)
+        final var subSection = subSectionRepository.findById(subSectionId)
             .orElseThrow(() -> new EntityNotFoundException(subSectionId, SubSection.class));
         // all keys from sub-section
         final var keys = subSection.getKeys();

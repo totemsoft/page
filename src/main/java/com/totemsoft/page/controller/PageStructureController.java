@@ -61,6 +61,14 @@ class PageStructureController {
             .build();
     }
 
+    @GetMapping("/page/key/{subSectionId}")
+    SearchResult<KeyDto> findKeys(@PathVariable(name = "subSectionId") long subSectionId) {
+        log.debug("#{} findKeys", subSectionId);
+        return SearchResult.<KeyDto>builder()
+            .data(pageService.findKeys(subSectionId))
+            .build();
+    }
+
     @PostMapping("/page/key")
     SearchResult<KeyDto> findKeys(@RequestBody Map<Integer, Object> tagTypeMap) {
         log.debug("findKeys: {}", tagTypeMap);

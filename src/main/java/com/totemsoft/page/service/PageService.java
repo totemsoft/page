@@ -14,9 +14,11 @@ import com.totemsoft.page.model.TagDto;
 import com.totemsoft.page.model.TagTypeDto;
 import com.totemsoft.page.model.entity.Key;
 import com.totemsoft.page.model.entity.Page;
+import com.totemsoft.page.model.entity.SubSection;
 import com.totemsoft.page.model.mapper.PageMapper;
 import com.totemsoft.page.repository.KeyTagRepository;
 import com.totemsoft.page.repository.PageRepository;
+import com.totemsoft.page.repository.SubSectionRepository;
 import com.totemsoft.page.repository.TagRepository;
 import com.totemsoft.page.repository.TagTypeRepository;
 
@@ -32,6 +34,8 @@ public class PageService {
     private final KeyTagRepository keyTagRepository;
 
     private final PageRepository pageRepository;
+
+    private final SubSectionRepository subSectionRepository;
 
     private final TagRepository tagRepository;
 
@@ -59,6 +63,16 @@ public class PageService {
     }
 
     @Transactional
+    public List<KeyDto> findKeys(long subSectionId) {
+        final var subSection = subSectionRepository.findById(subSectionId)
+            .orElseThrow(() -> new EntityNotFoundException(subSectionId, SubSection.class));
+        // all keys from sub-section
+        final var keys = subSection.getKeys();
+        log.trace("keys: {}", keys);
+        return mapper.mapKeys(keys);
+    }
+
+    @Transactional
     public List<KeyDto> findKeys(Map<Integer, Object> tagTypeMap) {
         final var tagIds = new HashSet<Long>();
         final var tagTitles = new HashMap<Integer, String>();
@@ -69,7 +83,7 @@ public class PageService {
                 tagTitles.put(tagTypeId, tagTitle);
             }
         });
-        log.debug("tagIds: {}, tagTitles: {}", tagIds, tagTitles);
+        log.trace("tagIds: {}, tagTitles: {}", tagIds, tagTitles);
         final var keys = new HashSet<Key>();
         if (!tagIds.isEmpty()) {
             keys.addAll(keyTagRepository.findByTagIdIn(tagIds));
@@ -79,7 +93,7 @@ public class PageService {
                 keyTagRepository.findByTagTypeIdAndTagTitleContainingIgnoreCase(tagTypeId, '%' + tagTitle.trim() + '%')
             ));
         }
-        log.debug("keys: {}", keys);
+        log.trace("keys: {}", keys);
         return mapper.mapKeys(keys);
     }
 

@@ -14,7 +14,7 @@ public enum SplitRatioEnum {
     TWO_THIRD("2/3 - 1/3",    "yui-gc"),
     ONE_QUATER("1/4 - 3/4",   "yui-gf"),
     THREE_QUATER("3/4 - 1/4", "yui-ge"),
-    //QUATER("1/4 - 1/4 - 1/4 - 1/4", "yui-g"), // Nested yui-g
+    QUATER("1/4 - 1/4 - 1/4 - 1/4", "yui-g") // Nested yui-g
     ;
 
     private final String title;

@@ -88,22 +88,59 @@
                 </a>
             </li>
         </ul>
+
+        <div th:fragment="subSectionFragment(sectionId, id, name, rowTagTypeId, columnTagTypeId)">
+            <input type="hidden" th:id="|subSection.sectionId.${id}|" th:value="${sectionId}" />
+            <input type="hidden" th:id="|subSection.rowTagTypeId.${id}|" th:value="${rowTagTypeId}" />
+            <input type="hidden" th:id="|subSection.columnTagTypeId.${id}|" th:value="${columnTagTypeId}" />
+            <div class="hd" th:id="|hd.subSection.${id}|" th:text="${name}"></div>
+            <div class="bd" th:id="|bd.subSection.${id}|">
+                <div th:id="|data.subSection.${id}|"></div>
+            </div>
+        </div>
+
         <div class="yui-content">
             <div th:each="tab: ${page.tabs}" th:id="|tab.${tab.id}|">
-                <div th:each="s: ${tab.sections}" th:id="|section.${s.id}|">
-                    <input type="hidden" th:id="|section.index.${s.id}|" th:value="${s.index}" />
-                    <input type="hidden" th:id="|section.splitRatio.${s.id}|" th:value="${s.splitRatio.name}" />
-                    <div class="hd" th:id="|section-menu.${s.id}|" th:text="${s.name}"></div>
-                    <div th:class="|bd ${s.splitRatio.cssClass}|" th:id="|bd.section.${s.id}|">
+                <div th:each="s: ${tab.sections}"
+                     th:with="sectionId=${s.id}"
+                     th:id="|section.${sectionId}|">
+                    <input type="hidden" th:id="|section.index.${sectionId}|" th:value="${s.index}" />
+                    <input type="hidden" th:id="|section.splitRatio.${sectionId}|" th:value="${s.splitRatio.name}" />
+                    <div class="hd" th:id="|section-menu.${sectionId}|" th:text="${s.name}"></div>
+                    <div th:class="|bd ${s.splitRatio.cssClass}|" th:id="|bd.section.${sectionId}|"
+                         th:if="${s.splitRatio.name != 'QUATER'}">
                         <div th:each="ss, iterStat: ${s.subSections}"
                              th:class="${iterStat.first}? 'yui-u first' : 'yui-u'"
-                             th:id="|subSection.${ss.id}|">
-                            <input type="hidden" th:id="|subSection.sectionId.${ss.id}|" th:value="${s.id}" />
-                            <input type="hidden" th:id="|subSection.rowTagTypeId.${ss.id}|" th:value="${ss.rowTagTypeId}" />
-                            <input type="hidden" th:id="|subSection.columnTagTypeId.${ss.id}|" th:value="${ss.columnTagTypeId}" />
-                            <div class="hd" th:id="|hd.subSection.${ss.id}|" th:text="${ss.name}"></div>
-                            <div class="bd" th:id="|bd.subSection.${ss.id}|">
-                                <div th:id="|data.subSection.${ss.id}|"></div>
+                             th:with="id=${ss.id},name=${ss.name},rowTagTypeId=${ss.rowTagTypeId},columnTagTypeId=${ss.columnTagTypeId}"
+                             th:id="|subSection.${id}|"
+                             th:insert="~{ ::subSectionFragment(${sectionId}, ${id}, ${name}, ${rowTagTypeId}, ${columnTagTypeId}) }">
+                        </div>
+                    </div>
+                    <div th:class="|bd ${s.splitRatio.cssClass}|" th:id="|bd.section.${sectionId}|"
+                         th:if="${s.splitRatio.name == 'QUATER'}"
+                         th:with="size=${s.subSections.size()}">
+                        <div class="yui-g first">
+                            <div class="yui-u first" th:if="${size > 0}"
+                                 th:with="ss=${s.subSections[0]},id=${ss.id},name=${ss.name},rowTagTypeId=${ss.rowTagTypeId},columnTagTypeId=${ss.columnTagTypeId}"
+                                 th:id="|subSection.${id}|"
+                                 th:insert="~{ ::subSectionFragment(${sectionId}, ${id}, ${name}, ${rowTagTypeId}, ${columnTagTypeId}) }">
+                            </div>
+                            <div class="yui-u" th:if="${size > 1}"
+                                 th:with="ss=${s.subSections[1]},id=${ss.id},name=${ss.name},rowTagTypeId=${ss.rowTagTypeId},columnTagTypeId=${ss.columnTagTypeId}"
+                                 th:id="|subSection.${id}|"
+                                 th:insert="~{ ::subSectionFragment(${sectionId}, ${id}, ${name}, ${rowTagTypeId}, ${columnTagTypeId}) }">
+                            </div>
+                        </div>
+                        <div class="yui-g" th:if="${size > 2}">
+                            <div class="yui-u first" th:if="${size > 2}"
+                                 th:with="ss=${s.subSections[2]},id=${ss.id},name=${ss.name},rowTagTypeId=${ss.rowTagTypeId},columnTagTypeId=${ss.columnTagTypeId}"
+                                 th:id="|subSection.${id}|"
+                                 th:insert="~{ ::subSectionFragment(${sectionId}, ${id}, ${name}, ${rowTagTypeId}, ${columnTagTypeId}) }">
+                            </div>
+                            <div class="yui-u" th:if="${size > 3}"
+                                 th:with="ss=${s.subSections[3]},id=${ss.id},name=${ss.name},rowTagTypeId=${ss.rowTagTypeId},columnTagTypeId=${ss.columnTagTypeId}"
+                                 th:id="|subSection.${id}|"
+                                 th:insert="~{ ::subSectionFragment(${sectionId}, ${id}, ${name}, ${rowTagTypeId}, ${columnTagTypeId}) }">
                             </div>
                         </div>
                     </div>

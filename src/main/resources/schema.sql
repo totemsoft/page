@@ -74,6 +74,7 @@ create table series_data (
   constraint series_data_fk1 foreign key (key_id) references series_data_key (key_id),
   primary key (series_data_id)
 );
+create index series_data_idx1 on series_data (series_data_date, key_id);
 
 create table key_tag (
   key_id bigint,

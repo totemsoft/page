@@ -6,7 +6,8 @@ insert into split_ratio (split_ratio_name, split_ratio_title) values
   ('ONE_THIRD', '1/3 - 2/3'),
   ('TWO_THIRD', '2/3 - 1/3'),
   ('ONE_QUATER', '1/4 - 3/4'),
-  ('THREE_QUATER', '3/4 - 1/4')
+  ('THREE_QUATER', '3/4 - 1/4'),
+  ('QUATER', '1/4 - 1/4 - 1/4 - 1/4')
   ;
 
 insert into tag_type (tag_type_name, tag_type_title) values

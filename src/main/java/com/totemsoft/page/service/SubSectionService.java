@@ -1,5 +1,6 @@
 package com.totemsoft.page.service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -39,11 +40,11 @@ public class SubSectionService {
     private final SeriesDataMapper mapper;
 
     @Transactional
-    public SubSectionResult<?> find(long subSectionId) {
-        log.trace("findRows({}) ...", subSectionId);
+    public SubSectionResult<?> find(long subSectionId, LocalDate date) {
+        log.trace("findRows({}, {}) ...", subSectionId, date);
         final var subSection = subSectionRepository.findById(subSectionId)
             .orElseThrow(() -> new EntityNotFoundException(subSectionId, SubSection.class));
-        final var data = findSeriesData(subSection);
+        final var data = findSeriesData(subSection, date);
         //
         final var rowTagType = subSection.getRowTagType();
         final var columnTagType = subSection.getColumnTagType();
@@ -78,14 +79,14 @@ public class SubSectionService {
             .build();
     }
 
-    private List<SeriesData> findSeriesData(SubSection subSection) {
+    private List<SeriesData> findSeriesData(SubSection subSection, LocalDate date) {
         // all keys from sub-section
         final var keys = subSection.getKeys();
         if (keys.isEmpty()) {
             log.warn("No key(s) found for sub-section {}.", subSection.getId());
             return List.of();
         }
-        return seriesDataRepository.findByKeyIn(keys);
+        return seriesDataRepository.findByDateIsAndKeyIn(date, keys);
     }
 
     private Map<String, Cell<?>> cells(List<SeriesData> data, Tag rowTag, Set<Tag> columnTags) {

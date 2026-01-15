@@ -48,6 +48,19 @@ YAHOO.page = {
         const className = oColumn.className || (oData ? oData.className : null);
         YAHOO.page.addClass(el.parentNode, className);
     },
+    reloadWindow: function(pageId, pageDate) {
+        const win = window.parent ? window.parent : window;
+        if (pageId)  {
+            const url = new URL(win.location.href);
+            url.searchParams.set('pageId', pageId);
+            if (pageDate) {
+                url.searchParams.set('pageDate', pageDate);
+            }
+            win.location.href = url.toString();
+        } else {
+            win.location.reload();
+        }
+    },
     init: function(oContainer) {
         // Registry of cell formatting functions
         // custom 'tag' column formatter
@@ -64,10 +77,16 @@ YAHOO.page = {
             const sections = this.initSections(elTab);
             this.pageMap.set(tab, sections);
         });
-        const subName = '' + YAHOO.page.getPageId();
+        const pageId = YAHOO.page.getPageId();
+        const subName = '' + pageId;
         var activeIndex = parseInt(YAHOO.util.Cookie.getSub(tabViewActiveTabCookie, subName));
         activeIndex = !activeIndex || isNaN(activeIndex) ? 0 : activeIndex;
         tabView.selectTab(activeIndex);
+        //
+        YUE.addListener('pageDate', 'change', function(e) {
+            const date = YUE.getTarget(e).value;
+            YAHOO.page.reloadWindow(pageId, date);
+        });
         // fire the custom event
         YAHOO.page.pageReadyEvent.fire({tabView: tabView});
     },
@@ -127,7 +146,8 @@ YAHOO.page = {
             elSubSections.forEach((elSubSection, index, array) => {
                 const id = elSubSection.id; // subSection.{id}
                 const subSectionId = this.getId(id);
-                const dataTable = this.initDataTable(YUD.get('data.' + id), '/subSection/' + subSectionId);
+                const date = YUD.get('pageDate').value;
+                const dataTable = this.initDataTable(YUD.get('data.' + id), '/subSection/' + subSectionId + '/' + date);
             });
             // via LayoutManager
             //YAHOO.page.optional.initSubSectionsLayout(section, elSubSections);

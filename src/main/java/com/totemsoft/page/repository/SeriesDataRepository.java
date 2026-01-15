@@ -1,5 +1,6 @@
 package com.totemsoft.page.repository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,6 +12,6 @@ import com.totemsoft.page.model.entity.SeriesData;
 @Repository
 public interface SeriesDataRepository extends JpaRepository<SeriesData, Long> {
 
-    List<SeriesData> findByKeyIn(List<Key> keys);
+    List<SeriesData> findByDateIsAndKeyIn(LocalDate date, List<Key> keys);
 
 }

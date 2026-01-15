@@ -36,15 +36,10 @@ YAHOO.page.admin = {
     reloadWindowCallback: {
         cache: false,
         success: function(oResponse) {
-            const win = window.parent ? window.parent : window;
             const data = YAHOO.page.admin.parseJsonData(oResponse.responseText, true);
-            if (data && data.pageId)  {
-                const url = new URL(win.location.href);
-                url.searchParams.set('pageId', data.pageId);
-                win.location.href = url.toString();
-            } else {
-                win.location.reload();
-            }
+            const pageId = data && data.pageId ? data.pageId : YAHOO.page.getPageId();
+            const date = YUD.get('pageDate').value;
+            YAHOO.page.reloadWindow(pageId, date);
         },
         failure: YAHOO.page.admin.failureHandler
     },

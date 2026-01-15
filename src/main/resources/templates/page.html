@@ -53,10 +53,14 @@
     </style>
 </head>
 <body class="yui-skin-sam">
-    <div class="yui-gc">
+    <div class="yui-gb">
         <div  class="yui-u first">
             <input type="hidden" id="pageId" th:value="${page.id}" />
             <h2 th:id="|page.${page.id}|" th:text="${page.name}">TBD</h2>
+        </div>
+        <div class="yui-u">
+            <label for="pageDate" class="bold">Select a date:</label>
+            <input type="date" id="pageDate" th:value="${pageDate}" style="margin-block-start:2em;" />
         </div>
         <div class="yui-u" th:fragment="logout" sec:authorize="isAuthenticated()">
             <div>

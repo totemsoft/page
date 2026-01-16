@@ -34,7 +34,7 @@ public class SecurityConfig {
                 c.permitAll();
                 c.loginProcessingUrl("/login");
                 c.loginPage("/login.html");
-                c.defaultSuccessUrl("/page?pageId=1", true); // redirect
+                c.defaultSuccessUrl("/home", true); // redirect
                 c.failureUrl("/login?error"); // redirect
             })
             .logout(c -> {

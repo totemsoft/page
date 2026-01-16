@@ -52,6 +52,14 @@ public class PageService {
     }
 
     @Transactional
+    public PageDto findDefaultPage() {
+        log.debug("Getting first available page ...");
+        final var page = pageRepository.findFirstByOrderByIdAsc()
+            .orElseThrow(() -> new EntityNotFoundException(null, Page.class));
+        return mapper.map(page);
+    }
+
+    @Transactional
     public List<TagTypeDto> findTagTypes() {
         final var tagTypes = tagTypeRepository.findAll(Sort.by("title"));
         return mapper.mapTagTypes(tagTypes);

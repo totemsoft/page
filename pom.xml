@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.totemsoft</groupId>
-    <artifactId>page</artifactId>
+    <artifactId>page-builder</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>Page Builder</name>
-    <description>Demo project for Spring Boot</description>
+    <description>Spring Boot Page Builder</description>
     <url/>
     <licenses>
         <license/>
@@ -143,5 +143,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>

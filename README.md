@@ -12,6 +12,16 @@ mvn spring-boot:run -Dspring-boot.run.profiles=local
 ps aux | grep java
 kill -9 PID
 
+#Docker
+## Option 1: Using a Multi-Stage Dockerfile
+./mvnw clean install
+docker build -t page-builder .
+docker run -p 8080:8080 page-builder
+
+## Option 2: Using Cloud Native Buildpacks
+./mvnw spring-boot:build-image
+docker run -p 8080:8080 docker.io/library/page-builder:0.0.1-SNAPSHOT
+
 # References
 [Spring Boot: Managed Dependency Coordinates](https://docs.spring.io/spring-boot/appendix/dependency-versions/coordinates.html)
 [Securing a Web Application](https://spring.io/guides/gs/securing-web)

@@ -18,9 +18,9 @@ kill -9 PID
 docker build -t page-builder .
 docker run -p 8080:8080 page-builder
 
-## Option 2: Using Cloud Native Buildpacks
-./mvnw spring-boot:build-image
-docker run -p 8080:8080 docker.io/library/page-builder:0.0.1-SNAPSHOT
+## Option 2: Using Cloud Native Buildpacks (Dockerfile ignored)
+./mvnw spring-boot:build-image -Dspring-boot.build-image.imageName=page-builder
+docker run -p 8080:8080 docker.io/library/page-builder:latest
 
 # References
 [Spring Boot: Managed Dependency Coordinates](https://docs.spring.io/spring-boot/appendix/dependency-versions/coordinates.html)

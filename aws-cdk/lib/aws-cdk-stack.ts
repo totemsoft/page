@@ -62,7 +62,7 @@ export class AwsCdkStack extends cdk.Stack {
       streamPrefix: `ecs-${id}`
     });
     const containerDef = new ContainerDefinition(this, `${id}ContainerDefinition`, {
-      image: ContainerImage.fromRegistry('totemsoft/page-builder'), // :latest
+      image: ContainerImage.fromRegistry('totemsoft/page-builder:latest'), // :latest
       taskDefinition: taskDef,
       environment: {
         STAGE: 'prod',

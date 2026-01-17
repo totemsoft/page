@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -16,6 +17,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
+import org.springframework.security.web.header.Header;
+import org.springframework.security.web.header.writers.StaticHeadersWriter;
 
 @Configuration
 @EnableWebSecurity
@@ -27,7 +30,7 @@ public class SecurityConfig {
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(a -> a
                 .requestMatchers("/").permitAll()
-                .requestMatchers(HttpMethod.GET, "/*.js", "/*.json", "/*.ico").permitAll()
+                .requestMatchers(HttpMethod.GET, "/css/**", "/js/**", "/*.json", "/*.ico").permitAll()
                 .anyRequest().authenticated()
             )
             .formLogin(c -> {
@@ -44,10 +47,19 @@ public class SecurityConfig {
                 c.deleteCookies("JSESSIONID", "authenticated");
                 c.invalidateHttpSession(true);
             })
+            //.headers(AbstractHttpConfigurer::disable)
+            .headers(c -> c.defaultsDisabled().addHeaderWriter(new StaticHeadersWriter(createHeaders())))
             .exceptionHandling(e -> e
                 .authenticationEntryPoint(new HttpStatusEntryPoint(HttpStatus.UNAUTHORIZED))
             )
             .build();
+    }
+
+    private List<Header> createHeaders() {
+        // CacheControl.noCache().cachePrivate().mustRevalidate().getHeaderValue()
+        return List.of(
+            new Header(HttpHeaders.CACHE_CONTROL, "private,no-cache,must-revalidate,max-age=86400")
+        );
     }
 
     @Bean

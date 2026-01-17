@@ -14,4 +14,13 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addViewController("/login").setViewName("login");
     }
 
+//    @Override
+//    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+//        registry
+//            .addResourceHandler("/static/**")
+//            .addResourceLocations("/")
+//            .setCacheControl(CacheControl.noCache().cachePrivate().mustRevalidate())
+//            .setCachePeriod(86400);
+//    }
+
 }

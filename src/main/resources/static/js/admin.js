@@ -423,12 +423,14 @@ YAHOO.page.admin = {
                 name:'beforeShow',
                 handler: function(oType, oArgs) {
                     YAHOO.page.admin.initKeysDataTable([]);
-                    YAHOO.page.admin.findSubSectionKeys(subSectionId);
+                    YAHOO.page.admin.findSubSectionKeys();
                 }
             };
             const w = YUD.getViewportWidth();
             YAHOO.page.admin.mapSubSectionKeysDialog = YAHOO.page.admin.openEditDialog('mapSubSectionKeysDialog',
                 fnSubmitHandler, oEventDef, {width: (w / 3) + 'px'});
+            // preview
+            YAHOO.page.admin.initPreviewDataTable();
         } else {
             // clear subSectionKeysSearch UI/data/rows
             YAHOO.page.admin.autoCompletes.forEach(ac => {
@@ -437,6 +439,8 @@ YAHOO.page.admin = {
             });
             YAHOO.page.admin.tagTypeMap.clear();
             YAHOO.page.admin.clearKeys();
+            // preview
+            YAHOO.page.admin.updatePreviewDataTable(subSectionId);
         }
         return YAHOO.page.admin.mapSubSectionKeysDialog;
     },
@@ -519,11 +523,112 @@ YAHOO.page.admin = {
             );
         }
     },
+    initPreviewDataTable: function() {
+        const oLiveData = '/subSection/';
+        const dataSource = new YAHOO.util.XHRDataSource(oLiveData, {
+            connXhrMode: 'queueRequests',
+            maxCacheEntries: 0,
+            responseType: YAHOO.util.XHRDataSource.TYPE_JSON,
+            responseSchema: {
+                resultsList: 'records',
+                metaFields: {columns:'columns'}
+            }
+        });
+        const elSubSection = YUD.get('preview.subSection');
+        const r = YUD.getRegion(elSubSection);
+        const requestBuilder = function(oState, oDataTable) {
+            const subSectionId = YUD.get('subSectionKeys.id').value;
+            const elRowTagType = YUD.get('subSectionKeys.rowTagType');
+            const elColumnTagType = YUD.get('subSectionKeys.columnTagType');
+            let request = '' + subSectionId + '?1=1';
+            if (elRowTagType.value) {
+                request += '&rowTagTypeId=' + elRowTagType.value;
+            }
+            if (elColumnTagType.value) {
+                request += '&columnTagTypeId=' + elColumnTagType.value;
+            }
+            return request;
+        };
+        const initialRequest = requestBuilder(null, null);
+        const dataTableConfig = {
+            initialLoad: true,
+            initialRequest: initialRequest,
+            generateRequest: requestBuilder,
+            width: (r.width - 2) + 'px'
+        };
+        const oColumnDefs = [];
+        const dataTable = new YAHOO.widget.DataTable(elSubSection,
+            oColumnDefs, dataSource, dataTableConfig);
+        // 1. access data before it gets added to RecordSet and rendered to the TBODY
+        dataTable.doBeforeLoadData = function(oRequest, oResponse, oPayload) {
+            const meta = oResponse.meta;
+            const columnDefs = meta.columns;
+            if (columnDefs) {
+                //this.disable();
+                columnDefs.forEach((columnDef, index) => {
+                    if (!this.getColumn(columnDef.key)) {
+                        const column = this.insertColumn(columnDef, index);
+                    }
+                })
+                this.getDataSource().responseSchema.fields = columnDefs.map(columnDef => columnDef.key);
+                //this.undisable();
+            }
+            return true;
+        };
+        // 2. after each time the DataTable is updated with new data
+        //dataTable.handleDataReturnPayload = function(oRequest, oResponse, oPayload) {
+        //    return oPayload || {};
+        //};
+        // 3. fired when the DataTable's DOM is rendered or dirty. 
+        //dataTable.subscribe('renderEvent', function() {
+        //    // TODO: init subSection context menu
+        //});
+        YAHOO.page.admin.previewDataTable = dataTable;
+        //
+        const elRowTagType = YUD.get('subSectionKeys.rowTagType');
+        YUE.addListener(elRowTagType, 'change', function(ev) {
+            YAHOO.page.admin.updatePreviewDataTable();
+        });
+        const elColumnTagType = YUD.get('subSectionKeys.columnTagType');
+        YUE.addListener(elColumnTagType, 'change', function(ev) {
+            YAHOO.page.admin.updatePreviewDataTable();
+        });
+    },
+    updatePreviewDataTable: function() {
+        const subSectionId = YUD.get('subSectionKeys.id').value;
+        const elRowTagType = YUD.get('subSectionKeys.rowTagType');
+        const elColumnTagType = YUD.get('subSectionKeys.columnTagType');
+        const dataTable = YAHOO.page.admin.previewDataTable;
+        // delete all rows
+        const length = dataTable.getRecordSet().getLength();
+        dataTable.deleteRows(0, length);
+        // remove all columns (except for first one)
+        const columns = dataTable.getColumnSet();
+        columns.keys.reverse().forEach(column => {
+            if (column.getKey() != 'TAG') {
+                dataTable.removeColumn(column);
+            }
+        });
+        //
+        const insertRows = true;
+        const state = dataTable.getState();
+        const request = dataTable.get('generateRequest')(state, dataTable);
+        // use onDataReturnSetRows because that method will clear out the old data in the DataTable, making way for the new data.
+        const callback = {
+            cache: false,
+            success: insertRows ? dataTable.onDataReturnInsertRows : dataTable.onDataReturnSetRows,
+            failure: insertRows ? dataTable.onDataReturnInsertRows : dataTable.onDataReturnSetRows,
+            argument: state,
+            scope: dataTable
+        };
+        dataTable.getDataSource().sendRequest(request, callback);
+    },
     clearKeys: function() {
         const length = YAHOO.page.admin.keysDataTable.getRecordSet().getLength();
         YAHOO.page.admin.keysDataTable.deleteRows(0, length);
     },
-    findSubSectionKeys: function(subSectionId) {
+    findSubSectionKeys: function() {
+        const subSectionId = YUD.get('subSectionKeys.id').value;
         YAHOO.page.admin.sendGetRequest('/page/key/' + subSectionId,
             YAHOO.page.admin.findKeysCallback);
     },
@@ -539,13 +644,11 @@ YAHOO.page.admin = {
             const dataTable = YAHOO.page.admin.keysDataTable;
             dataTable.addRows(data.records);
             dataTable.sortColumn(dataTable.getColumn('id'), YAHOO.widget.DataTable.CLASS_ASC);
-            //dataTable.validateColumnWidths(null);
         },
         failure: YAHOO.page.admin.failureHandler
     },
     mapSubSectionKeys: function(subSectionId, subSectionName) {
         console.log('mapSubSectionKeys: subSectionId=' + subSectionId + ', subSectionName=' + subSectionName);
-        // TODO:
         YUD.get('subSectionKeys.id').value = subSectionId;
         const elRowTagType = YUD.get('subSectionKeys.rowTagType');
         elRowTagType.value = YUD.get('subSection.rowTagTypeId.' + subSectionId).value;

@@ -53,12 +53,12 @@ public class Key {
         inverseJoinColumns = @JoinColumn(name = "tag_id", referencedColumnName = "tag_id"))
     private List<Tag> tags;
 
-    public Optional<Tag> findTag(TagType tagType) {
-        return tags.stream().filter(t -> t.getTagType().equals(tagType)).findFirst();
+    public Optional<Tag> findTag(Integer tagTypeId) {
+        return tags.stream().filter(t -> t.getTagTypeId().equals(tagTypeId)).findFirst();
     }
 
-    public boolean anyMatch(Tag tag) {
-        return tags.stream().anyMatch(t -> t.equals(tag));
+    public boolean anyMatch(Long tagId) {
+        return tags.stream().anyMatch(t -> t.getId().equals(tagId));
     }
 
 }

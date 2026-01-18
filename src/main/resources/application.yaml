@@ -18,7 +18,7 @@ spring:
     basename: messages
   # For non-embedded databases explicitly enable initialization (schema.sql, data.sql)
   #sql.init.mode: always
-# Set the Cache-Control max-age for static resources to 1 day
+  # Set the Cache-Control max-age for static resources to 1 day
   resources:
     cache-period: 15
     cache:

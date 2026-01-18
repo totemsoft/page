@@ -219,14 +219,14 @@ YAHOO.page.admin = {
         const dialog = new YAHOO.widget.SimpleDialog(el, {
             close: true,
             draggable: true,
-            fixedcenter: true,
+            fixedcenter: oConfig && oConfig.fixedcenter !== undefined ? oConfig.fixedcenter : true,
             visible: false,
             modal: false,
             icon: null,
-            height: oConfig && oConfig.height ? oConfig.height : null,
-            width: oConfig && oConfig.width ? oConfig.width : null,
+            height: oConfig && oConfig.height !== undefined ? oConfig.height : null,
+            width: oConfig && oConfig.width !== undefined ? oConfig.width : null,
             autofillheight: 'body',
-            constraintoviewport: true,
+            constraintoviewport: oConfig && oConfig.constraintoviewport !== undefined ? oConfig.constraintoviewport : true,
             context: ['showbtn', 'tl', 'bl'],
             buttons: [
                 {text: 'Save', isDefault: true, handler: fnSubmitHandler},
@@ -428,7 +428,10 @@ YAHOO.page.admin = {
             };
             const w = YUD.getViewportWidth();
             YAHOO.page.admin.mapSubSectionKeysDialog = YAHOO.page.admin.openEditDialog('mapSubSectionKeysDialog',
-                fnSubmitHandler, oEventDef, {width: (w / 3) + 'px'});
+                fnSubmitHandler, oEventDef, {
+                    fixedcenter: 'contained',
+                    width: (w / 3) + 'px'
+                });
             // preview
             YAHOO.page.admin.initPreviewDataTable();
         } else {
@@ -440,7 +443,7 @@ YAHOO.page.admin = {
             YAHOO.page.admin.tagTypeMap.clear();
             YAHOO.page.admin.clearKeys();
             // preview
-            YAHOO.page.admin.updatePreviewDataTable(subSectionId);
+            YAHOO.page.admin.updatePreviewDataTable();
         }
         return YAHOO.page.admin.mapSubSectionKeysDialog;
     },
@@ -549,8 +552,10 @@ YAHOO.page.admin = {
             }
             return request;
         };
+        const subSectionName = YUD.get('subSectionKeys.name').value;
         const initialRequest = requestBuilder(null, null);
         const dataTableConfig = {
+            caption: subSectionName,
             initialLoad: true,
             initialRequest: initialRequest,
             generateRequest: requestBuilder,
@@ -596,9 +601,12 @@ YAHOO.page.admin = {
     },
     updatePreviewDataTable: function() {
         const subSectionId = YUD.get('subSectionKeys.id').value;
+        const subSectionName = YUD.get('subSectionKeys.name').value;
         const elRowTagType = YUD.get('subSectionKeys.rowTagType');
         const elColumnTagType = YUD.get('subSectionKeys.columnTagType');
         const dataTable = YAHOO.page.admin.previewDataTable;
+        // update caption
+        dataTable.set('caption', subSectionName);
         // delete all rows
         const length = dataTable.getRecordSet().getLength();
         dataTable.deleteRows(0, length);
@@ -650,11 +658,12 @@ YAHOO.page.admin = {
     mapSubSectionKeys: function(subSectionId, subSectionName) {
         console.log('mapSubSectionKeys: subSectionId=' + subSectionId + ', subSectionName=' + subSectionName);
         YUD.get('subSectionKeys.id').value = subSectionId;
+        YUD.get('subSectionKeys.name').value = subSectionName;
         const elRowTagType = YUD.get('subSectionKeys.rowTagType');
         elRowTagType.value = YUD.get('subSection.rowTagTypeId.' + subSectionId).value;
         const elColumnTagType = YUD.get('subSectionKeys.columnTagType');
         elColumnTagType.value = YUD.get('subSection.columnTagTypeId.' + subSectionId).value;
-        const dialog = YAHOO.page.admin.openMapSubSectionKeysDialog(subSectionId);
+        const dialog = YAHOO.page.admin.openMapSubSectionKeysDialog();
         dialog.bringToTop();
         dialog.show();
     }

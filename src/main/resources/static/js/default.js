@@ -156,7 +156,8 @@ YAHOO.page = {
     initDataTable: function(elSubSection, oLiveData) {
         const id = elSubSection.id; // data.subSection.{id}
         const subSectionId = this.getId(id);
-        const headerEl = YUD.get('hd.subSection.' + subSectionId); // hd.subSection.{id}
+        const headerId = 'hd.subSection.' + subSectionId; // hd.subSection.{id}
+        const headerEl = YUD.get(headerId);
         const caption = headerEl.innerHTML; //innerText;
         setTimeout(function(el) {
             el.parentNode.removeChild(el);
@@ -175,7 +176,7 @@ YAHOO.page = {
             return '';
         };
         const dataTableConfig = {
-            caption: caption,
+            caption: '<div id=' + headerId + '>' + caption + '</div>',
             //dynamicData: true,
             generateRequest: requestBuilder,
             width: (r.width - 2) + 'px'

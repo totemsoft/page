@@ -50,12 +50,16 @@ YAHOO.page.admin = {
     },
     fnSubscriberPageReady: function(type, args) {
         YAHOO.page.admin.tabView = args[0].tabView;
-        YAHOO.page.admin.initPageContextMenu();
-        YAHOO.page.admin.initTabContextMenu();
-        YAHOO.page.admin.initSectionContextMenu();
-        YAHOO.page.admin.initSubSectionContextMenu();
+        const context = [];
+        YAHOO.page.admin.initPageContextMenu(context);
+        YAHOO.page.admin.initTabContextMenu(context);
+        YAHOO.page.admin.initSectionContextMenu(context);
+        YAHOO.page.admin.initSubSectionContextMenu(context);
+        setTimeout(function(context) {
+            YAHOO.page.admin.initTooltip(context);
+        }, 100, context);
     },
-    initPageContextMenu: function() {
+    initPageContextMenu: function(context) {
         // h2[@id=page.{id}]
         const triggerNode = YUS.query('h2[id^=page.]');
         const pageMenu = new YAHOO.widget.ContextMenu('pageMenu', {
@@ -90,8 +94,9 @@ YAHOO.page.admin = {
                 }
             }
         });
+        context.push(...triggerNode.map(el => el.id));
     },
-    initTabContextMenu: function() {
+    initTabContextMenu: function(context) {
         // li[@id=tab-menu.{id}]
         const triggerNodes = YUS.query('li[id^=tab-menu.]', 'pageDiv');
         const tabMenu = new YAHOO.widget.ContextMenu('tabMenu', {
@@ -136,8 +141,9 @@ YAHOO.page.admin = {
                 }
             }
         });
+        context.push(...triggerNodes.map(el => el.id));
     },
-    initSectionContextMenu: function() {
+    initSectionContextMenu: function(context) {
         // div[@id=section-menu.{id}]
         const triggerNodes = YUS.query('div[id^=section-menu.]', 'pageDiv');
         const sectionMenu = new YAHOO.widget.ContextMenu('sectionMenu', {
@@ -178,8 +184,9 @@ YAHOO.page.admin = {
                 }
             }
         });
+        context.push(...triggerNodes.map(el => el.id));
     },
-    initSubSectionContextMenu: function() {
+    initSubSectionContextMenu: function(context) {
         // div[@id=subSection.{id}]/caption
         const triggerNodes = YUS.query('div[id^=data.subSection.] table caption', 'pageDiv');
         const subSectionMenu = new YAHOO.widget.ContextMenu('subSectionMenu', {
@@ -214,6 +221,24 @@ YAHOO.page.admin = {
                 }
             }
         });
+        context.push(...triggerNodes.map(el => el)); // caption[no @id]
+    },
+    initTooltip: function(context) {
+        const tooltip = new YAHOO.widget.Tooltip('contextMenuTooltip', {
+            context: context,
+            text: 'Right-click here to open the context menu for edit.',
+            zIndex: 4,
+            //preventcontextoverlap: true,
+            autodismissdelay: 3000,
+            //hidedelay: 250,
+            //xyoffset: [1,1],
+            effect: {effect:YAHOO.widget.ContainerEffect.FADE, duration:0.50}
+        });
+        // Set the text for the tooltip just before we display it.
+        //tooltip.contextTriggerEvent.subscribe(function(type, args) {
+        //    const context = args[0];
+        //    this.cfg.setProperty('text', 'Right-click here to open the context menu for edit.');
+        //});
     },
     openEditDialog: function(el, fnSubmitHandler, oEventDef, oConfig) {
         const dialog = new YAHOO.widget.SimpleDialog(el, {

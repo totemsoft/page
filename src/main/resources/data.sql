@@ -78,20 +78,7 @@ insert into series_data_key (key_name, key_title) values
   ('KEY_09', 'Key 09'),
   ('KEY_10', 'Key 10')
   ;
-
-insert into series_data (series_data_date, series_data_value, series_data_title, key_id) values
-  (CURRENT_DATE, RAND() * ( 10000 -  1000) +  1000, 'Read Me  1',  1),
-  (CURRENT_DATE, RAND() * ( 20000 -  2000) +  2000, 'Read Me  2',  2),
-  (CURRENT_DATE, RAND() * ( 30000 -  3000) +  3000, 'Read Me  3',  3),
-  (CURRENT_DATE, RAND() * ( 40000 -  4000) +  4000, 'Read Me  4',  4),
-  (CURRENT_DATE, RAND() * ( 50000 -  5000) +  5000, 'Read Me  5',  5),
-  (CURRENT_DATE, RAND() * ( 60000 -  6000) +  6000, 'Read Me  6',  6),
-  (CURRENT_DATE, RAND() * ( 70000 -  7000) +  7000, 'Read Me  7',  7),
-  (CURRENT_DATE, RAND() * ( 80000 -  8000) +  8000, 'Read Me  8',  8),
-  (CURRENT_DATE, RAND() * ( 90000 -  9000) +  9000, 'Read Me  9',  9)
---  ,(CURRENT_DATE, RAND() * (100000 - 10000) + 10000, 'Read Me 10', 10)
-  ;
-
+  
 insert into sub_section_key (sub_section_id, key_id) values
   -- sub-section #1
   (1, 1),

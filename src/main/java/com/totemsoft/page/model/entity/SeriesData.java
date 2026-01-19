@@ -13,13 +13,19 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @ToString(onlyExplicitlyIncluded = true)
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Entity
 @Table(name = "series_data")
 public class SeriesData {
@@ -43,8 +49,11 @@ public class SeriesData {
     @Column(name = "series_data_title")
     private String title;
 
+    @Column(name = "key_id")
+    private Long keyId;
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "key_id")
+    @JoinColumn(name = "key_id", insertable = false, updatable = false)
     private Key key;
 
 }

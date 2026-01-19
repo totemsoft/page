@@ -28,8 +28,8 @@ public class TaskService {
 
     private final SeriesDataRepository seriesDataRepository;
 
-    //@Scheduled(cron = "@daily") // @midnight
-    @Scheduled(initialDelay = 10_000, fixedRate = 24 * 60 * 60 * 1000L)
+    @Scheduled(cron = "@daily") // @midnight
+    @Scheduled(initialDelay = 10_000) // one-time
     @Transactional
     public void dailyTask() {
         log.info(">>> Daily task started at: {}", LocalTime.now());

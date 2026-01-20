@@ -25,8 +25,8 @@ kill -9 PID
 
 ## Option 3: Using GraalVM Native Image technology
     curl -s "https://get.sdkman.io" | bash
+    sdk list java
     sdk install java 25-graal
-    sdk default java 25-graal
     ./mvnw -Pnative package
     ./target/page-builder
 

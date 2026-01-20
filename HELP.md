@@ -16,7 +16,7 @@ kill -9 PID
 
 ## Option 1: Using a Multi-Stage Dockerfile
     ./mvnw clean install
-    docker build -t page-builder .
+    docker build . --file docker/java/Dockerfile -t page-builder
     docker run -p 8080:8080 page-builder
 
 ## Option 2: Using Cloud Native Buildpacks (Dockerfile ignored)
@@ -42,3 +42,4 @@ kill -9 PID
 * [Native Images with Spring Boot and GraalVM](https://www.baeldung.com/spring-native-intro)
 * [Building Native Images with Maven: An End-to-End Guide](https://graalvm.github.io/native-build-tools/latest/end-to-end-maven-guide.html)
 * [Spring Framework: Ahead of Time Optimizations](https://docs.spring.io/spring-framework/reference/core/aot.html#aot.hints.register-reflection)
+* [Download Oracle GraalVM](https://www.graalvm.org/downloads/)

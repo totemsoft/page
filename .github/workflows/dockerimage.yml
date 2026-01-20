@@ -30,7 +30,7 @@ jobs:
     - name: Build Page Spring-boot JAR
       run: ./mvnw -B package --file pom.xml
     - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag page-builder
+      run: docker build . --file docker/java/Dockerfile --tag page-builder
     - name: Authenticate
       run: echo ${{ secrets.DOCKERHUB_TOKEN }} | docker login --username shibaevv --password-stdin
     - name: Tag

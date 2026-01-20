@@ -26,10 +26,10 @@ kill -9 PID
 ## Option 3: Using GraalVM Native Image technology
     curl -s "https://get.sdkman.io" | bash
     sdk install java 25-graal
-    sdk list java
-    sdk use java 25-graal
+    #sdk list java
+    #sdk use java 25-graal
     sdk default java 25-graal
-    ./mvnw -Pnative native:compile
+    ./mvnw -Pnative package
 
 ## References
 * [Spring Boot: Common Application Properties](https://docs.spring.io/spring-boot/appendix/application-properties/index.html)
@@ -40,3 +40,5 @@ kill -9 PID
 * [Tutorial: Using Thymeleaf](https://www.thymeleaf.org/doc/tutorials/3.1/usingthymeleaf.html)
 * [Thymeleaf + Spring Security integration basics](https://www.thymeleaf.org/doc/articles/springsecurity.html)
 * [How to use Thymeleaf for JavaScript in Spring Boot](https://stackoverflow.com/questions/77024439/how-to-use-thymeleaf-for-javascript-in-spring-boot)
+* [Native Images with Spring Boot and GraalVM](https://www.baeldung.com/spring-native-intro)
+* [Building Native Images with Maven: An End-to-End Guide](https://graalvm.github.io/native-build-tools/latest/end-to-end-maven-guide.html)

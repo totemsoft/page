@@ -29,7 +29,7 @@ import lombok.ToString;
 @Builder
 @Entity
 @Table(name = "series_data_key")
-public class Key {
+public final class Key {
 
     @EqualsAndHashCode.Include
     @ToString.Include

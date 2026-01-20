@@ -1,7 +1,10 @@
 <!DOCTYPE HTML>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>admin</title>
+</head>
 <body>
-    <div th:fragment="page-structure">
+    <div th:fragment="admin(splitRatios)">
         <div id="editPageDialog">
             <div class="hd">Edit Page</div>
             <div class="bd">
@@ -73,21 +76,11 @@
                     </div>
                     <div>
                         <div>Row Tag Type:</div>
-                        <div>
-                            <select id="subSection.rowTagType">
-                                <option value="" th:text="#{option.null}"></option>
-                                <option th:each="item: ${tagTypes}" th:value="${item.id}" th:text="${item.name}"></option>
-                            </select>
-                        </div>
+                        <div th:replace="~{ ::selectTagTypeFragment('subSection.rowTagType') }"></div>
                     </div>
                     <div>
                         <div>Column Tag Type:</div>
-                        <div>
-                            <select id="subSection.columnTagType">
-                                <option value="" th:text="#{option.null}"></option>
-                                <option th:each="item: ${tagTypes}" th:value="${item.id}" th:text="${item.name}"></option>
-                            </select>
-                        </div>
+                        <div th:replace="~{ ::selectTagTypeFragment('subSection.columnTagType') }"></div>
                     </div>
                 </div>
             </div>
@@ -97,16 +90,10 @@
             <div class="bd">
                 <div id="subSectionKeys" class="yui-gd">
                     <div id="subSectionKeysSearch" class="yui-u first">
-                        <div th:each="item: ${tagTypes}">
-                            <label th:for="|input.subSectionKeys.tagType.${item.id}|" th:text="${item.name}" class="bold"></label>
-                            <div th:id="|subSectionKeys.tagType.${item.id}|">
-                                <input th:id="|input.subSectionKeys.tagType.${item.id}|" />
-                                <div th:id="|container.subSectionKeys.tagType.${item.id}|"></div>
-                            </div>
-                        </div>
+                        <div th:replace="~{ ::keysFragment }"></div>
                         <div class="yui-gd nowrap" style="width: auto;">
                             <div class="yui-u first">
-                                <input type="button"  id="subSectionKeysClearButton" title="Clear Search Results" value="Clear" />
+                                <input type="button" id="subSectionKeysClearButton" title="Clear Search Results" value="Clear" />
                             </div>
                             <div class="yui-u">
                                 <input type="button" id="subSectionKeysSearchButton" title="Search &amp; Add to Search Results" value="Search &amp; Add" />
@@ -132,17 +119,11 @@
                         <div>
                             <div>
                                 <div>Row Tag Type:</div>
-                                <select id="subSectionKeys.rowTagType">
-                                    <option value="" th:text="#{option.null}"></option>
-                                    <option th:each="item: ${tagTypes}" th:value="${item.id}" th:text="${item.name}"></option>
-                                </select>
+                                <div th:replace="~{ ::selectTagTypeFragment('subSectionKeys.rowTagType') }"></div>
                             </div>
                             <div>
                                 <div>Column Tag Type:</div>
-                                <select id="subSectionKeys.columnTagType">
-                                    <option value="" th:text="#{option.null}"></option>
-                                    <option th:each="item: ${tagTypes}" th:value="${item.id}" th:text="${item.name}"></option>
-                                </select>
+                                <div th:replace="~{ ::selectTagTypeFragment('subSectionKeys.columnTagType') }"></div>
                             </div>
                         </div>
                     </div>

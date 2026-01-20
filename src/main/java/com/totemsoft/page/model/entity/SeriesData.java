@@ -28,7 +28,7 @@ import lombok.ToString;
 @Builder
 @Entity
 @Table(name = "series_data")
-public class SeriesData {
+public final class SeriesData {
 
     @EqualsAndHashCode.Include
     @ToString.Include
@@ -45,6 +45,7 @@ public class SeriesData {
     @Column(name = "series_data_value")
     private BigDecimal value;
 
+    @ToString.Include
     @NotBlank
     @Column(name = "series_data_title")
     private String title;

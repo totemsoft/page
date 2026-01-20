@@ -3,7 +3,6 @@ package com.totemsoft.page.model.mapper;
 import java.util.List;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 
 import com.totemsoft.page.model.KeyDto;
@@ -34,7 +33,6 @@ public interface PageMapper {
 
     TagDto map(Tag tag);
     List<TagDto> mapTags(List<Tag> tags);
-    @Mapping(target = "tagType", ignore = true)
     Tag map(TagDto tagDto);
 
     TagTypeDto map(TagType tagType);
@@ -42,8 +40,6 @@ public interface PageMapper {
 
     Section map(SectionDto sectionDto);
 
-    @Mapping(target = "rowTagType", ignore = true)
-    @Mapping(target = "columnTagType", ignore = true)
     SubSection map(SubSectionDto subSectionDto);
 
 }

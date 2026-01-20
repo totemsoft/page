@@ -68,7 +68,7 @@ public class SubSectionService {
         log.trace("#{} columnTags: {}", subSectionId, columnTags);
         final var result = new ArrayList<Row>();
         rowTags.forEach(rowTag -> result.add(Row.builder()
-            .cells(cells(List.of(), rowTag, columnTags))
+            .cells(filterRowCells(List.of(), rowTag, columnTags))
             .build())
         );
         return SubSectionResult.<Row>builder()
@@ -84,9 +84,9 @@ public class SubSectionService {
             .orElseThrow(() -> new EntityNotFoundException(subSectionId, SubSection.class));
         final var data = findSeriesData(subSection, date);
         //
-        final var rowTagType = subSection.getRowTagType();
-        final var columnTagType = subSection.getColumnTagType();
-        if (rowTagType == null || columnTagType == null) {
+        final var rowTagTypeId = subSection.getRowTagTypeId();
+        final var columnTagTypeId = subSection.getColumnTagTypeId();
+        if (rowTagTypeId == null || columnTagTypeId == null) {
             log.trace("No RowTagType/ColumnTagType set for sub-section {}.", subSectionId);
             return SubSectionResult.<SeriesDataDto>builder()
                 .columns(findDefaultColumns())
@@ -99,14 +99,16 @@ public class SubSectionService {
         final var rowTags = new TreeSet<Tag>();
         final var columnTags = new TreeSet<Tag>();
         keys.forEach(key -> {
-            key.findTag(rowTagType.getId()).ifPresent(rowTags::add);
-            key.findTag(columnTagType.getId()).ifPresent(columnTags::add);
+            key.findTag(rowTagTypeId).ifPresent(rowTags::add);
+            key.findTag(columnTagTypeId).ifPresent(columnTags::add);
         });
         log.trace("#{} rowTags: {}", subSectionId, rowTags);
         log.trace("#{} columnTags: {}", subSectionId, columnTags);
         final var result = new ArrayList<Row>();
         rowTags.forEach(rowTag -> result.add(Row.builder()
-            .cells(cells(data.stream().filter(d -> d.getKey().anyMatch(rowTag.getId())).toList(), rowTag, columnTags))
+            .cells(filterRowCells(
+                data.stream().filter(d -> d.getKey().anyMatch(rowTag.getId())).toList(),
+                rowTag, columnTags))
             .build())
         );
         return SubSectionResult.<Row>builder()
@@ -125,9 +127,9 @@ public class SubSectionService {
         return seriesDataRepository.findByDateIsAndKeyIn(date, keys);
     }
 
-    private Map<String, Cell<?>> cells(List<SeriesData> data, Tag rowTag, Set<Tag> columnTags) {
+    private Map<String, Cell<?>> filterRowCells(List<SeriesData> data, Tag rowTag, Set<Tag> columnTags) {
         final var cells = new HashMap<String, Cell<?>>(1 + columnTags.size());
-        cells.put("TAG", Cell.<String>builder()
+        cells.put(ColumnDef.COLUMN_TAG, Cell.<String>builder()
             .id(rowTag.getId())
             .value(rowTag.getTitle())
             .build());
@@ -141,9 +143,9 @@ public class SubSectionService {
     private List<ColumnDef> findColumns(Set<Tag> columnTags) {
         final var columnDefs = new ArrayList<ColumnDef>();
         columnDefs.add(ColumnDef.builder()
-            .key("TAG")
+            .key(ColumnDef.COLUMN_TAG)
             .label("&#160;") // &nbsp;
-            .formatter(FORMATTER.TAG.name().toLowerCase())
+            .formatter(ColumnDef.COLUMN_TAG.toLowerCase())
             .className(CssClasName.TAG)
             .build());
         columnTags.forEach(t -> columnDefs.add(ColumnDef.builder()

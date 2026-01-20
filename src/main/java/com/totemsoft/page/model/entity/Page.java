@@ -21,7 +21,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @Entity
 @Table(name = "page")
-public class Page {
+public final class Page {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

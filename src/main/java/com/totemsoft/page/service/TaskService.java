@@ -37,15 +37,18 @@ public class TaskService {
             final var pageable = PageRequest.of(0, 100);
             final var keys = keyRepository.findAll(pageable).getContent();
             final var date = LocalDate.now();
-            keys.forEach(key -> loadData(key.getId(), date));
+            keys.forEach(key -> {
+                final var d = loadData(key.getId(), date);
+                log.trace("saved: {}", d);
+            });
             log.info("<<< Daily task executed at: {}", LocalTime.now());
         } catch (Throwable ignore) {
             log.warn("<<< Daily task failed:", ignore);
         }
     }
 
-    private void loadData(long keyId, LocalDate date) {
-        seriesDataRepository.save(SeriesData.builder()
+    private SeriesData loadData(long keyId, LocalDate date) {
+        return seriesDataRepository.save(SeriesData.builder()
             .keyId(keyId)
             .date(date)
             .value(randomValue(1_000, 1_000_000))

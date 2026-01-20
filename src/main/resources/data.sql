@@ -62,7 +62,7 @@ insert into page_sub_section (sub_section_name, section_id, row_tag_type_id, col
   ('SubSection 4', 3, NULL, NULL),
   ('SubSection 5', 3, NULL, NULL),
   ('SubSection 6', 4, NULL, NULL),
-  ('SubSection 7', 4, NULL, NULL),
+  ('SubSection 7', 4,    2,    1),
   ('SubSection 8', 4,    1,    2)
   ;
 

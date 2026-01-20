@@ -71,12 +71,6 @@
                     <input type="submit" value="Logout" />
                 </form>
             </div>
-            <div>
-                <span class="bold">Default Authorities: </span><span sec:authentication="principal.authorities"></span>
-            </div>
-            <div>
-                <span class="bold">Mapped Authorities: </span><span sec:authentication="authorities"></span>
-            </div>
         </div>
     </div>
 
@@ -88,16 +82,6 @@
                 </a>
             </li>
         </ul>
-
-        <div th:fragment="subSectionFragment(sectionId, id, name, rowTagTypeId, columnTagTypeId)">
-            <input type="hidden" th:id="|subSection.sectionId.${id}|" th:value="${sectionId}" />
-            <input type="hidden" th:id="|subSection.rowTagTypeId.${id}|" th:value="${rowTagTypeId}" />
-            <input type="hidden" th:id="|subSection.columnTagTypeId.${id}|" th:value="${columnTagTypeId}" />
-            <div class="hd" th:id="|hd.subSection.${id}|" th:text="${name}"></div>
-            <div class="bd" th:id="|bd.subSection.${id}|">
-                <div th:id="|data.subSection.${id}|"></div>
-            </div>
-        </div>
 
         <div class="yui-content">
             <div th:each="tab: ${page.tabs}" th:id="|tab.${tab.id}|">
@@ -148,6 +132,34 @@
             </div>
         </div>
     </div>
-    <div th:insert="~{admin :: page-structure}" sec:authorize="hasRole('ROLE_ADMIN')" class="hidden"></div>
+
+    <div id="fragments" class="hidden">
+        <div th:fragment="subSectionFragment(sectionId, id, name, rowTagTypeId, columnTagTypeId)">
+            <input type="hidden" th:id="|subSection.sectionId.${id}|" th:value="${sectionId}" />
+            <input type="hidden" th:id="|subSection.rowTagTypeId.${id}|" th:value="${rowTagTypeId}" />
+            <input type="hidden" th:id="|subSection.columnTagTypeId.${id}|" th:value="${columnTagTypeId}" />
+            <div class="hd" th:id="|hd.subSection.${id}|" th:text="${name}"></div>
+            <div class="bd" th:id="|bd.subSection.${id}|">
+                <div th:id="|data.subSection.${id}|"></div>
+            </div>
+        </div>
+        <div th:fragment="selectTagTypeFragment(selectId)" sec:authorize="hasRole('ROLE_ADMIN')">
+            <select th:id="${selectId}">
+                <option value="" th:text="#{option.null}"></option>
+                <option th:each="item: ${tagTypes}" th:value="${item.id}" th:text="${item.name}"></option>
+            </select>
+        </div>
+        <div th:fragment="keysFragment" sec:authorize="hasRole('ROLE_ADMIN')">
+            <div th:each="item: ${tagTypes}">
+                <label th:for="|input.subSectionKeys.tagType.${item.id}|" th:text="${item.name}" class="bold"></label>
+                <div th:id="|subSectionKeys.tagType.${item.id}|">
+                    <input th:id="|input.subSectionKeys.tagType.${item.id}|" />
+                    <div th:id="|container.subSectionKeys.tagType.${item.id}|"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:insert="~{admin :: admin ( splitRatios=${splitRatios} )}" sec:authorize="hasRole('ROLE_ADMIN')" class="hidden"></div>
 </body>
 </html>

@@ -23,7 +23,7 @@ class PageController {
     @GetMapping("/home")
     public String home() {
         final var page = pageService.findDefaultPage();
-        log.debug("Found default page {}.", page.getId());
+        log.debug("Found default page {}", page.getId());
         return "redirect:/page?pageId=" + page.getId();
     }
 
@@ -34,7 +34,7 @@ class PageController {
             Model model) {
         log.debug("Loading page {} for date {} ...", pageId, pageDate);
         final var page = pageService.findPage(pageId);
-        log.trace("Found page {}.", page.getId());
+        log.debug("Found page {}", page.getId());
         model.addAttribute("page", page);
         model.addAttribute("pageDate", pageDate != null ? pageDate : LocalDate.now());
         model.addAttribute("splitRatios", SplitRatioEnum.values());

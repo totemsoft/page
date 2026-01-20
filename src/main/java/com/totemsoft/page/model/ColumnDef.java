@@ -24,6 +24,8 @@ public class ColumnDef {
         CURRENCY, DATE, NUMBER, TAG
     }
 
+    public static final String COLUMN_TAG = FORMATTER.TAG.name();
+
     @NotBlank
     private String key;
 

@@ -150,16 +150,15 @@
                         <skipNativeTests>true</skipNativeTests>
                     </configuration>
                 </plugin>
-                <plugin>
+                <!--plugin>
                     <groupId>org.hibernate.orm.tooling</groupId>
                     <artifactId>hibernate-enhance-maven-plugin</artifactId>
-                    <!--version>7.0.0.Beta1</version-->
                     <version>6.6.41.Final</version>
                     <configuration>
                         <failOnError>true</failOnError>
                         <enableLazyInitialization>true</enableLazyInitialization>
                     </configuration>
-                </plugin>
+                </plugin-->
             </plugins>
         </pluginManagement>
         <plugins>

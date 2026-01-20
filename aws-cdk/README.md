@@ -6,13 +6,13 @@
 Configuring environments:
 * `export CDK_DEFAULT_ACCOUNT=<aws-account-id>`
 * `export CDK_DEFAULT_REGION=ap-southeast-2`
+* `export VPC_NAME=<vpc-name>`
+* `export DOMAIN_NAME=company.com`
 
 Deploy stack:
 * `alias cdk="npx aws-cdk"`
 * `cdk bootstrap`
 * `cdk diff`
-* `export VPC_NAME=<vpc-name>`
-* `export DOMAIN_NAME=company.com`
 * `cdk deploy`
 
 Destroy stack:

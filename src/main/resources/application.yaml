@@ -18,14 +18,18 @@ spring:
   jackson:
     default-property-inclusion: non_null
   jpa:
-    # disable automatic DDL generation to avoid conflicts
-    hibernate.ddl-auto: none
+    hibernate:
+      ddl-auto: none # disable automatic DDL generation to avoid conflicts
     open-in-view: false
+#    properties:
+#    - hibernate.bytecode.provider: none
+#    - hibernate.enhancer.enableDirtyTracking: false
+#    - hibernate.enhancer.enableLazyInitialization: false
   main:
     lazy-initialization: true
   messages:
     basename: messages
-  # For non-embedded databases explicitly enable initialization (schema.sql, data.	sql)
+  # For non-embedded databases explicitly enable initialization (schema.sql, data.sql)
   #sql.init.mode: always
   web:
     resources:

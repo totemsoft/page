@@ -26,10 +26,9 @@ kill -9 PID
 ## Option 3: Using GraalVM Native Image technology
     curl -s "https://get.sdkman.io" | bash
     sdk install java 25-graal
-    #sdk list java
-    #sdk use java 25-graal
     sdk default java 25-graal
     ./mvnw -Pnative package
+    ./target/page-builder
 
 ## References
 * [Spring Boot: Common Application Properties](https://docs.spring.io/spring-boot/appendix/application-properties/index.html)

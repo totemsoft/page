@@ -137,5 +137,23 @@
             </div>
         </div>
     </div>
+
+    <div id="admin-fragments" class="hidden">
+        <div th:fragment="selectTagTypeFragment(selectId)">
+            <select th:id="${selectId}">
+                <option value="" th:text="#{option.null}"></option>
+                <option th:each="item: ${tagTypes}" th:value="${item.id}" th:text="${item.name}"></option>
+            </select>
+        </div>
+        <div th:fragment="keysFragment">
+            <div th:each="item: ${tagTypes}">
+                <label th:for="|input.subSectionKeys.tagType.${item.id}|" th:text="${item.name}" class="bold"></label>
+                <div th:id="|subSectionKeys.tagType.${item.id}|">
+                    <input th:id="|input.subSectionKeys.tagType.${item.id}|" />
+                    <div th:id="|container.subSectionKeys.tagType.${item.id}|"></div>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

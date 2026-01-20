@@ -23,7 +23,7 @@ import lombok.ToString;
 @Builder
 @Entity
 @Table(name = "tag")
-public final class Tag implements Comparable<Tag> {
+public class Tag implements Comparable<Tag> {
 
     @EqualsAndHashCode.Include
     @ToString.Include

@@ -4,7 +4,7 @@ import jakarta.persistence.Column;
 import lombok.Data;
 
 @Data
-public final class KeyTagId {
+public class KeyTagId {
 
     @Column(name = "key_id")
     private Long keyId;

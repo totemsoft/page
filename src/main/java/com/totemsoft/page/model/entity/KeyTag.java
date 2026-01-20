@@ -18,7 +18,7 @@ import lombok.ToString;
 @Entity
 @Table(name = "key_tag")
 @IdClass(KeyTagId.class)
-public final class KeyTag {
+public class KeyTag {
 
     @EqualsAndHashCode.Include
     @ToString.Include

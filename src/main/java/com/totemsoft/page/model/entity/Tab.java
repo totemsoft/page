@@ -25,7 +25,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @Entity
 @Table(name = "page_tab")
-public final class Tab {
+public class Tab {
 
     @EqualsAndHashCode.Include
     @Id

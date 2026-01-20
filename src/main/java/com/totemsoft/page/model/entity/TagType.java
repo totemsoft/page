@@ -22,7 +22,7 @@ import lombok.ToString;
 @Builder
 @Entity
 @Table(name = "tag_type")
-public final class TagType {
+public class TagType {
 
     @EqualsAndHashCode.Include
     @ToString.Include

@@ -31,7 +31,7 @@ import lombok.ToString;
 @Builder
 @Entity
 @Table(name = "page_section")
-public final class Section {
+public class Section {
 
     @EqualsAndHashCode.Include
     @ToString.Include

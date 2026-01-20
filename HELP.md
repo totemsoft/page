@@ -41,3 +41,4 @@ kill -9 PID
 * [How to use Thymeleaf for JavaScript in Spring Boot](https://stackoverflow.com/questions/77024439/how-to-use-thymeleaf-for-javascript-in-spring-boot)
 * [Native Images with Spring Boot and GraalVM](https://www.baeldung.com/spring-native-intro)
 * [Building Native Images with Maven: An End-to-End Guide](https://graalvm.github.io/native-build-tools/latest/end-to-end-maven-guide.html)
+* [Spring Framework: Ahead of Time Optimizations](https://docs.spring.io/spring-framework/reference/core/aot.html#aot.hints.register-reflection)

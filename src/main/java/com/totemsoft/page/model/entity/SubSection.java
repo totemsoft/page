@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @Entity
 @Table(name = "page_sub_section")
-public final class SubSection {
+public class SubSection {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

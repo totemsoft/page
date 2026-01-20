@@ -28,7 +28,7 @@ import lombok.ToString;
 @Builder
 @Entity
 @Table(name = "series_data")
-public final class SeriesData {
+public class SeriesData {
 
     @EqualsAndHashCode.Include
     @ToString.Include

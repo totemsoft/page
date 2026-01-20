@@ -1,4 +1,4 @@
-FROM eclipse-temurin:17-jre-alpine
+FROM eclipse-temurin:25-jre-alpine
 
 LABEL Maintainer="Valeri Chibaev <shibaev.valera@gmail.com>"
 
@@ -7,7 +7,6 @@ LABEL Maintainer="Valeri Chibaev <shibaev.valera@gmail.com>"
 # fix vulnerabilities
 RUN echo $(cat /etc/os-release)
 #RUN yum update -y && yum clean all
-#RUN $(yes | rm /usr/bin/python)
 
 # timezone
 ARG tz

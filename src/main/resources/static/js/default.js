@@ -176,7 +176,7 @@ YAHOO.page = {
             return '';
         };
         const dataTableConfig = {
-            caption: '<div id=' + headerId + '>' + caption + '</div>',
+            caption: caption,
             //dynamicData: true,
             generateRequest: requestBuilder,
             width: (r.width - 2) + 'px'

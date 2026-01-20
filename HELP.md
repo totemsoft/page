@@ -1,26 +1,42 @@
-# Getting Started
+# page-builder
+mvn -version
+mvn clean install -Dtest -DfailIfNoTests=false
 
-### Reference Documentation
-For further reference, please consider the following sections:
+mvn eclipse:clean eclipse:eclipse
+mvn dependency:sources
+mvn dependency:tree -DoutputFile=dependency.txt
 
-* [Official Apache Maven documentation](https://maven.apache.org/guides/index.html)
-* [Spring Boot Maven Plugin Reference Guide](https://docs.spring.io/spring-boot/4.0.1/maven-plugin)
-* [Create an OCI image](https://docs.spring.io/spring-boot/4.0.1/maven-plugin/build-image.html)
-* [Spring Web](https://docs.spring.io/spring-boot/4.0.1/reference/web/servlet.html)
-* [Spring Data JPA](https://docs.spring.io/spring-boot/4.0.1/reference/data/sql.html#data.sql.jpa-and-spring-data)
+./mvnw spring-boot:run
+mvn spring-boot:run -Dspring-boot.run.profiles=local
 
-### Guides
-The following guides illustrate how to use some features concretely:
+ps aux | grep java
+kill -9 PID
 
-* [Building a RESTful Web Service](https://spring.io/guides/gs/rest-service/)
-* [Serving Web Content with Spring MVC](https://spring.io/guides/gs/serving-web-content/)
-* [Building REST services with Spring](https://spring.io/guides/tutorials/rest/)
-* [Accessing Data with JPA](https://spring.io/guides/gs/accessing-data-jpa/)
+#Docker
 
-### Maven Parent overrides
+## Option 1: Using a Multi-Stage Dockerfile
+    ./mvnw clean install
+    docker build -t page-builder .
+    docker run -p 8080:8080 page-builder
 
-Due to Maven's design, elements are inherited from the parent POM to the project POM.
-While most of the inheritance is fine, it also inherits unwanted elements like `<license>` and `<developers>` from the parent.
-To prevent this, the project POM contains empty overrides for these elements.
-If you manually switch to a different parent and actually want the inheritance, you need to remove those overrides.
+## Option 2: Using Cloud Native Buildpacks (Dockerfile ignored)
+    ./mvnw spring-boot:build-image -Dspring-boot.build-image.imageName=page-builder
+    docker run -p 8080:8080 docker.io/library/page-builder:latest
 
+## Option 3: Using GraalVM Native Image technology
+    curl -s "https://get.sdkman.io" | bash
+    sdk install java 21-graal
+    sdk list java
+    sdk use java 21-graal
+    sdk default java 21-graal
+    ./mvnw -Pnative native:compile
+
+## References
+* [Spring Boot: Common Application Properties](https://docs.spring.io/spring-boot/appendix/application-properties/index.html)
+* [Spring Boot: Managed Dependency Coordinates](https://docs.spring.io/spring-boot/appendix/dependency-versions/coordinates.html)
+[Securing a Web Application](https://spring.io/guides/gs/securing-web)
+* [OAuth 2.0 Login](https://docs.spring.io/spring-security/reference/reactive/oauth2/login/index.html)
+* [MapStruct: Reference Guide](https://mapstruct.org/documentation/stable/reference/html/)
+* [Tutorial: Using Thymeleaf](https://www.thymeleaf.org/doc/tutorials/3.1/usingthymeleaf.html)
+* [Thymeleaf + Spring Security integration basics](https://www.thymeleaf.org/doc/articles/springsecurity.html)
+* [How to use Thymeleaf for JavaScript in Spring Boot](https://stackoverflow.com/questions/77024439/how-to-use-thymeleaf-for-javascript-in-spring-boot)

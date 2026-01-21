@@ -10,8 +10,7 @@ RUN echo $(cat /etc/os-release)
 
 # timezone
 ARG tz
-#ENV TZ=${tz:-UTC}
-ENV TZ=${tz:-Australia/Brisbane}
+ENV TZ=${tz:-UTC}
 RUN echo $TZ
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 RUN echo "date="$(date)

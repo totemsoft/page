@@ -1,0 +1,40 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [ main ]
+
+env:
+  AWS_REGION: ap-southeast-2                    # set this to your preferred AWS region, e.g. us-west-1
+  ECR_REPOSITORY: MY_ECR_REPOSITORY             # set this to your Amazon ECR repository name
+  ECS_SERVICE: page-builder                     # set this to your Amazon ECS service name
+  ECS_CLUSTER: page-builder                     # set this to your Amazon ECS cluster name
+  ECS_TASK_DEFINITION: MY_ECS_TASK_DEFINITION   # set this to the path to your Amazon ECS task definition file, e.g. .aws/task-definition.json
+  CONTAINER_NAME: MY_CONTAINER_NAME             # set this to the name of the container in the containerDefinitions section of your task definition
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    environment: dev
+    #if: false
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v5
+    - name: Set up GraalVM 25
+      uses: graalvm/setup-graalvm@v1
+      with:
+        java-version: 25
+        distribution: graalvm
+        components: native-image
+    - name: Build Page Spring-boot JAR
+      run: ./mvnw -Pnative package --file pom.xml
+    - name: Build the Docker image
+      run: docker build . --file docker/graalvm/Dockerfile --tag page-builder-graalvm
+    - name: Authenticate
+      run: echo ${{ secrets.DOCKERHUB_TOKEN }} | docker login --username shibaevv --password-stdin
+    - name: Tag
+      run: docker tag page-builder totemsoft/page-builder-graalvm:latest
+    - name: Publish
+      run: docker push totemsoft/page-builder-graalvm:latest

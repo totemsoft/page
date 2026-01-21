@@ -39,6 +39,8 @@ spring:
     init:
       continue-on-error: true
       mode: always
+      schema-locations: classpath:db/migration/*.sql
+      data-locations: classpath:db/migration/data/*.sql
   web:
     resources:
       cache:

@@ -1,4 +1,4 @@
-name: Docker Image CI
+name: Docker Image with Java
 
 on:
   push:
@@ -17,7 +17,7 @@ jobs:
     name: Deploy
     runs-on: ubuntu-latest
     environment: dev
-    if: false
+    #if: false
 
     steps:
     - name: Checkout

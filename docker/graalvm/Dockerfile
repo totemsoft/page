@@ -16,8 +16,8 @@ RUN echo $TZ
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 RUN echo "date="$(date)
 
-#RUN addgroup -S totemsoft && adduser -S admin -G totemsoft
-#USER admin:totemsoft
+RUN groupadd totemsoft && useradd admin -g totemsoft -s/sbin/nologin
+USER admin:totemsoft
 
 ARG EXECUTABLE_FILE=./target/page-builder
 COPY ${EXECUTABLE_FILE} page-builder

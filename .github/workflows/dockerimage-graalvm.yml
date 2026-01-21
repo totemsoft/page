@@ -35,6 +35,6 @@ jobs:
     - name: Authenticate
       run: echo ${{ secrets.DOCKERHUB_TOKEN }} | docker login --username shibaevv --password-stdin
     - name: Tag
-      run: docker tag page-builder totemsoft/page-builder-graalvm:latest
+      run: docker tag page-builder-graalvm totemsoft/page-builder-graalvm:latest
     - name: Publish
       run: docker push totemsoft/page-builder-graalvm:latest

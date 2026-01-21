@@ -36,7 +36,7 @@ export class AwsCdkStack extends cdk.Stack {
     //const taskCpu = 1024;
     //const taskMemoryLimitMiB = 2048;
     // GraalVM
-    const containerImage= 'totemsoft/page-builder-graalvm:latest'; // :latest
+    const containerImage= 'totemsoft/page-builder-graalvm'; // :latest
     const taskCpu = 256;
     const taskMemoryLimitMiB = 512;
 
@@ -73,7 +73,7 @@ export class AwsCdkStack extends cdk.Stack {
       image: ContainerImage.fromRegistry(containerImage),
       taskDefinition: taskDef,
       environment: {
-        STAGE: 'dev',
+        STAGE: 'prod',
       },
       logging: logDriver,
       portMappings: [

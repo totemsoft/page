@@ -14,7 +14,7 @@ spring:
   application:
     name: Page Builder
   datasource:
-    url: jdbc:h2:file:${java.io.tmpdir}db/pagedb # /tmp/pagedb.mv.db
+    url: jdbc:h2:file:${java.io.tmpdir}/db/pagedb # /tmp/pagedb.mv.db
     username: sa
     password:
     driver-class-name: org.h2.Driver

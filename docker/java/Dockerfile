@@ -16,7 +16,8 @@ RUN echo $TZ
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 RUN echo "date="$(date)
 
-RUN addgroup -S totemsoft && adduser -S admin -G totemsoft
+# -S: Create a system group/user
+RUN addgroup -S totemsoft && adduser -S admin -G totemsoft -s/sbin/nologin
 USER admin:totemsoft
 
 ARG JAR_FILE=target/*.jar

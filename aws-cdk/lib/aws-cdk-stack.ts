@@ -31,10 +31,18 @@ export class AwsCdkStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: AwsCdkStackProps) {
     super(scope, id, props);
 
-    const vpcName = props.vpcName;
+    // Java
+    //const containerImage= 'totemsoft/page-builder'; // :latest
+    //const taskCpu = 1024;
+    //const taskMemoryLimitMiB = 2048;
+    // GraalVM
+    const containerImage= 'totemsoft/page-builder-graalvm'; // :latest
+    const taskCpu = 256;
+    const taskMemoryLimitMiB = 512;
+
     const domainName = props.domainName;
 
-    const vpc = ec2.Vpc.fromLookup(this, id, {vpcName: vpcName});
+    const vpc = ec2.Vpc.fromLookup(this, id, {vpcName: props.vpcName});
 
     const vpcSubnets: ec2.SubnetSelection = {
       subnetType: ec2.SubnetType.PUBLIC
@@ -45,8 +53,8 @@ export class AwsCdkStack extends cdk.Stack {
     });
 
     const taskDef = new FargateTaskDefinition(this, `${id}TaskDefinition1`, {
-      cpu: 1024,
-      memoryLimitMiB: 2048
+      cpu: taskCpu,
+      memoryLimitMiB: taskMemoryLimitMiB
     });
     taskDef.addToTaskRolePolicy(new PolicyStatement( {
         actions: [
@@ -62,7 +70,7 @@ export class AwsCdkStack extends cdk.Stack {
       streamPrefix: `ecs-${id}`
     });
     const containerDef = new ContainerDefinition(this, `${id}ContainerDefinition`, {
-      image: ContainerImage.fromRegistry('totemsoft/page-builder'), // :latest
+      image: ContainerImage.fromRegistry(containerImage),
       taskDefinition: taskDef,
       environment: {
         STAGE: 'prod',

@@ -49,3 +49,7 @@ server:
   servlet:
     context-path: /
     application-display-name: Page Builder
+  tomcat:
+    accesslog:
+      max-days: 1
+      request-attributes-enabled: true

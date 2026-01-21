@@ -16,9 +16,6 @@ public class SectionDto {
     @NotBlank
     private String name;
 
-    /**
-     * vertical position (row index within the tab: 0..n)
-     */
     private int index;
 
     @NotNull

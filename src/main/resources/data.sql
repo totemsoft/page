@@ -43,9 +43,9 @@ insert into page (page_name) values
   ('My First Page')
   ;
 
-insert into page_tab (tab_name, page_id) values
-  ('Tab 1', 1),
-  ('Tab 2', 1)
+insert into page_tab (tab_name, tab_index, page_id) values
+  ('Tab 1', 1, 1),
+  ('Tab 2', 2, 1)
   ;
 
 insert into page_section (section_name, section_index, section_split_ratio, tab_id) values
@@ -55,15 +55,15 @@ insert into page_section (section_name, section_index, section_split_ratio, tab_
   ('Section 4', 2, 'THIRD',     2)
   ;
 
-insert into page_sub_section (sub_section_name, section_id, row_tag_type_id, column_tag_type_id) values
-  ('SubSection 1', 1, NULL, NULL),
-  ('SubSection 2', 2, NULL, NULL),
-  ('SubSection 3', 2, NULL, NULL),
-  ('SubSection 4', 3, NULL, NULL),
-  ('SubSection 5', 3, NULL, NULL),
-  ('SubSection 6', 4, NULL, NULL),
-  ('SubSection 7', 4,    2,    1),
-  ('SubSection 8', 4,    1,    2)
+insert into page_sub_section (sub_section_name, sub_section_index, section_id, row_tag_type_id, column_tag_type_id) values
+  ('SubSection 1', 1, 1, NULL, NULL),
+  ('SubSection 2', 1, 2, NULL, NULL),
+  ('SubSection 3', 2, 2, NULL, NULL),
+  ('SubSection 4', 1, 3, NULL, NULL),
+  ('SubSection 5', 2, 3, NULL, NULL),
+  ('SubSection 6', 1, 4, NULL, NULL),
+  ('SubSection 7', 2, 4,    2,    1),
+  ('SubSection 8', 3, 4,    1,    2)
   ;
 
 insert into series_data_key (key_name, key_title) values

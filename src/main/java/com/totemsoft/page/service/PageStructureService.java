@@ -72,6 +72,7 @@ public class PageStructureService {
             tab = tabRepository.findById(tabId)
                 .orElseThrow(() -> new EntityNotFoundException(tabId, Tab.class));
             tab.setName(tabDto.getName());
+            tab.setIndex(tabDto.getIndex());
         }
         log.trace("saving: {}", tab);
         tabRepository.save(tab);
@@ -106,6 +107,7 @@ public class PageStructureService {
             subSection = subSectionRepository.findById(subSectionId)
                 .orElseThrow(() -> new EntityNotFoundException(subSectionId, SubSection.class));
             subSection.setName(subSectionDto.getName());
+            subSection.setIndex(subSectionDto.getIndex());
             subSection.setRowTagTypeId(subSectionDto.getRowTagTypeId());
             subSection.setColumnTagTypeId(subSectionDto.getColumnTagTypeId());
         }

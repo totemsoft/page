@@ -13,6 +13,8 @@ public class SubSectionDto {
     @NotBlank
     private String name;
 
+    private int index;
+
     private Long sectionId;
 
     private Integer rowTagTypeId;

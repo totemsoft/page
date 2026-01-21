@@ -37,6 +37,10 @@ public class Tab {
     @Column(name = "tab_name")
     private String name;
 
+    /** position (tab index within the page: 0..n) (ORDER BY) */
+    @Column(name = "tab_index")
+    private int index;
+
     @NotNull
     @Column(name = "page_id")
     private Long pageId;

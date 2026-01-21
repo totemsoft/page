@@ -310,7 +310,8 @@ YAHOO.page.admin = {
             const fnSubmitHandler = function() {
                 const tabDto = {
                     id: tabId,
-                    name: YUD.get('tab.name').value
+                    name: YUD.get('tab.name').value,
+                    index: YUD.get('tab.index').value
                 };
                 YAHOO.page.admin.sendPostRequest('/page/tab', YAHOO.page.admin.reloadWindowCallback, tabDto);
             };
@@ -318,6 +319,7 @@ YAHOO.page.admin = {
                 fnSubmitHandler);
         }
         YUD.get('tab.name').value = tabName;
+        YUD.get('tab.index').value = YUD.get('tab.index.' + tabId).value;
         YAHOO.page.admin.editTabDialog.bringToTop();
         YAHOO.page.admin.editTabDialog.show();
     },
@@ -327,7 +329,8 @@ YAHOO.page.admin = {
             const fnSubmitHandler = function() {
                 const tabDto = {
                     pageId: YAHOO.page.getPageId(),
-                    name: YUD.get('tab.name').value
+                    name: YUD.get('tab.name').value,
+                    index: YUD.get('tab.index').value
                 };
                 YAHOO.page.admin.sendPostRequest('/page/tab', YAHOO.page.admin.reloadWindowCallback, tabDto);
             };
@@ -335,6 +338,7 @@ YAHOO.page.admin = {
                 fnSubmitHandler);
         }
         YUD.get('tab.name').value = '';
+        YUD.get('tab.index').value = '1';
         YAHOO.page.admin.editTabDialog.bringToTop();
         YAHOO.page.admin.editTabDialog.show();
     },
@@ -386,6 +390,7 @@ YAHOO.page.admin = {
                 YAHOO.page.admin.sendPostRequest('/page/subSection', YAHOO.page.admin.reloadWindowCallback, {
                     id: YUD.get('subSection.id').value,
                     name: YUD.get('subSection.name').value,
+                    index: YUD.get('subSection.index').value,
                     sectionId: YUD.get('subSection.sectionId').value,
                     rowTagTypeId: elRowTagType.value,
                     columnTagTypeId: elColumnTagType.value
@@ -400,6 +405,7 @@ YAHOO.page.admin = {
         console.log('editSubSection: subSectionId=' + subSectionId + ', subSectionName=' + subSectionName);
         YUD.get('subSection.id').value = subSectionId;
         YUD.get('subSection.name').value = subSectionName;
+        YUD.get('subSection.index').value = YUD.get('subSection.index.' + subSectionId).value;
         YUD.get('subSection.sectionId').value = YUD.get('subSection.sectionId.' + subSectionId).value;
         const elRowTagType = YUD.get('subSection.rowTagType');
         elRowTagType.value = YUD.get('subSection.rowTagTypeId.' + subSectionId).value;
@@ -413,6 +419,7 @@ YAHOO.page.admin = {
         console.log('addSubSection: sectionId=' + sectionId);
         YUD.get('subSection.id').value = '';
         YUD.get('subSection.name').value = '';
+        YUD.get('subSection.index').value = '1';
         YUD.get('subSection.sectionId').value = sectionId;
         const elRowTagType = YUD.get('subSection.rowTagType');
         elRowTagType.selectedIndex = 0;

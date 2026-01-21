@@ -35,6 +35,10 @@ public class SubSection {
     @Column(name = "sub_section_name")
     private String name;
 
+    /** horizontal position (index within the section: 0..n) (ORDER BY) */
+    @Column(name = "sub_section_index")
+    private int index;
+
     @NotNull
     @Column(name = "section_id")
     private Long sectionId;

@@ -13,6 +13,8 @@ public class TabDto {
     @NotBlank
     private String name;
 
+    private int index;
+
     private Long pageId;
 
     private List<SectionDto> sections;

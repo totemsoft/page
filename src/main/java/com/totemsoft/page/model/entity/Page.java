@@ -8,6 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -33,6 +34,7 @@ public class Page {
     private String name;
 
     @OneToMany(mappedBy = "pageId")
+    @OrderBy("index")
     private List<Tab> tabs;
 
 }

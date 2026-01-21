@@ -13,6 +13,8 @@ public class PageDto {
     @NotBlank
     private String name;
 
+    private int index;
+
     private List<TabDto> tabs;
 
 }

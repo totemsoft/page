@@ -12,6 +12,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -45,9 +46,7 @@ public class Section {
     @Column(name = "section_name")
     private String name;
 
-    /**
-     * vertical position (row index within the tab: 0..n) (ORDER BY)
-     */
+    /** vertical position (row index within the tab: 0..n) (ORDER BY) */
     @Column(name = "section_index")
     private int index;
 
@@ -61,8 +60,9 @@ public class Section {
     @Column(name = "tab_id")
     private Long tabId;
 
-    @Size(max = 3)
+    @Size(max = 4)
     @OneToMany(mappedBy = "sectionId")
+    @OrderBy("index")
     private List<SubSection> subSections;
 
 }

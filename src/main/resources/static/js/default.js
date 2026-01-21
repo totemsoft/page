@@ -97,7 +97,9 @@ YAHOO.page = {
             const subName = '' + YAHOO.page.getPageId();
             YAHOO.util.Cookie.setSub(tabViewActiveTabCookie, subName, '' + activeIndex, {expires: new Date(Date.now() + 30*60*1000)});
             const tab = this.getTab(activeIndex);
-            YAHOO.page.moveSections(tab);
+            setTimeout(function(tab) {
+                YAHOO.page.moveSections(tab);
+            }, 100, tab);
         });
         return tabView;
     },

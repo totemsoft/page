@@ -13,6 +13,11 @@ management:
 spring:
   application:
     name: Page Builder
+  datasource:
+    url: jdbc:h2:file:${java.io.tmpdir}db/pagedb # /tmp/pagedb.mv.db
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
   devtools:
     add-properties: false
   jackson:
@@ -29,8 +34,11 @@ spring:
     lazy-initialization: true
   messages:
     basename: messages
-  # For non-embedded databases explicitly enable initialization (schema.sql, data.sql)
-  #sql.init.mode: always
+  # TODO: move to H2 specific profile
+  sql:
+    init:
+      continue-on-error: true
+      mode: always
   web:
     resources:
       cache:

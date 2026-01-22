@@ -8,6 +8,7 @@ import { EnvironmentUtils } from './include/environment-utils';
 import { PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as efs from 'aws-cdk-lib/aws-efs';
+import * as iam from 'aws-cdk-lib/aws-iam';
 import { Certificate, CertificateValidation } from 'aws-cdk-lib/aws-certificatemanager';
 
 export interface AwsCdkStackProps extends cdk.StackProps {
@@ -32,17 +33,23 @@ export class AwsCdkStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: AwsCdkStackProps) {
     super(scope, id, props);
 
+/*
     // Java
-    //const containerImage= 'totemsoft/page-builder'; // :latest
-    //const taskCpu = 1024;
-    //const taskMemoryLimitMiB = 2048;
+    const containerImage= 'totemsoft/page-builder'; // :latest
+    const taskCpu = 1024;
+    const taskMemoryLimitMiB = 2048;
+    const javaOpts = '-Xms1024m -Xmx1536m -XX:MetaspaceSize=96M -XX:MaxMetaspaceSize=256m -Djava.net.preferIPv4Stack=true -Djava.awt.headless=true';
+//*/
+//*
     // GraalVM
-    const containerImage= 'totemsoft/page-builder-graalvm'; // :latest
+    const containerImage= 'totemsoft/page-builder-graalvm:latest'; // :latest
     const taskCpu = 256;
     const taskMemoryLimitMiB = 512;
-    // efs
+    const javaOpts = null;
+//*/
+    // EFS
     const efsVolumeName = 'efsVolume';
-    const efsContainerPath = '/mount/efs'; // '/usr/share'
+    const efsMountPath = '/mount/efs'; // '/usr/share'
 
     const domainName = props.domainName;
 
@@ -55,18 +62,6 @@ export class AwsCdkStack extends cdk.Stack {
       vpc
     });
 
-    const taskPolicy = new PolicyStatement( {
-        actions: [
-            //'cognito-idp:Admin*',
-            //'ses:*',
-            //'s3:*',
-            'elasticfilesystem:ClientMount',
-            'elasticfilesystem:ClientRootAccess',
-            'elasticfilesystem:ClientWrite',
-        ],
-        resources: ['*']
-    });
-
     const sg = new ec2.SecurityGroup(this, `${id}System`, {
       vpc,
       allowAllOutbound: false,
@@ -77,21 +72,63 @@ export class AwsCdkStack extends cdk.Stack {
     sg.addIngressRule(ec2.Peer.ipv4(vpc.vpcCidrBlock), ec2.Port.tcp(2049), 'Inbound NFS');
     sg.addEgressRule(ec2.Peer.anyIpv4(), ec2.Port.allTcp(), 'Outbound');
 
+    const account = process.env.CDK_DEFAULT_ACCOUNT;
+    const region = process.env.CDK_DEFAULT_REGION;
+    const fileSystemPolicy = new iam.PolicyDocument( {
+        statements: [
+            new iam.PolicyStatement({
+                effect: iam.Effect.ALLOW,
+                actions: [
+                   'elasticfilesystem:ClientMount',
+                   'elasticfilesystem:ClientRootAccess',
+                   'elasticfilesystem:ClientWrite'
+                ],
+                principals: [
+                    new iam.StarPrincipal()
+                    //arn:aws:elasticfilesystem:${region}:${account}:file-system/fs-???
+                    //new iam.ArnPrincipal(`arn:aws:elasticfilesystem:${region}:${account}:*`)
+                ],
+                resources: [
+                    '*'
+                ],
+                conditions: {
+                    Bool: {
+                        'elasticfilesystem:AccessedViaMountTarget': 'true'
+                    }
+                },
+            })
+        ]
+    });
+
     const fileSystem = new efs.FileSystem(this, `${id}EfsFileSystem`, {
         vpc: vpc,
         vpcSubnets: vpcSubnets,
         securityGroup: sg,
+        fileSystemPolicy: fileSystemPolicy,
         performanceMode: efs.PerformanceMode.GENERAL_PURPOSE,
         //encrypted: true, // Transit encryption must be enabled if IAM authorization is used
+    });
+
+    const taskPolicy = new PolicyStatement( {
+        actions: [
+            //'cognito-idp:Admin*',
+            //'ses:*',
+            //'s3:*',
+            'elasticfilesystem:ClientMount',
+            'elasticfilesystem:ClientRootAccess',
+            'elasticfilesystem:ClientWrite'
+        ],
+        resources: ['*']
     });
 
     const taskDef = new FargateTaskDefinition(this, `${id}TaskDefinition1`, {
       cpu: taskCpu,
       memoryLimitMiB: taskMemoryLimitMiB
     });
+
     // Attach the AmazonEFSVolumeAccessRole managed policy
     taskDef.addToTaskRolePolicy(taskPolicy);
-/*
+
     taskDef.addVolume({
         name: efsVolumeName,
         efsVolumeConfiguration: {
@@ -99,7 +136,7 @@ export class AwsCdkStack extends cdk.Stack {
             //transitEncryption: 'ENABLED', // ecs.EfsTransitEncryption.ENABLED,
         },
     });
-//*/
+
     // create a task definition with CloudWatch Logs
     const logDriver = new AwsLogDriver({
       streamPrefix: `ecs-${id}`
@@ -108,21 +145,21 @@ export class AwsCdkStack extends cdk.Stack {
       image: ContainerImage.fromRegistry(containerImage),
       taskDefinition: taskDef,
       environment: {
-        STAGE: 'prod',
+        PROFILE: id,
+        STAGE: 'dev',
       },
       logging: logDriver,
       portMappings: [
         { containerPort: 8080, name: 'page-builder-http' }
       ]
     });
-/*
+    EnvironmentUtils.addEnvironments(containerDef, efsMountPath, javaOpts);
+
     containerDef.addMountPoints({
         sourceVolume: efsVolumeName,
-        containerPath: efsContainerPath,
+        containerPath: efsMountPath,
         readOnly: false,
     });
-//*/
-    EnvironmentUtils.addEnvironments(id, containerDef);
 
     const domainZone = HostedZone.fromLookup(this, 'Zone', {
       domainName

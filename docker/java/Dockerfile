@@ -8,7 +8,7 @@ LABEL Maintainer="Valeri Chibaev <shibaev.valera@gmail.com>"
 RUN echo $(cat /etc/os-release)
 #RUN apk update && apk clean all
 
-RUN apk add efs-utils
+#RUN apk add efs-utils
 #RUN systemctl enable --now amazon-ecs-volume-plugin
 
 # timezone
@@ -20,7 +20,7 @@ RUN echo "date="$(date)
 
 # -S: Create a system group/user
 RUN addgroup -S totemsoft && adduser -S admin -G totemsoft -s/sbin/nologin
-#USER admin:totemsoft
+USER admin:totemsoft
 
 ARG JAR_FILE=target/*.jar
 COPY ${JAR_FILE} page-builder.jar

@@ -33,6 +33,11 @@ YAHOO.page.admin = {
         }
         YUC.asyncRequest('POST', action, callback, postdata); 
     },
+    failureHandler: function(oResponse) {
+        const status = oResponse && oResponse.status ? oResponse.status : '';
+        const message = oResponse && oResponse.responseText ? oResponse.responseText : oResponse.statusText;
+        console.log('Failure: ' + status + '<br/>' + message);
+    },
     reloadWindowCallback: {
         cache: false,
         success: function(oResponse) {
@@ -41,12 +46,9 @@ YAHOO.page.admin = {
             const date = YUD.get('pageDate').value;
             YAHOO.page.reloadWindow(pageId, date);
         },
-        failure: YAHOO.page.admin.failureHandler
-    },
-    failureHandler: function(oResponse) {
-        const status = oResponse && oResponse.status ? oResponse.status : '';
-        const message = oResponse && oResponse.responseText ? oResponse.responseText : oResponse.statusText;
-        console.log('Failure: ' + status + '<br/>' + message);
+        failure: function(oResponse) {
+            YAHOO.page.admin.failureHandler(oResponse);
+        }
     },
     fnSubscriberPageReady: function(type, args) {
         YAHOO.page.admin.tabView = args[0].tabView;
@@ -254,7 +256,11 @@ YAHOO.page.admin = {
             constraintoviewport: oConfig && oConfig.constraintoviewport !== undefined ? oConfig.constraintoviewport : true,
             context: ['showbtn', 'tl', 'bl'],
             buttons: [
-                {text: 'Save', isDefault: true, handler: fnSubmitHandler},
+                {text: 'Save', isDefault: true, handler: {
+                    fn: fnSubmitHandler,
+                    obj: el,
+                    scope: this
+                }},
                 {text: 'Cancel', handler: function() {
                     this.cancel();
                 }}

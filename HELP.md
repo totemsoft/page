@@ -30,6 +30,9 @@ kill -9 PID
     ./mvnw -Pnative package
     ./target/page-builder
 
+## Charts
+* [highcharts](https://github.com/highcharts/highcharts/tree/v3.0.0)
+
 ## References
 * [Spring Boot: Common Application Properties](https://docs.spring.io/spring-boot/appendix/application-properties/index.html)
 * [Spring Boot: Managed Dependency Coordinates](https://docs.spring.io/spring-boot/appendix/dependency-versions/coordinates.html)

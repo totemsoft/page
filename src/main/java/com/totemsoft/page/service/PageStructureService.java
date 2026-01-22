@@ -1,7 +1,9 @@
 package com.totemsoft.page.service;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
+import com.totemsoft.page.config.SecurityConfig;
 import com.totemsoft.page.model.PageDto;
 import com.totemsoft.page.model.PageResponse;
 import com.totemsoft.page.model.SectionDto;
@@ -33,6 +35,7 @@ public class PageStructureService {
     private final SubSectionRepository subSectionRepository;
     private final TabRepository tabRepository;
 
+    @PreAuthorize(SecurityConfig.HAS_ROLE_ADMIN)
     @Transactional
     public PageResponse savePage(final PageDto pageDto) {
         log.trace("saving: {}", pageDto);
@@ -61,6 +64,7 @@ public class PageStructureService {
             .build();
     }
 
+    @PreAuthorize(SecurityConfig.HAS_ROLE_ADMIN)
     @Transactional
     public void saveTab(final TabDto tabDto) {
         log.trace("saving: {}", tabDto);
@@ -78,6 +82,7 @@ public class PageStructureService {
         tabRepository.save(tab);
     }
 
+    @PreAuthorize(SecurityConfig.HAS_ROLE_ADMIN)
     @Transactional
     public void saveSection(final SectionDto sectionDto) {
         log.trace("saving: {}", sectionDto);
@@ -96,6 +101,7 @@ public class PageStructureService {
         sectionRepository.save(section);
     }
 
+    @PreAuthorize(SecurityConfig.HAS_ROLE_ADMIN)
     @Transactional
     public void saveSubSection(final SubSectionDto subSectionDto) {
         log.trace("saving: {}", subSectionDto);
@@ -115,6 +121,7 @@ public class PageStructureService {
         subSectionRepository.save(subSection);
     }
 
+    @PreAuthorize(SecurityConfig.HAS_ROLE_ADMIN)
     @Transactional
     public void mapSubSection(final SubSectionDto subSectionDto) {
         final var subSection = subSectionRepository.findById(subSectionDto.getId())

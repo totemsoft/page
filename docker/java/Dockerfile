@@ -23,5 +23,5 @@ RUN addgroup -S totemsoft && adduser -S admin -G totemsoft -s/sbin/nologin
 #USER admin:totemsoft
 
 ARG JAR_FILE=target/*.jar
-COPY ${JAR_FILE} app.jar
-ENTRYPOINT ["java","-jar","/app.jar"]
+COPY ${JAR_FILE} page-builder.jar
+ENTRYPOINT ["java", "-jar", "/page-builder.jar"]

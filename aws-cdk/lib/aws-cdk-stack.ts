@@ -74,15 +74,15 @@ export class AwsCdkStack extends cdk.Stack {
       securityGroupName: `${id}ALB`
     });
     sg.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(443), 'Inbound HTTPS');
-    sg.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(2049), 'Inbound NFS traffic');
+    sg.addIngressRule(ec2.Peer.ipv4(vpc.vpcCidrBlock), ec2.Port.tcp(2049), 'Inbound NFS');
     sg.addEgressRule(ec2.Peer.anyIpv4(), ec2.Port.allTcp(), 'Outbound');
 
     const fileSystem = new efs.FileSystem(this, `${id}EfsFileSystem`, {
         vpc: vpc,
         vpcSubnets: vpcSubnets,
         securityGroup: sg,
-        performanceMode: efs.PerformanceMode.GENERAL_PURPOSE, // Optional
-        encrypted: true, // Transit encryption must be enabled if IAM authorization is used
+        performanceMode: efs.PerformanceMode.GENERAL_PURPOSE,
+        //encrypted: true, // Transit encryption must be enabled if IAM authorization is used
     });
 
     const taskDef = new FargateTaskDefinition(this, `${id}TaskDefinition1`, {
@@ -96,7 +96,7 @@ export class AwsCdkStack extends cdk.Stack {
         name: efsVolumeName,
         efsVolumeConfiguration: {
             fileSystemId: fileSystem.fileSystemId,
-            transitEncryption: 'ENABLED', // ecs.EfsTransitEncryption.ENABLED,
+            //transitEncryption: 'ENABLED', // ecs.EfsTransitEncryption.ENABLED,
         },
     });
 //*/

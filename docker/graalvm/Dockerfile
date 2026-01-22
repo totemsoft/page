@@ -8,7 +8,7 @@ LABEL Maintainer="Valeri Chibaev <shibaev.valera@gmail.com>"
 RUN echo $(cat /etc/os-release)
 #RUN yum update -y && yum clean all
 
-#RUN yum install efs-utils
+#RUN yum install amazon-efs-utils
 #RUN systemctl enable --now amazon-ecs-volume-plugin
 
 # timezone

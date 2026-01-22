@@ -37,10 +37,10 @@ spring:
   # TODO: move to H2 specific profile
   sql:
     init:
-      continue-on-error: true
+      continue-on-error: true # continue when duplicate data load error occurs (data.sql)
       mode: always
-      #schema-locations: classpath:/db/migration/*.sql
-      #data-locations: classpath:/db/migration/data/*.sql
+      schema-locations: optional:classpath*:schema.sql
+      data-locations: optional:classpath*:data.sql
   web:
     resources:
       cache:

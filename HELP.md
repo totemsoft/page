@@ -36,7 +36,8 @@ kill -9 PID
 ## References
 * [Spring Boot: Common Application Properties](https://docs.spring.io/spring-boot/appendix/application-properties/index.html)
 * [Spring Boot: Managed Dependency Coordinates](https://docs.spring.io/spring-boot/appendix/dependency-versions/coordinates.html)
-[Securing a Web Application](https://spring.io/guides/gs/securing-web)
+* [Spring Boot: Database Initialization](https://docs.spring.io/spring-boot/how-to/data-initialization.html)
+* [Securing a Web Application](https://spring.io/guides/gs/securing-web)
 * [OAuth 2.0 Login](https://docs.spring.io/spring-security/reference/reactive/oauth2/login/index.html)
 * [MapStruct: Reference Guide](https://mapstruct.org/documentation/stable/reference/html/)
 * [Tutorial: Using Thymeleaf](https://www.thymeleaf.org/doc/tutorials/3.1/usingthymeleaf.html)

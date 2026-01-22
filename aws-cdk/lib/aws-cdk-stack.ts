@@ -58,19 +58,7 @@ export class AwsCdkStack extends cdk.Stack {
       vpc
     });
 
-    const fileSystem = new efs.FileSystem(this, 'EfsFileSystem', {
-        vpc: vpc,
-        lifecyclePolicy: efs.LifecyclePolicy.AFTER_14_DAYS, // Optional
-        performanceMode: efs.PerformanceMode.GENERAL_PURPOSE, // Optional
-        encrypted: true, // Transit encryption must be enabled if IAM authorization is used
-    });
-
-    const taskDef = new FargateTaskDefinition(this, `${id}TaskDefinition1`, {
-      cpu: taskCpu,
-      memoryLimitMiB: taskMemoryLimitMiB
-    });
-    // Attach the AmazonEFSVolumeAccessRole managed policy
-    taskDef.addToTaskRolePolicy(new PolicyStatement( {
+    const taskPolicy = new PolicyStatement( {
         actions: [
             //'cognito-idp:Admin*',
             //'ses:*',
@@ -82,7 +70,22 @@ export class AwsCdkStack extends cdk.Stack {
         ],
         principals: [new iam.AccountRootPrincipal()],
         resources: ['*']
-    }));
+    });
+
+    const fileSystem = new efs.FileSystem(this, 'EfsFileSystem', {
+        vpc: vpc,
+        //fileSystemPolicy: taskPolicy,
+        lifecyclePolicy: efs.LifecyclePolicy.AFTER_14_DAYS, // Optional
+        performanceMode: efs.PerformanceMode.GENERAL_PURPOSE, // Optional
+        encrypted: true, // Transit encryption must be enabled if IAM authorization is used
+    });
+
+    const taskDef = new FargateTaskDefinition(this, `${id}TaskDefinition1`, {
+      cpu: taskCpu,
+      memoryLimitMiB: taskMemoryLimitMiB
+    });
+    // Attach the AmazonEFSVolumeAccessRole managed policy
+    taskDef.addToTaskRolePolicy(taskPolicy);
     taskDef.addVolume({
         name: efsVolumeName,
         efsVolumeConfiguration: {

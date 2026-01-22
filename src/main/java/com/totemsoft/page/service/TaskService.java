@@ -4,7 +4,6 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.data.domain.PageRequest;
@@ -34,9 +33,13 @@ public class TaskService {
     public void dailyTask() {
         log.info(">>> Daily task started at: {}", LocalTime.now());
         try {
+            final var date = LocalDate.now();
+            if (seriesDataRepository.existsByDate(date)) {
+                log.info("<<< Data already loaded for: {}", date);
+                return;
+            }
             final var pageable = PageRequest.of(0, 100);
             final var keys = keyRepository.findAll(pageable).getContent();
-            final var date = LocalDate.now();
             keys.forEach(key -> {
                 final var d = loadData(key.getId(), date);
                 log.trace("saved: {}", d);

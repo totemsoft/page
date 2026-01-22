@@ -12,6 +12,8 @@ import com.totemsoft.page.model.entity.SeriesData;
 @Repository
 public interface SeriesDataRepository extends JpaRepository<SeriesData, Long> {
 
+    boolean existsByDate(LocalDate date);
+
     List<SeriesData> findByDateIsAndKeyIn(LocalDate date, List<Key> keys);
 
 }

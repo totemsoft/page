@@ -7,6 +7,9 @@ import { HostedZone } from 'aws-cdk-lib/aws-route53';
 import { EnvironmentUtils } from './include/environment-utils';
 import { PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as ecs from 'aws-cdk-lib/aws-ecs';
+import * as efs from 'aws-cdk-lib/aws-efs';
+import * as iam from 'aws-cdk-lib/aws-iam';
 import { Certificate, CertificateValidation } from 'aws-cdk-lib/aws-certificatemanager';
 
 export interface AwsCdkStackProps extends cdk.StackProps {
@@ -39,6 +42,9 @@ export class AwsCdkStack extends cdk.Stack {
     const containerImage= 'totemsoft/page-builder-graalvm'; // :latest
     const taskCpu = 256;
     const taskMemoryLimitMiB = 512;
+    // efs
+    const efsVolumeName = 'efsVolume';
+    const efsContainerPath = '/mount/efs'; // '/usr/share'
 
     const domainName = props.domainName;
 
@@ -52,18 +58,38 @@ export class AwsCdkStack extends cdk.Stack {
       vpc
     });
 
+    const fileSystem = new efs.FileSystem(this, 'EfsFileSystem', {
+        vpc: vpc,
+        lifecyclePolicy: efs.LifecyclePolicy.AFTER_14_DAYS, // Optional
+        performanceMode: efs.PerformanceMode.GENERAL_PURPOSE, // Optional
+        encrypted: true, // Transit encryption must be enabled if IAM authorization is used
+    });
+
     const taskDef = new FargateTaskDefinition(this, `${id}TaskDefinition1`, {
       cpu: taskCpu,
       memoryLimitMiB: taskMemoryLimitMiB
     });
+    // Attach the AmazonEFSVolumeAccessRole managed policy
     taskDef.addToTaskRolePolicy(new PolicyStatement( {
         actions: [
             //'cognito-idp:Admin*',
             //'ses:*',
-            's3:*'
+            //'s3:*',
+            //'elasticfilesystem:*',
+            'elasticfilesystem:ClientWrite',
+            'elasticfilesystem:ClientMount',
+            'elasticfilesystem:ClientRootAccess',
         ],
+        principals: [new iam.AccountRootPrincipal()],
         resources: ['*']
     }));
+    taskDef.addVolume({
+        name: efsVolumeName,
+        efsVolumeConfiguration: {
+            fileSystemId: fileSystem.fileSystemId,
+            transitEncryption: 'ENABLED', // ecs.EfsTransitEncryption.ENABLED,
+        },
+    });
 
     // create a task definition with CloudWatch Logs
     const logDriver = new AwsLogDriver({
@@ -77,9 +103,15 @@ export class AwsCdkStack extends cdk.Stack {
       },
       logging: logDriver,
       portMappings: [
+        { containerPort: 2049, name: 'page-builder-nfs' },
         { containerPort: 8080, name: 'page-builder-http' }
       ]
     });
+//    containerDef.addMountPoints({
+//        sourceVolume: efsVolumeName,
+//        containerPath: efsContainerPath,
+//        readOnly: false,
+//    });
 
     EnvironmentUtils.addEnvironments(id, containerDef);
 
@@ -99,6 +131,7 @@ export class AwsCdkStack extends cdk.Stack {
       securityGroupName: `${id}ALB`
     });
     sg.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(443), 'Inbound HTTPS');
+    sg.addIngressRule(ec2.Peer.anyIpv4(), ec2.Port.tcp(2049), 'Inbound NFS traffic');
     sg.addEgressRule(ec2.Peer.anyIpv4(), ec2.Port.allTcp(), 'Outbound');
 
     // Create a load-balanced Fargate service and make it public

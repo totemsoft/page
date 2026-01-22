@@ -20,8 +20,8 @@ kill -9 PID
     docker run -p 8080:8080 page-builder
 
 ## Option 2: Using Cloud Native Buildpacks (Dockerfile ignored)
-    ./mvnw spring-boot:build-image -Dspring-boot.build-image.imageName=page-builder
-    docker run -p 8080:8080 docker.io/library/page-builder:latest
+    ./mvnw spring-boot:build-image -Dspring-boot.build-image.imageName=page-builder-native
+    docker run -p 8080:8080 docker.io/library/page-builder-native:latest
 
 ## Option 3: Using GraalVM Native Image technology
     curl -s "https://get.sdkman.io" | bash

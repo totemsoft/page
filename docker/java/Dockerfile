@@ -6,7 +6,10 @@ LABEL Maintainer="Valeri Chibaev <shibaev.valera@gmail.com>"
 #USER root
 # fix vulnerabilities
 RUN echo $(cat /etc/os-release)
-#RUN yum update -y && yum clean all
+#RUN apk update && apk clean all
+
+RUN apk add efs-utils
+#RUN systemctl enable --now amazon-ecs-volume-plugin
 
 # timezone
 ARG tz
@@ -17,7 +20,7 @@ RUN echo "date="$(date)
 
 # -S: Create a system group/user
 RUN addgroup -S totemsoft && adduser -S admin -G totemsoft -s/sbin/nologin
-USER admin:totemsoft
+#USER admin:totemsoft
 
 ARG JAR_FILE=target/*.jar
 COPY ${JAR_FILE} app.jar

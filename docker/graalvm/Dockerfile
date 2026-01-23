@@ -21,7 +21,7 @@ RUN echo "date="$(date)
 RUN groupadd totemsoft && useradd admin -g totemsoft -s/sbin/nologin
 RUN chgrp -R totemsoft /mnt
 RUN chmod -R g+rw /mnt
-#RUN chown admin:totemsoft /mnt/efs
+RUN chown admin:totemsoft /mnt/efs
 
 USER admin:totemsoft
 ARG EXECUTABLE_FILE=./target/page-builder

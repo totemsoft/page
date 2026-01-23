@@ -21,8 +21,11 @@ RUN ls -al /mnt
 
 # -S: Create a system group/user
 RUN addgroup -S totemsoft && adduser -S admin -G totemsoft -s/sbin/nologin
-#USER admin:totemsoft
+RUN chgrp -R totemsoft /mnt
+RUN chmod -R g+rw /mnt
+#RUN chown admin:totemsoft /mnt/efs
 
+USER admin:totemsoft
 ARG JAR_FILE=target/*.jar
 COPY ${JAR_FILE} page-builder.jar
 ENTRYPOINT ["java", "-jar", "/page-builder.jar"]

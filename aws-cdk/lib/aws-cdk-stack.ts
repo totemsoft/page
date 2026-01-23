@@ -42,7 +42,7 @@ export class AwsCdkStack extends cdk.Stack {
 //*/
 //*
     // GraalVM
-    const containerImage= 'totemsoft/page-builder-graalvm:latest'; // :latest
+    const containerImage= 'totemsoft/page-builder-graalvm'; // :latest
     const taskCpu = 256;
     const taskMemoryLimitMiB = 512;
     const javaOpts = null;
@@ -85,8 +85,7 @@ export class AwsCdkStack extends cdk.Stack {
                 ],
                 principals: [
                     new iam.StarPrincipal()
-                    //arn:aws:elasticfilesystem:${region}:${account}:file-system/fs-???
-                    //new iam.ArnPrincipal(`arn:aws:elasticfilesystem:${region}:${account}:*`)
+                    //new iam.ArnPrincipal(`arn:aws:elasticfilesystem:${region}:${account}:file-system/fs-???`)
                 ],
                 resources: [
                     '*'

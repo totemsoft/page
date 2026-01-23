@@ -146,13 +146,14 @@ export class AwsCdkStack extends cdk.Stack {
       environment: {
         PROFILE: id,
         STAGE: 'dev',
+        EFS_MOUNT_PATH: efsMountPath,
       },
       logging: logDriver,
       portMappings: [
         { containerPort: 8080, name: 'page-builder-http' }
       ]
     });
-    EnvironmentUtils.addEnvironments(containerDef, efsMountPath, javaOpts);
+    EnvironmentUtils.addEnvironments(containerDef, javaOpts);
 
     containerDef.addMountPoints({
         sourceVolume: efsVolumeName,

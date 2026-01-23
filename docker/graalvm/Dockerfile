@@ -18,14 +18,18 @@ RUN echo $TZ
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 RUN echo "date="$(date)
 
+ARG efsMountPath
+ENV EFS_MOUNT_PATH=${efsMountPath:-/mnt/efs}
+RUN echo $EFS_MOUNT_PATH
+
 RUN groupadd totemsoft && useradd admin -g totemsoft -s/sbin/nologin
 
-RUN mkdir /mnt/efs
-RUN chgrp -R totemsoft /mnt/efs
-RUN chmod -R g+rw /mnt/efs
-RUN chown -R admin:totemsoft /mnt/efs
+RUN mkdir -p $EFS_MOUNT_PATH
+RUN chgrp -R totemsoft $EFS_MOUNT_PATH
+RUN chmod -R g+rw $EFS_MOUNT_PATH
+RUN chown -R admin:totemsoft $EFS_MOUNT_PATH
 
-USER admin:totemsoft
+#USER admin:totemsoft
 ARG EXECUTABLE_FILE=./target/page-builder
 COPY ${EXECUTABLE_FILE} page-builder
 ENTRYPOINT ["/bin/bash", "-c", "./page-builder"]

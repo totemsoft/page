@@ -20,9 +20,11 @@ RUN echo "date="$(date)
 
 # -S: Create a system group/user
 RUN addgroup -S totemsoft && adduser -S admin -G totemsoft -s/sbin/nologin
-RUN chgrp -R totemsoft /mnt
-RUN chmod -R g+rw /mnt
-RUN chown admin:totemsoft /mnt/efs
+
+RUN mkdir /mnt/efs
+RUN chgrp -R totemsoft /mnt/efs
+RUN chmod -R g+rw /mnt/efs
+RUN chown -R admin:totemsoft /mnt/efs
 
 USER admin:totemsoft
 ARG JAR_FILE=target/*.jar

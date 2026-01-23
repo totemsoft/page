@@ -19,9 +19,11 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 RUN echo "date="$(date)
 
 RUN groupadd totemsoft && useradd admin -g totemsoft -s/sbin/nologin
-RUN chgrp -R totemsoft /mnt
-RUN chmod -R g+rw /mnt
-RUN chown admin:totemsoft /mnt/efs
+
+RUN mkdir /mnt/efs
+RUN chgrp -R totemsoft /mnt/efs
+RUN chmod -R g+rw /mnt/efs
+RUN chown -R admin:totemsoft /mnt/efs
 
 USER admin:totemsoft
 ARG EXECUTABLE_FILE=./target/page-builder

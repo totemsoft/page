@@ -49,7 +49,7 @@ export class AwsCdkStack extends cdk.Stack {
 //*/
     // EFS
     const efsVolumeName = 'efsVolume';
-    const efsMountPath = '/mnt/efs';
+    const efsMountPath = '/mnt/efs/db';
 
     const domainName = props.domainName;
 

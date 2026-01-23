@@ -49,7 +49,7 @@ export class AwsCdkStack extends cdk.Stack {
 //*/
     // EFS
     const efsVolumeName = 'efsVolume';
-    const efsMountPath = '/mount/efs'; // '/usr/share'
+    const efsMountPath = '/mnt/efs'; // '/usr/share'
 
     const domainName = props.domainName;
 
@@ -185,7 +185,7 @@ export class AwsCdkStack extends cdk.Stack {
       securityGroups: [sg],
       minHealthyPercent: 50,
       idleTimeout: cdk.Duration.seconds(60),
-      healthCheckGracePeriod: cdk.Duration.seconds(120)
+      healthCheckGracePeriod: cdk.Duration.seconds(60)
     });
 
     const targetGroup = albFargateService.targetGroup;

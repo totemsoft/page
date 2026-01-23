@@ -17,10 +17,11 @@ ENV TZ=${tz:-UTC}
 RUN echo $TZ
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 RUN echo "date="$(date)
+RUN ls -al /mnt
 
 # -S: Create a system group/user
 RUN addgroup -S totemsoft && adduser -S admin -G totemsoft -s/sbin/nologin
-USER admin:totemsoft
+#USER admin:totemsoft
 
 ARG JAR_FILE=target/*.jar
 COPY ${JAR_FILE} page-builder.jar

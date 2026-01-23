@@ -1,4 +1,6 @@
--- DDL (schema) script
+create schema if not exists public;
+
+use public;
 
 create table if not exists split_ratio (
   split_ratio_name varchar(32) not null,

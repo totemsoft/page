@@ -105,14 +105,14 @@ export class AwsCdkStack extends cdk.Stack {
         securityGroup: sg,
         fileSystemPolicy: fileSystemPolicy,
         performanceMode: efs.PerformanceMode.GENERAL_PURPOSE,
+        lifecyclePolicy: efs.LifecyclePolicy.AFTER_7_DAYS,
+        outOfInfrequentAccessPolicy: efs.OutOfInfrequentAccessPolicy.AFTER_1_ACCESS,
+        //removalPolicy: cdk.RemovalPolicy.DESTROY,
         //encrypted: true, // Transit encryption must be enabled if IAM authorization is used
     });
 
     const taskPolicy = new PolicyStatement( {
         actions: [
-            //'cognito-idp:Admin*',
-            //'ses:*',
-            //'s3:*',
             'elasticfilesystem:ClientMount',
             'elasticfilesystem:ClientRootAccess',
             'elasticfilesystem:ClientWrite'
@@ -147,6 +147,7 @@ export class AwsCdkStack extends cdk.Stack {
         PROFILE: id,
         STAGE: 'dev',
         EFS_MOUNT_PATH: efsMountPath,
+        DB_NAME: 'pagedb_003',
       },
       logging: logDriver,
       portMappings: [
@@ -178,6 +179,7 @@ export class AwsCdkStack extends cdk.Stack {
       desiredCount: 1,
       publicLoadBalancer: true,
       assignPublicIp: true,
+      circuitBreaker: { enable: true, rollback: true },
       domainName: `${id}.${domainName}`,
       domainZone,
       certificate,
@@ -185,6 +187,7 @@ export class AwsCdkStack extends cdk.Stack {
       targetProtocol: ApplicationProtocol.HTTP,
       securityGroups: [sg],
       minHealthyPercent: 50,
+      maxHealthyPercent: 200,
       idleTimeout: cdk.Duration.seconds(60),
       healthCheckGracePeriod: cdk.Duration.seconds(60)
     });

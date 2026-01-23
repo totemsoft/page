@@ -120,7 +120,7 @@ export class AwsCdkStack extends cdk.Stack {
         resources: ['*']
     });
 
-    const taskDef = new FargateTaskDefinition(this, `${id}TaskDefinition1`, {
+    const taskDef = new FargateTaskDefinition(this, `${id}TaskDefinition`, {
       cpu: taskCpu,
       memoryLimitMiB: taskMemoryLimitMiB
     });

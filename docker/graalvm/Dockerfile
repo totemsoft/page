@@ -21,13 +21,13 @@ RUN echo "date="$(date)
 ARG efsMountPath
 ENV EFS_MOUNT_PATH=${efsMountPath:-/mnt/efs}
 RUN echo $EFS_MOUNT_PATH
+RUN mkdir -p $EFS_MOUNT_PATH
 
 RUN groupadd totemsoft && useradd admin -g totemsoft -s/sbin/nologin
 
-RUN mkdir -p $EFS_MOUNT_PATH
-RUN chgrp -R totemsoft $EFS_MOUNT_PATH
-RUN chmod -R g+rw $EFS_MOUNT_PATH
-RUN chown -R admin:totemsoft $EFS_MOUNT_PATH
+RUN chgrp -R totemsoft $EFS_MOUNT_PATH/
+RUN chmod -R g+rw $EFS_MOUNT_PATH/
+RUN chown -R admin:totemsoft $EFS_MOUNT_PATH/
 
 #USER admin:totemsoft
 ARG EXECUTABLE_FILE=./target/page-builder

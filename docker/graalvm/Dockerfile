@@ -17,7 +17,6 @@ ENV TZ=${tz:-UTC}
 RUN echo $TZ
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 RUN echo "date="$(date)
-RUN ls -al /mnt
 
 RUN groupadd totemsoft && useradd admin -g totemsoft -s/sbin/nologin
 RUN chgrp -R totemsoft /mnt

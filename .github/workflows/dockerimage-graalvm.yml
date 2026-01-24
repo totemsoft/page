@@ -27,7 +27,7 @@ jobs:
       with:
         java-version: 25
         distribution: graalvm
-        components: native-image
+        #components: native-image # default
     - name: Build Page Spring-boot JAR
       run: ./mvnw -Pnative package --file pom.xml
     - name: Build the Docker image

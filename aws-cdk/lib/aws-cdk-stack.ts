@@ -42,7 +42,7 @@ export class AwsCdkStack extends cdk.Stack {
 //*/
 //*
     // GraalVM
-    const containerImage= 'totemsoft/page-builder-graalvm'; // :latest
+    const containerImage= 'totemsoft/page-builder-graalvm:latest'; // :latest
     const taskCpu = 256;
     const taskMemoryLimitMiB = 512;
     const javaOpts = null;
@@ -50,7 +50,7 @@ export class AwsCdkStack extends cdk.Stack {
     // EFS
     const efsVolumeName = 'efsVolume';
     const efsMountPath = '/mnt/efs/db';
-    const dbName = 'pagedb_001';
+    const dbName = 'pagedb_004';
  
     const domainName = props.domainName;
 
@@ -145,11 +145,6 @@ export class AwsCdkStack extends cdk.Stack {
         DB_NAME: dbName,
       },
       logging: logDriver,
-      command: [
-          `chgrp -R totemsoft ${efsMountPath}/`,
-          `chmod -R g+rw ${efsMountPath}/`,
-          `chown -R admin:totemsoft ${efsMountPath}/`
-      ],
       portMappings: [
         { containerPort: 8080, name: 'page-builder-http' }
       ]
@@ -179,7 +174,10 @@ export class AwsCdkStack extends cdk.Stack {
       desiredCount: 1,
       publicLoadBalancer: true,
       assignPublicIp: true,
-      circuitBreaker: { enable: true, rollback: true },
+      circuitBreaker: {
+          enable: true,
+          rollback: true
+      },
       domainName: `${id}.${domainName}`,
       domainZone,
       certificate,

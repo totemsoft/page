@@ -28,4 +28,7 @@ USER admin:totemsoft
 
 ARG EXECUTABLE_FILE=./target/page-builder
 COPY ${EXECUTABLE_FILE} page-builder
-ENTRYPOINT ["/bin/bash", "-c", "./page-builder"]
+
+ENTRYPOINT chgrp -R totemsoft $EFS_MOUNT_PATH/ && chmod -R g+rw $EFS_MOUNT_PATH/ && chown -R admin:totemsoft $EFS_MOUNT_PATH/
+#ENTRYPOINT ["/bin/bash", "-c", "./page-builder"]
+CMD ["/bin/bash", "./page-builder"]

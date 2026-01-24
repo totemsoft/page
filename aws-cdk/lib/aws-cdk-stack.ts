@@ -50,7 +50,7 @@ export class AwsCdkStack extends cdk.Stack {
     // EFS
     const efsVolumeName = 'efsVolume';
     const efsMountPath = '/mnt/efs/db';
-    const dbName = 'pagedb_004';
+    const dbName = 'pagedb_000';
  
     const domainName = props.domainName;
 
@@ -113,13 +113,17 @@ export class AwsCdkStack extends cdk.Stack {
       cpu: taskCpu,
       memoryLimitMiB: taskMemoryLimitMiB
     });
+/*
     const taskPolicy = new PolicyStatement({
         actions: [
-            'elasticfilesystem:ClientWrite'
+            'cognito-idp:Admin*',
+            's3:*',
+            'ses:*'
         ],
         resources: ['*']
     });
     taskDef.addToTaskRolePolicy(taskPolicy);
+//*/
     taskDef.addVolume({
         name: efsVolumeName,
         efsVolumeConfiguration: {

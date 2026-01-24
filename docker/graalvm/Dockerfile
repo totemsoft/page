@@ -37,3 +37,5 @@ ARG EXECUTABLE_FILE=./target/page-builder
 COPY ${EXECUTABLE_FILE} page-builder
 
 ENTRYPOINT ["/bin/bash", "-c", "./page-builder"]
+# optional post action(s), eg cleanup old h2 files
+CMD rm -rf /mnt/efs/db/db && rm -f pagedb_h2.mv.db

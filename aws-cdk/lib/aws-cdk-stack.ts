@@ -115,7 +115,6 @@ export class AwsCdkStack extends cdk.Stack {
     });
     const taskPolicy = new PolicyStatement({
         actions: [
-            //'elasticfilesystem:ClientRootAccess',
             'elasticfilesystem:ClientWrite'
         ],
         resources: ['*']

@@ -36,7 +36,7 @@ public class Application {
     private static List<String> listDirectory(String path) throws IOException {
         try (Stream<Path> walk = Files.walk(Paths.get(path))) {
             return walk
-                .filter(Files::isRegularFile)
+                //.filter(Files::isRegularFile)
                 .map(p -> {
                     String owner = null;
                     try {
@@ -49,7 +49,7 @@ public class Application {
                         .toLocalDateTime();
                     return d + "\t" + owner + "\t" + p.toString();
                 })
-                .collect(Collectors.toList());
+                .collect(Collectors.toUnmodifiableList());
         }
     }
 

@@ -38,4 +38,4 @@ COPY ${EXECUTABLE_FILE} page-builder
 
 ENTRYPOINT ["/bin/bash", "-c", "./page-builder"]
 # optional post action(s), eg cleanup old h2 files
-CMD rm -rf /mnt/efs/db/db && rm -f pagedb_h2.mv.db
+CMD rm -rf /mnt/efs/db/db && rm -f /mnt/efs/db/pagedb_h2.mv.db

@@ -29,7 +29,7 @@ RUN chgrp -R totemsoft $EFS_MOUNT_PATH
 RUN chmod -R g+rw $EFS_MOUNT_PATH
 #RUN chown -R admin:totemsoft $EFS_MOUNT_PATH
 
-# java.nio.file.AccessDeniedException: /mnt/efs/db/pagedb_004.mv.db
+# java.nio.file.AccessDeniedException: /mnt/efs/db/pagedb.mv.db
 #USER admin:totemsoft
 
 #WORKDIR /app

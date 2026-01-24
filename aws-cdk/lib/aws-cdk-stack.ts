@@ -42,7 +42,7 @@ export class AwsCdkStack extends cdk.Stack {
 //*/
 //*
     // GraalVM
-    const containerImage= 'totemsoft/page-builder-graalvm:latest'; // :latest
+    const containerImage= 'totemsoft/page-builder-graalvm'; // :latest
     const taskCpu = 256;
     const taskMemoryLimitMiB = 512;
     const javaOpts = null;
@@ -50,7 +50,7 @@ export class AwsCdkStack extends cdk.Stack {
     // EFS
     const efsVolumeName = 'efsVolume';
     const efsMountPath = '/mnt/efs/db';
-    const dbName = 'pagedb_004';
+    const dbName = 'pagedb_007';
  
     const domainName = props.domainName;
 
@@ -113,16 +113,14 @@ export class AwsCdkStack extends cdk.Stack {
       cpu: taskCpu,
       memoryLimitMiB: taskMemoryLimitMiB
     });
-
     const taskPolicy = new PolicyStatement({
         actions: [
-            'elasticfilesystem:ClientRootAccess',
+            //'elasticfilesystem:ClientRootAccess',
             'elasticfilesystem:ClientWrite'
         ],
         resources: ['*']
     });
     taskDef.addToTaskRolePolicy(taskPolicy);
-
     taskDef.addVolume({
         name: efsVolumeName,
         efsVolumeConfiguration: {

@@ -50,7 +50,8 @@ export class AwsCdkStack extends cdk.Stack {
     // EFS
     const efsVolumeName = 'efsVolume';
     const efsMountPath = '/mnt/efs/db';
-
+    const dbName = 'pagedb_001';
+ 
     const domainName = props.domainName;
 
     const vpc = ec2.Vpc.fromLookup(this, id, {vpcName: props.vpcName});
@@ -72,9 +73,9 @@ export class AwsCdkStack extends cdk.Stack {
     sg.addIngressRule(ec2.Peer.ipv4(vpc.vpcCidrBlock), ec2.Port.tcp(2049), 'Inbound NFS');
     sg.addEgressRule(ec2.Peer.anyIpv4(), ec2.Port.allTcp(), 'Outbound');
 
-    const account = process.env.CDK_DEFAULT_ACCOUNT;
-    const region = process.env.CDK_DEFAULT_REGION;
-    const fileSystemPolicy = new iam.PolicyDocument( {
+    //const account = process.env.CDK_DEFAULT_ACCOUNT;
+    //const region = process.env.CDK_DEFAULT_REGION;
+    const fileSystemPolicy = new iam.PolicyDocument({
         statements: [
             new iam.PolicyStatement({
                 effect: iam.Effect.ALLOW,
@@ -87,9 +88,7 @@ export class AwsCdkStack extends cdk.Stack {
                     new iam.StarPrincipal()
                     //new iam.ArnPrincipal(`arn:aws:elasticfilesystem:${region}:${account}:file-system/fs-???`)
                 ],
-                resources: [
-                    '*'
-                ],
+                resources: ['*'],
                 conditions: {
                     Bool: {
                         'elasticfilesystem:AccessedViaMountTarget': 'true'
@@ -98,7 +97,6 @@ export class AwsCdkStack extends cdk.Stack {
             })
         ]
     });
-
     const fileSystem = new efs.FileSystem(this, `${id}EfsFileSystem`, {
         vpc: vpc,
         vpcSubnets: vpcSubnets,
@@ -111,21 +109,19 @@ export class AwsCdkStack extends cdk.Stack {
         //encrypted: true, // Transit encryption must be enabled if IAM authorization is used
     });
 
-    const taskPolicy = new PolicyStatement( {
-        actions: [
-            'elasticfilesystem:ClientMount',
-            'elasticfilesystem:ClientRootAccess',
-            'elasticfilesystem:ClientWrite'
-        ],
-        resources: ['*']
-    });
-
     const taskDef = new FargateTaskDefinition(this, `${id}TaskDefinition`, {
       cpu: taskCpu,
       memoryLimitMiB: taskMemoryLimitMiB
     });
 
-    // Attach the AmazonEFSVolumeAccessRole managed policy
+    const taskPolicy = new PolicyStatement({
+        actions: [
+            //'elasticfilesystem:ClientMount',
+            'elasticfilesystem:ClientRootAccess',
+            'elasticfilesystem:ClientWrite'
+        ],
+        resources: ['*']
+    });
     taskDef.addToTaskRolePolicy(taskPolicy);
 
     taskDef.addVolume({
@@ -147,9 +143,14 @@ export class AwsCdkStack extends cdk.Stack {
         PROFILE: id,
         STAGE: 'dev',
         EFS_MOUNT_PATH: efsMountPath,
-        DB_NAME: 'pagedb_003',
+        DB_NAME: dbName,
       },
       logging: logDriver,
+      command: [
+          `chgrp -R totemsoft ${efsMountPath}/`,
+          `chmod -R g+rw ${efsMountPath}/`,
+          `chown -R admin:totemsoft ${efsMountPath}/`
+      ],
       portMappings: [
         { containerPort: 8080, name: 'page-builder-http' }
       ]

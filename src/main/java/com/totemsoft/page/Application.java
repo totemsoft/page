@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -21,8 +23,10 @@ public class Application {
         SpringApplication.run(Application.class, args);
         try {
             final var path = System.getenv("EFS_MOUNT_PATH");
-            log.debug("Listing {}:", path);
-            listDirectory(path).forEach(d -> log.debug("\t{}", d));
+            final var sb = new StringBuilder();
+            sb.append("Listing " + path);
+            listDirectory(path).forEach(d -> sb.append("\n\t" + d));
+            log.debug(sb.toString());
         } catch (IOException e) {
             log.error("FAILED to listDirectory:", e);
         }
@@ -32,7 +36,12 @@ public class Application {
         try (Stream<Path> walk = Files.walk(Paths.get(path))) {
             return walk
                 //.filter(Files::isRegularFile)
-                .map(Path::toString)
+                .map(p -> {
+                    final var d = Instant.ofEpochMilli(p.toFile().lastModified())
+                        .atZone(ZoneId.systemDefault())
+                        .toLocalDateTime();
+                    return d + "\t" + p.toString();
+                })
                 .collect(Collectors.toList());
         }
     }

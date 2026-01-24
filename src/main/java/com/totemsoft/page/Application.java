@@ -2,6 +2,7 @@ package com.totemsoft.page;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Instant;
@@ -35,12 +36,18 @@ public class Application {
     private static List<String> listDirectory(String path) throws IOException {
         try (Stream<Path> walk = Files.walk(Paths.get(path))) {
             return walk
-                //.filter(Files::isRegularFile)
+                .filter(Files::isRegularFile)
                 .map(p -> {
+                    String owner = null;
+                    try {
+                        owner = Files.getOwner(p, LinkOption.NOFOLLOW_LINKS).getName();
+                    } catch (IOException e) {
+                        owner = e.getMessage();
+                    }
                     final var d = Instant.ofEpochMilli(p.toFile().lastModified())
                         .atZone(ZoneId.systemDefault())
                         .toLocalDateTime();
-                    return d + "\t" + p.toString();
+                    return d + "\t" + owner + "\t" + p.toString();
                 })
                 .collect(Collectors.toList());
         }

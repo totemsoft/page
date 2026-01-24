@@ -27,13 +27,11 @@ spring:
       connection-timeout: 30000
       idle-timeout: 600000
       max-lifetime: 1800000
-
   devtools:
     add-properties: false
   jackson:
     default-property-inclusion: non_null
   jpa:
-    defer-datasource-initialization: true
     hibernate:
       ddl-auto: none # disable automatic DDL generation to avoid conflicts
     open-in-view: false

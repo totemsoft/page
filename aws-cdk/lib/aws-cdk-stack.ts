@@ -50,7 +50,7 @@ export class AwsCdkStack extends cdk.Stack {
     // EFS
     const efsVolumeName = 'efsVolume';
     const efsMountPath = '/mnt/efs/db';
-    const dbName = 'pagedb_007';
+    const dbName = 'pagedb_008';
  
     const domainName = props.domainName;
 
@@ -106,7 +106,7 @@ export class AwsCdkStack extends cdk.Stack {
         lifecyclePolicy: efs.LifecyclePolicy.AFTER_7_DAYS,
         outOfInfrequentAccessPolicy: efs.OutOfInfrequentAccessPolicy.AFTER_1_ACCESS,
         //removalPolicy: cdk.RemovalPolicy.DESTROY,
-        //encrypted: true, // Transit encryption must be enabled if IAM authorization is used
+        encrypted: true, // Transit encryption must be enabled if IAM authorization is used
     });
 
     const taskDef = new FargateTaskDefinition(this, `${id}TaskDefinition`, {
@@ -124,7 +124,7 @@ export class AwsCdkStack extends cdk.Stack {
         name: efsVolumeName,
         efsVolumeConfiguration: {
             fileSystemId: fileSystem.fileSystemId,
-            //transitEncryption: 'ENABLED', // ecs.EfsTransitEncryption.ENABLED,
+            transitEncryption: 'ENABLED', // ecs.EfsTransitEncryption.ENABLED,
         },
     });
 

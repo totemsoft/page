@@ -17,7 +17,7 @@ spring:
   application:
     name: Page Builder
   datasource:
-    url: jdbc:h2:file:${page.mountPath}/${page.dbName};AUTO_SERVER=TRUE;MODE=MYSQL;DATABASE_TO_LOWER=TRUE;
+    url: jdbc:h2:file:${page.mountPath}/${page.dbName};MODE=MYSQL;DATABASE_TO_LOWER=TRUE;
     username: sa
     password:
     driver-class-name: org.h2.Driver

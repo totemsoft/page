@@ -8,6 +8,7 @@ import java.nio.file.Paths;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -22,36 +23,43 @@ public class Application {
 
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
-        logDirectory();
+        cleanupDirectory();
     }
 
-    private static void logDirectory() {
+    private static void cleanupDirectory() {
         try {
             final var path = System.getenv("EFS_MOUNT_PATH");
+            final var dbName = System.getenv("DB_NAME");
             final var sb = new StringBuilder();
-            sb.append("Listing " + path);
-            listDirectory(path).forEach(d -> sb.append("\n\t" + d));
+            sb.append("Cleanup " + path);
+            cleanupDirectory(path, Optional.ofNullable(dbName))
+                .forEach(d -> sb.append("\n\t" + d));
             log.debug(sb.toString());
         } catch (IOException e) {
-            log.error("FAILED to listDirectory:", e);
+            log.error("FAILED to cleanupDirectory:", e);
         }
     }
 
-    private static List<String> listDirectory(String path) throws IOException {
+    private static List<String> cleanupDirectory(String path, Optional<String> dbName) throws IOException {
         try (Stream<Path> walk = Files.walk(Paths.get(path))) {
             return walk
-                //.filter(Files::isRegularFile)
+                .filter(Files::isRegularFile)
                 .map(p -> {
-                    String owner = null;
-                    try {
-                        owner = Files.getOwner(p, LinkOption.NOFOLLOW_LINKS).getName();
-                    } catch (IOException e) {
-                        owner = e.getMessage();
-                    }
-                    final var d = Instant.ofEpochMilli(p.toFile().lastModified())
+                    final var file = p.toFile();
+                    final var fileName = file.getName();
+                    final var lastModified = Instant.ofEpochMilli(file.lastModified())
                         .atZone(ZoneId.systemDefault())
                         .toLocalDateTime();
-                    return d + "\t" + owner + "\t" + p.toString();
+                    try {
+                        final var owner = Files.getOwner(p, LinkOption.NOFOLLOW_LINKS).getName();
+                        boolean deleted = false;
+                        if (dbName.isPresent() && !fileName.startsWith(dbName.get() + ".")) {
+                            deleted = Files.deleteIfExists(p);
+                        }
+                        return lastModified + "\t" + owner + "\t" + p.toString() + (deleted ? " [*]" : "");
+                    } catch (IOException ignore) {
+                        return "ERROR:\t" + p.toString() + ":\t" + ignore.getMessage();
+                    }
                 })
                 .collect(Collectors.toUnmodifiableList());
         }

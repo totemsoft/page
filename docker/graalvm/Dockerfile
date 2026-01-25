@@ -19,9 +19,13 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 RUN echo "date="$(date)
 
 ARG efsMountPath
-ENV EFS_MOUNT_PATH=${efsMountPath:-/mnt/efs}
+ENV EFS_MOUNT_PATH=${efsMountPath:-/mnt/efs/db}
 RUN echo $EFS_MOUNT_PATH
 RUN mkdir -p $EFS_MOUNT_PATH
+
+ARG dbName
+ENV DB_NAME=${dbName:-pagedb}
+RUN echo $DB_NAME
 
 RUN groupadd totemsoft && useradd admin -g totemsoft -s/sbin/nologin
 
@@ -37,5 +41,3 @@ ARG EXECUTABLE_FILE=./target/page-builder
 COPY ${EXECUTABLE_FILE} page-builder
 
 ENTRYPOINT ["/bin/bash", "-c", "./page-builder"]
-# optional post action(s), eg cleanup old h2 files
-CMD rm -rf /mnt/efs/db/db && rm -f /mnt/efs/db/pagedb_h2.mv.db

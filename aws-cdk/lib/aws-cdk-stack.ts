@@ -104,7 +104,7 @@ export class AwsCdkStack extends cdk.Stack {
         performanceMode: efs.PerformanceMode.GENERAL_PURPOSE,
         lifecyclePolicy: efs.LifecyclePolicy.AFTER_7_DAYS,
         outOfInfrequentAccessPolicy: efs.OutOfInfrequentAccessPolicy.AFTER_1_ACCESS,
-        //removalPolicy: cdk.RemovalPolicy.DESTROY,
+        removalPolicy: cdk.RemovalPolicy.DESTROY,
         encrypted: true, // Transit encryption must be enabled if IAM authorization is used
     });
 

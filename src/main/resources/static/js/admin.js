@@ -559,9 +559,41 @@ YAHOO.page.admin = {
                 height: r.height + 'px',
                 width: Math.floor(r.width * 0.66) + 'px'
             };
-            YAHOO.page.admin.keysDataTable = new YAHOO.widget.ScrollingDataTable('subSectionKeysSearchResult',
+            const dataTable = new YAHOO.widget.ScrollingDataTable('subSectionKeysSearchResult',
                 columnDefs, dataSource, dataTableConfig
             );
+            dataTable.subscribe('rowClickEvent', dataTable.onEventSelectRow);
+            dataTable.subscribe('postRenderEvent', function() {
+                if (!YAHOO.page.admin.keysDataTableContextMenu) {
+                    const contextMenu = new YAHOO.widget.ContextMenu('subSectionKeysSearchResultContextMenu', {
+                        trigger: YAHOO.page.admin.keysDataTable.getTbodyEl(),
+                        zIndex: 10,
+                        lazyload: false,
+                        itemdata: [
+                            {text:'Remove Key(s)'}
+                        ]
+                    });
+                    contextMenu.render('subSectionKeysSearchResult');
+                    contextMenu.subscribe('click', function(oType, oArgs) {
+                        var oItem = oArgs[1];
+                        if (oItem) {
+                            var trEls = YAHOO.page.admin.keysDataTable.getSelectedTrEls();
+                            if (trEls && trEls.length != 0) {
+                                switch (oItem.index) {
+                                case 0:
+                                    if (confirm('Remove ' + trEls.length + ' Key(s):\n - Are you sure?')) {
+                                        for (var i = trEls.length - 1; i >= 0; i--) {
+                                            YAHOO.page.admin.keysDataTable.deleteRow(trEls[i]);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    });
+                    YAHOO.page.admin.keysDataTableContextMenu = contextMenu;
+                }
+            });
+            YAHOO.page.admin.keysDataTable = dataTable;
         }
     },
     initPreviewDataTable: function() {

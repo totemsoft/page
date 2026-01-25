@@ -27,8 +27,8 @@ public class KeyDto {
 
     public String getTagSummary() {
         return tags.stream()
-            .map(TagDto::getName)
-            .collect(Collectors.joining(", "));
+            .map(t -> t.getTagTypeId() + ":" + t.getName())
+            .collect(Collectors.joining(","));
     }
 
 }

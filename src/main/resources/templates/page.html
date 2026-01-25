@@ -4,6 +4,7 @@
     <title th:text="#{page.title}">TBD</title>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <link type="text/css" rel="stylesheet" href="/css/yui-combine.css" />
+    <link type="text/css" rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" />
     <script type="text/javascript" src="/js/yui/yui-combine.js"></script>
     <script type="text/javascript" src="/js/default.js"></script>
     <script type="text/javascript" th:src="@{/js/admin.js}" sec:authorize="hasRole('ROLE_ADMIN')"></script>
@@ -54,7 +55,7 @@
 </head>
 <body class="yui-skin-sam">
     <div class="yui-gb">
-        <div  class="yui-u first">
+        <div class="yui-u first">
             <input type="hidden" id="pageId" th:value="${page.id}" />
             <h2 th:id="|page.${page.id}|" th:text="${page.name}">TBD</h2>
         </div>
@@ -63,13 +64,20 @@
             <input type="date" id="pageDate" th:value="${pageDate}" style="margin-block-start:2em;" />
         </div>
         <div class="yui-u" th:fragment="logout" sec:authorize="isAuthenticated()">
-            <div>
-                <h1 th:inline="text"><span style="font-weight:bold">User: </span><span th:remove="tag" sec:authentication="name">TBD</span></h1>
-            </div>
-            <div style="float:right">
-                <form action="#" th:action="@{/logout}" method="post">
-                    <input type="submit" value="Logout" />
-                </form>
+            <div class="yui-ge" style="width: 100%;">
+                <div class="yui-u first">
+                    <div th:inline="text">
+                        <span style="font-weight:bold">User: </span>
+                        <span th:remove="tag" sec:authentication="name">TBD</span>
+                    </div>
+                </div>
+                <div class="yui-u">
+                    <form action="#" th:action="@{/logout}" method="post">
+                        <button type="submit" class="btn btn-info btn-sm">
+                            <span class="glyphicon glyphicon-log-out"></span> Log out
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
     </div>

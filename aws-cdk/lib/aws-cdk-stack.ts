@@ -32,7 +32,6 @@ export interface AwsCdkStackProps extends cdk.StackProps {
 export class AwsCdkStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props: AwsCdkStackProps) {
     super(scope, id, props);
-
 /*
     // Java
     const containerImage= 'totemsoft/page-builder'; // :latest
@@ -50,7 +49,7 @@ export class AwsCdkStack extends cdk.Stack {
     // EFS
     const efsVolumeName = 'efsVolume';
     const efsMountPath = '/mnt/efs/db';
-    const dbName = 'pagedb_000';
+    const dbName = 'pagedb_010';
  
     const domainName = props.domainName;
 

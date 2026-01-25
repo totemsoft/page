@@ -575,17 +575,13 @@ YAHOO.page.admin = {
                     });
                     contextMenu.render('subSectionKeysSearchResult');
                     contextMenu.subscribe('click', function(oType, oArgs) {
-                        var oItem = oArgs[1];
+                        const oItem = oArgs[1];
                         if (oItem) {
-                            var trEls = YAHOO.page.admin.keysDataTable.getSelectedTrEls();
+                            const trEls = YAHOO.page.admin.keysDataTable.getSelectedTrEls();
                             if (trEls && trEls.length != 0) {
                                 switch (oItem.index) {
                                 case 0:
-                                    if (confirm('Remove ' + trEls.length + ' Key(s):\n - Are you sure?')) {
-                                        for (var i = trEls.length - 1; i >= 0; i--) {
-                                            YAHOO.page.admin.keysDataTable.deleteRow(trEls[i]);
-                                        }
-                                    }
+                                    YAHOO.page.admin.clearKeysSelected(trEls);
                                 }
                             }
                         }
@@ -704,6 +700,13 @@ YAHOO.page.admin = {
     clearKeys: function() {
         const length = YAHOO.page.admin.keysDataTable.getRecordSet().getLength();
         YAHOO.page.admin.keysDataTable.deleteRows(0, length);
+    },
+    clearKeysSelected: function(rows) {
+        if (confirm('Remove ' + rows.length + ' Key(s):\n - Are you sure?')) {
+            rows.reverse().forEach(r => {
+                YAHOO.page.admin.keysDataTable.deleteRow(r);
+            });
+        }
     },
     findSubSectionKeys: function() {
         const subSectionId = YUD.get('subSectionKeys.id').value;

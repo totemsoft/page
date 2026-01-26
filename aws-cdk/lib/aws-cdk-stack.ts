@@ -7,6 +7,7 @@ import { HostedZone } from 'aws-cdk-lib/aws-route53';
 import { EnvironmentUtils } from './include/environment-utils';
 import { PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
+import * as ecs from 'aws-cdk-lib/aws-ecs';
 import * as efs from 'aws-cdk-lib/aws-efs';
 import * as iam from 'aws-cdk-lib/aws-iam';
 import { Certificate, CertificateValidation } from 'aws-cdk-lib/aws-certificatemanager';
@@ -49,7 +50,7 @@ export class AwsCdkStack extends cdk.Stack {
     // EFS
     const efsVolumeName = 'efsVolume';
     const efsMountPath = '/mnt/efs/db';
-    const dbName = 'pagedb_015';
+    const dbName = 'pagedb_019';
  
     const domainName = props.domainName;
 
@@ -58,7 +59,7 @@ export class AwsCdkStack extends cdk.Stack {
       subnetType: ec2.SubnetType.PUBLIC
     };
 
-    const cluster = new Cluster(this, `${id}Cluster`, {
+    const cluster = new ecs.Cluster(this, `${id}Cluster`, {
       vpc
     });
 
@@ -110,11 +111,18 @@ export class AwsCdkStack extends cdk.Stack {
     });
 
     const accessPoint = fileSystem.addAccessPoint('admin', {
-      //path: '/db',
+      path: '/',
+/*
+      posixUser: {
+        uid: '1001',
+        gid: '1001',
+        secondaryGids: ['0'] // root
+      },
+//*/
       createAcl: {
         ownerUid: '1001',
         ownerGid: '1001',
-        permissions: '0666' // rw-rw-rw- (owner,group,others)
+        permissions: '0777' // rw-rw-rw- (owner,group,others)
       }
     });
 
@@ -150,6 +158,8 @@ export class AwsCdkStack extends cdk.Stack {
     });
     const containerDef = new ContainerDefinition(this, `${id}ContainerDefinition`, {
       image: ContainerImage.fromRegistry(containerImage),
+      // Caused by: java.nio.file.AccessDeniedException: /mnt/efs/db/pagedb.mv.db
+      //user: 'admin', // default 'root'
       taskDefinition: taskDef,
       environment: {
         PROFILE: id,

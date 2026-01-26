@@ -27,7 +27,7 @@ ARG dbName
 ENV DB_NAME=${dbName:-pagedb}
 RUN echo $DB_NAME
 
-RUN groupadd totemsoft && useradd admin -g totemsoft -s/sbin/nologin
+RUN groupadd -g 1001 totemsoft && useradd admin -g totemsoft -u 1001 -s/sbin/nologin
 
 RUN chgrp -R totemsoft $EFS_MOUNT_PATH
 RUN chmod -R g+rw $EFS_MOUNT_PATH

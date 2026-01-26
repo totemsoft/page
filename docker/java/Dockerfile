@@ -23,7 +23,7 @@ RUN echo "USER_NAME="$USER_NAME
 
 RUN addgroup -S -g 1001 totemsoft && adduser -S admin -G totemsoft -u 1001 -s/sbin/nologin
 # Caused by: java.nio.file.AccessDeniedException: /mnt/efs/db/pagedb.mv.db
-USER $USER_NAME:totemsoft
+USER $USER_NAME
 
 WORKDIR /app
 ARG JAR_FILE=target/*.jar

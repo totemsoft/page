@@ -2,10 +2,9 @@ FROM container-registry.oracle.com/graalvm/native-image:25
 
 LABEL Maintainer="Valeri Chibaev <shibaev.valera@gmail.com>"
 
-# run as root
 #USER root
-# fix vulnerabilities
 RUN echo $(cat /etc/os-release)
+# fix vulnerabilities
 #RUN yum update -y && yum clean all
 
 #RUN yum install amazon-efs-utils
@@ -18,23 +17,8 @@ RUN echo $TZ
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 RUN echo "date="$(date)
 
-ARG efsMountPath
-ENV EFS_MOUNT_PATH=${efsMountPath:-/mnt/efs/db}
-RUN echo $EFS_MOUNT_PATH
-RUN mkdir -p $EFS_MOUNT_PATH
-
-ARG dbName
-ENV DB_NAME=${dbName:-pagedb}
-RUN echo $DB_NAME
-
 RUN groupadd -g 1001 totemsoft && useradd admin -g totemsoft -u 1001 -s/sbin/nologin
-
-RUN chgrp -R totemsoft $EFS_MOUNT_PATH
-RUN chmod -R g+rw $EFS_MOUNT_PATH
-#RUN chown -R admin:totemsoft $EFS_MOUNT_PATH
-
-# java.nio.file.AccessDeniedException: /mnt/efs/db/pagedb.mv.db
-#USER admin:totemsoft
+USER admin:totemsoft
 
 #WORKDIR /app
 ARG EXECUTABLE_FILE=./target/page-builder

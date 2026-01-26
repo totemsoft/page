@@ -29,13 +29,15 @@ public class Application {
     private static void cleanupDirectory() {
         try {
             final var path = System.getenv("EFS_MOUNT_PATH");
-            final var dbName = System.getenv("DB_NAME");
-            final var sb = new StringBuilder();
-            sb.append("Cleanup " + path);
-            cleanupDirectory(path, Optional.ofNullable(dbName))
-                .forEach(d -> sb.append("\n\t" + d));
-            log.debug(sb.toString());
-        } catch (IOException e) {
+            if (path != null) {
+                final var dbName = System.getenv("DB_NAME");
+                final var sb = new StringBuilder();
+                sb.append("Cleanup " + path);
+                cleanupDirectory(path, Optional.ofNullable(dbName))
+                    .forEach(d -> sb.append("\n\t" + d));
+                log.debug(sb.toString());
+            }
+        } catch (Throwable e) {
             log.error("FAILED to cleanupDirectory:", e);
         }
     }

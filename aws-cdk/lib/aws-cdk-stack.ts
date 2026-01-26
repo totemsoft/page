@@ -49,7 +49,7 @@ export class AwsCdkStack extends cdk.Stack {
     // EFS
     const efsVolumeName = 'efsVolume';
     const efsMountPath = '/mnt/efs/db';
-    const dbName = 'pagedb_012';
+    const dbName = 'pagedb_015';
  
     const domainName = props.domainName;
 
@@ -75,37 +75,47 @@ export class AwsCdkStack extends cdk.Stack {
     //const account = process.env.CDK_DEFAULT_ACCOUNT;
     //const region = process.env.CDK_DEFAULT_REGION;
     const fileSystemPolicy = new iam.PolicyDocument({
-        statements: [
-            new iam.PolicyStatement({
-                effect: iam.Effect.ALLOW,
-                actions: [
-                   'elasticfilesystem:ClientMount',
-                   'elasticfilesystem:ClientRootAccess',
-                   'elasticfilesystem:ClientWrite'
-                ],
-                principals: [
-                    new iam.StarPrincipal()
-                    //new iam.ArnPrincipal(`arn:aws:elasticfilesystem:${region}:${account}:file-system/fs-???`)
-                ],
-                resources: ['*'],
-                conditions: {
-                    Bool: {
-                        'elasticfilesystem:AccessedViaMountTarget': 'true'
-                    }
-                },
-            })
-        ]
+      statements: [
+        new iam.PolicyStatement({
+          effect: iam.Effect.ALLOW,
+            actions: [
+             'elasticfilesystem:ClientMount',
+             'elasticfilesystem:ClientRootAccess',
+             'elasticfilesystem:ClientWrite'
+            ],
+            principals: [
+              new iam.StarPrincipal()
+              //new iam.ArnPrincipal(`arn:aws:elasticfilesystem:${region}:${account}:file-system/fs-???`)
+            ],
+            resources: ['*'],
+            conditions: {
+              Bool: {
+                'elasticfilesystem:AccessedViaMountTarget': 'true'
+              }
+            },
+          }
+        )
+      ]
     });
     const fileSystem = new efs.FileSystem(this, `${id}EfsFileSystem`, {
-        vpc: vpc,
-        vpcSubnets: vpcSubnets,
-        securityGroup: sg,
-        fileSystemPolicy: fileSystemPolicy,
-        performanceMode: efs.PerformanceMode.GENERAL_PURPOSE,
-        lifecyclePolicy: efs.LifecyclePolicy.AFTER_7_DAYS,
-        outOfInfrequentAccessPolicy: efs.OutOfInfrequentAccessPolicy.AFTER_1_ACCESS,
-        removalPolicy: cdk.RemovalPolicy.DESTROY,
-        encrypted: true, // Transit encryption must be enabled if IAM authorization is used
+      vpc: vpc,
+      vpcSubnets: vpcSubnets,
+      securityGroup: sg,
+      fileSystemPolicy: fileSystemPolicy,
+      performanceMode: efs.PerformanceMode.GENERAL_PURPOSE,
+      lifecyclePolicy: efs.LifecyclePolicy.AFTER_7_DAYS,
+      outOfInfrequentAccessPolicy: efs.OutOfInfrequentAccessPolicy.AFTER_1_ACCESS,
+      removalPolicy: cdk.RemovalPolicy.DESTROY,
+      encrypted: true, // Transit encryption must be enabled if IAM authorization is used
+    });
+
+    const accessPoint = fileSystem.addAccessPoint('admin', {
+      //path: '/db',
+      createAcl: {
+        ownerUid: '1001',
+        ownerGid: '1001',
+        permissions: '0666' // rw-rw-rw- (owner,group,others)
+      }
     });
 
     const taskDef = new FargateTaskDefinition(this, `${id}TaskDefinition`, {
@@ -114,21 +124,24 @@ export class AwsCdkStack extends cdk.Stack {
     });
 /*
     const taskPolicy = new PolicyStatement({
-        actions: [
-            'cognito-idp:Admin*',
-            's3:*',
-            'ses:*'
-        ],
-        resources: ['*']
+      actions: [
+        'cognito-idp:Admin*',
+        's3:*',
+        'ses:*'
+      ],
+      resources: ['*']
     });
     taskDef.addToTaskRolePolicy(taskPolicy);
 //*/
     taskDef.addVolume({
-        name: efsVolumeName,
-        efsVolumeConfiguration: {
-            fileSystemId: fileSystem.fileSystemId,
-            transitEncryption: 'ENABLED', // ecs.EfsTransitEncryption.ENABLED,
+      name: efsVolumeName,
+      efsVolumeConfiguration: {
+        fileSystemId: fileSystem.fileSystemId,
+        authorizationConfig: {
+          accessPointId: accessPoint.accessPointId
         },
+        transitEncryption: 'ENABLED', // ecs.EfsTransitEncryption.ENABLED,
+      },
     });
 
     // create a task definition with CloudWatch Logs
@@ -152,9 +165,9 @@ export class AwsCdkStack extends cdk.Stack {
     EnvironmentUtils.addEnvironments(containerDef, javaOpts);
 
     containerDef.addMountPoints({
-        sourceVolume: efsVolumeName,
-        containerPath: efsMountPath,
-        readOnly: false,
+      sourceVolume: efsVolumeName,
+      containerPath: efsMountPath,
+      readOnly: false,
     });
 
     const domainZone = HostedZone.fromLookup(this, 'Zone', {

@@ -18,7 +18,8 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 RUN echo "date="$(date)
 
 RUN groupadd -g 1001 totemsoft && useradd admin -g totemsoft -u 1001 -s/sbin/nologin
-USER admin:totemsoft
+# Caused by: java.nio.file.AccessDeniedException: /mnt/efs/db/pagedb.mv.db
+#USER admin:totemsoft
 
 #WORKDIR /app
 ARG EXECUTABLE_FILE=./target/page-builder

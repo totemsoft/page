@@ -14,6 +14,7 @@ import java.util.stream.Stream;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.core.env.Environment;
 
 import lombok.extern.log4j.Log4j2;
 
@@ -22,21 +23,19 @@ import lombok.extern.log4j.Log4j2;
 public class Application {
 
     public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
-        cleanupDirectory();
+        final var ctx = SpringApplication.run(Application.class, args);
+        cleanupDirectory(ctx.getEnvironment());
     }
 
-    private static void cleanupDirectory() {
+    private static void cleanupDirectory(Environment env) {
         try {
-            final var path = System.getenv("EFS_MOUNT_PATH");
-            if (path != null) {
-                final var dbName = System.getenv("DB_NAME");
-                final var sb = new StringBuilder();
-                sb.append("Cleanup " + path);
-                cleanupDirectory(path, Optional.ofNullable(dbName))
-                    .forEach(d -> sb.append("\n\t" + d));
-                log.debug(sb.toString());
-            }
+            final var path = env.getProperty("page.mountPath");
+            final var dbName = env.getProperty("page.dbName");
+            final var sb = new StringBuilder();
+            sb.append("Cleanup " + path);
+            cleanupDirectory(path, Optional.ofNullable(dbName))
+                .forEach(d -> sb.append("\n\t" + d));
+            log.info(sb.toString());
         } catch (Throwable e) {
             log.error("FAILED to cleanupDirectory:", e);
         }

@@ -1,6 +1,6 @@
 # https://docs.spring.io/spring-boot/docs/current/reference/html/appendix-application-properties.html
 page:
-  mountPath: ${EFS_MOUNT_PATH:${java.io.tmpdir}}
+  dbPath: ${DB_PATH:${java.io.tmpdir}}
   dbName: ${DB_NAME:pagedb}
 
 logging:
@@ -17,7 +17,7 @@ spring:
   application:
     name: Page Builder
   datasource:
-    url: jdbc:h2:file:${page.mountPath}/${page.dbName};MODE=MYSQL;DATABASE_TO_LOWER=TRUE;
+    url: jdbc:h2:file:${page.dbPath}/${page.dbName};MODE=MYSQL;DATABASE_TO_LOWER=TRUE;
     username: sa
     password:
     driver-class-name: org.h2.Driver

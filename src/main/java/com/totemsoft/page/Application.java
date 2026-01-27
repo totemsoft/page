@@ -29,11 +29,11 @@ public class Application {
 
     private static void cleanupDirectory(Environment env) {
         try {
-            final var path = env.getProperty("page.mountPath");
+            final var dbPath = env.getProperty("page.dbPath");
             final var dbName = env.getProperty("page.dbName");
             final var sb = new StringBuilder();
-            sb.append("Cleanup " + path);
-            cleanupDirectory(path, Optional.ofNullable(dbName))
+            sb.append("Cleanup " + dbPath);
+            cleanupDirectory(dbPath, Optional.ofNullable(dbName))
                 .forEach(d -> sb.append("\n\t" + d));
             log.info(sb.toString());
         } catch (Throwable e) {
@@ -41,8 +41,8 @@ public class Application {
         }
     }
 
-    private static List<String> cleanupDirectory(String path, Optional<String> dbName) throws IOException {
-        try (Stream<Path> walk = Files.walk(Paths.get(path))) {
+    private static List<String> cleanupDirectory(String dbPath, Optional<String> dbName) throws IOException {
+        try (Stream<Path> walk = Files.walk(Paths.get(dbPath))) {
             return walk
                 .filter(Files::isRegularFile)
                 .map(p -> {

@@ -119,7 +119,7 @@ YAHOO.page = {
             zIndex: 2,
             width: w + 'px',
             autofillheight: 'body',
-            constraintoviewport: true,
+            constraintoviewport: false,
             visible: true,
             draggable: false,
             close: false
@@ -214,9 +214,7 @@ YAHOO.page = {
         };
         // 2. after each time the DataTable is updated with new data
         dataTable.handleDataReturnPayload = function(oRequest, oResponse, oPayload) {
-            setTimeout(function() {
-                YAHOO.page.moveSections();
-            }, 100);
+            YAHOO.page.moveSections();
             return oPayload || {};
         };
         // 3. fired when the DataTable's DOM is rendered or dirty. 

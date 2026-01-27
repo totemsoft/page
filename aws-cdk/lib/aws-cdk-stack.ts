@@ -50,7 +50,7 @@ export class AwsCdkStack extends cdk.Stack {
     // EFS
     const efsVolumeName = 'efsVolume';
     const efsMountPath = '/mnt/efs/db';
-    const dbName = 'pagedb_019';
+    const dbName = 'pagedb_001';
  
     const domainName = props.domainName;
 

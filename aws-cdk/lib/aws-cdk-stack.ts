@@ -86,7 +86,7 @@ export class AwsCdkStack extends cdk.Stack {
             ],
             principals: [
               new iam.StarPrincipal()
-              //new iam.ArnPrincipal(`arn:aws:elasticfilesystem:${region}:${account}:file-system/fs-???`)
+              //new iam.ArnPrincipal(`arn:aws:elasticfilesystem:${region}:${account}:file-system/*`)
             ],
             resources: ['*'],
             conditions: {
@@ -113,14 +113,14 @@ export class AwsCdkStack extends cdk.Stack {
 
     const accessPoint = fileSystem.addAccessPoint('admin', {
       path: accessPointPath,
-      posixUser: {
-        uid: '0', // root
-        gid: '0'
-      },
       createAcl: {
         ownerUid: '1001', // admin
         ownerGid: '1001',
         permissions: '640' // rw-r----- (owner,group,others)
+      },
+      posixUser: {
+        uid: '0', // root
+        gid: '0'
       }
     });
 

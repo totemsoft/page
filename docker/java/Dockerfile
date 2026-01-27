@@ -18,7 +18,7 @@ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 RUN echo "date="$(date)
 
 RUN addgroup -S -g 1001 totemsoft && adduser -S admin -G totemsoft -u 1001 -s/sbin/nologin
-#USER admin:totemsoft
+USER admin:totemsoft
 
 WORKDIR /app
 ARG JAR_FILE=target/*.jar

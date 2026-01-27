@@ -70,9 +70,10 @@ YAHOO.page = {
         YAHOO.widget.DataTable.Formatter.number = this.formatNumber;
         YAHOO.widget.DataTable.Formatter.text = this.formatText;
         //
-        const tabView = this.initTabView(oContainer);
+        YAHOO.page.tabView = this.initTabView(oContainer);
         // init tab section(s)
-        tabView.get('tabs').forEach(tab => {
+        YAHOO.page.dataTables = [];
+        YAHOO.page.tabView.get('tabs').forEach(tab => {
             const elTab = tab.get('contentEl');
             const sections = this.initSections(elTab);
             this.pageMap.set(tab, sections);
@@ -81,14 +82,15 @@ YAHOO.page = {
         const subName = '' + pageId;
         var activeIndex = parseInt(YAHOO.util.Cookie.getSub(tabViewActiveTabCookie, subName));
         activeIndex = !activeIndex || isNaN(activeIndex) ? 0 : activeIndex;
-        tabView.selectTab(activeIndex);
+        YAHOO.page.tabView.selectTab(activeIndex);
         //
         YUE.addListener('pageDate', 'change', function(e) {
-            const date = YUE.getTarget(e).value;
-            YAHOO.page.reloadWindow(pageId, date);
+            //const date = YUE.getTarget(e).value;
+            //YAHOO.page.reloadWindow(pageId, date);
+            YAHOO.page.updateDataTables();
         });
         // fire the custom event
-        YAHOO.page.pageReadyEvent.fire({tabView: tabView});
+        YAHOO.page.pageReadyEvent.fire({tabView: YAHOO.page.tabView});
     },
     initTabView: function(oContainer) {
         const tabView = new YAHOO.widget.TabView(oContainer/*, {activeIndex: 0}*/);
@@ -96,10 +98,9 @@ YAHOO.page = {
             const activeIndex = e.newValue;
             const subName = '' + YAHOO.page.getPageId();
             YAHOO.util.Cookie.setSub(tabViewActiveTabCookie, subName, '' + activeIndex, {expires: new Date(Date.now() + 30*60*1000)});
-            const tab = this.getTab(activeIndex);
-            setTimeout(function(tab) {
-                YAHOO.page.moveSections(tab);
-            }, 100, tab);
+            setTimeout(function() {
+                YAHOO.page.moveSections();
+            }, 100);
         });
         return tabView;
     },
@@ -128,6 +129,9 @@ YAHOO.page = {
         return section;
     },
     moveSections: function(tab) {
+        if (!tab) {
+            tab = YAHOO.page.tabView.get('activeTab');
+        }
         const elTab = tab.get('contentEl');
         let r = YUD.getRegion(elTab.parentNode);
         let y = r.top;
@@ -148,6 +152,7 @@ YAHOO.page = {
             elSubSections.forEach((elSubSection, index, array) => {
                 const id = elSubSection.id; // subSection.{id}
                 const dataTable = this.initDataTable(YUD.get('data.' + id));
+                YAHOO.page.dataTables.push(dataTable);
             });
             // via LayoutManager
             //YAHOO.page.optional.initSubSectionsLayout(section, elSubSections);
@@ -176,6 +181,9 @@ YAHOO.page = {
         const requestBuilder = function(oState, oDataTable) {
             const date = YUD.get('pageDate').value;
             let request = subSectionId + '/' + date;
+            if (oState) {
+                request += '?skipColumns=true';
+            }
             return request;
         };
         const initialRequest = requestBuilder(null, null);
@@ -205,14 +213,31 @@ YAHOO.page = {
             return true;
         };
         // 2. after each time the DataTable is updated with new data
-        //dataTable.handleDataReturnPayload = function(oRequest, oResponse, oPayload) {
-        //    return oPayload || {};
-        //};
+        dataTable.handleDataReturnPayload = function(oRequest, oResponse, oPayload) {
+            setTimeout(function() {
+                YAHOO.page.moveSections();
+            }, 100);
+            return oPayload || {};
+        };
         // 3. fired when the DataTable's DOM is rendered or dirty. 
         //dataTable.subscribe('renderEvent', function() {
         //    // TODO: init subSection context menu
         //});
         return dataTable;
+    },
+    updateDataTables: function() {
+        YAHOO.page.dataTables.forEach(dataTable => {
+            const state = dataTable.getState();
+            const request = dataTable.get('generateRequest')(state, dataTable);
+            const callback = {
+                cache: false,
+                success: dataTable.onDataReturnReplaceRows,
+                failure: dataTable.onDataReturnReplaceRows,
+                argument: state,
+                scope: dataTable
+            };
+            dataTable.getDataSource().sendRequest(request, callback);
+        });
     }
 };
 

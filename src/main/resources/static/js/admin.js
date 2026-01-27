@@ -684,14 +684,12 @@ YAHOO.page.admin = {
             }
         });
         //
-        const insertRows = true;
         const state = dataTable.getState();
         const request = dataTable.get('generateRequest')(state, dataTable);
-        // use onDataReturnSetRows because that method will clear out the old data in the DataTable, making way for the new data.
         const callback = {
             cache: false,
-            success: insertRows ? dataTable.onDataReturnInsertRows : dataTable.onDataReturnSetRows,
-            failure: insertRows ? dataTable.onDataReturnInsertRows : dataTable.onDataReturnSetRows,
+            success: dataTable.onDataReturnInsertRows,
+            failure: dataTable.onDataReturnInsertRows,
             argument: state,
             scope: dataTable
         };

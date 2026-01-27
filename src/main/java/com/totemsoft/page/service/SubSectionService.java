@@ -78,7 +78,7 @@ public class SubSectionService {
     }
 
     @Transactional
-    public SubSectionResult<?> find(long subSectionId, LocalDate date) {
+    public SubSectionResult<?> find(long subSectionId, LocalDate date, Optional<Boolean> skipColumns) {
         log.trace("findRows({}, {}) ...", subSectionId, date);
         final var subSection = subSectionRepository.findById(subSectionId)
             .orElseThrow(() -> new EntityNotFoundException(subSectionId, SubSection.class));
@@ -89,7 +89,7 @@ public class SubSectionService {
         if (rowTagTypeId == null || columnTagTypeId == null) {
             log.trace("No RowTagType/ColumnTagType set for sub-section {}.", subSectionId);
             return SubSectionResult.<SeriesDataDto>builder()
-                .columns(findDefaultColumns())
+                .columns(skipColumns.orElse(false) ? null : findDefaultColumns())
                 .data(mapper.map(data))
                 .build();
         }
@@ -112,7 +112,7 @@ public class SubSectionService {
             .build())
         );
         return SubSectionResult.<Row>builder()
-            .columns(findColumns(columnTags))
+            .columns(skipColumns.orElse(false) ? null : findColumns(columnTags))
             .data(result)
             .build();
     }

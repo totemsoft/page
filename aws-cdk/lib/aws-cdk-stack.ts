@@ -1,11 +1,9 @@
 import * as cdk from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
-import { AwsLogDriver, Cluster, ContainerDefinition, ContainerImage, FargateTaskDefinition } from 'aws-cdk-lib/aws-ecs';
 import { ApplicationLoadBalancedFargateService } from 'aws-cdk-lib/aws-ecs-patterns';
 import { ApplicationProtocol, Protocol } from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 import { HostedZone } from 'aws-cdk-lib/aws-route53';
 import { EnvironmentUtils } from './include/environment-utils';
-import { PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as ecs from 'aws-cdk-lib/aws-ecs';
 import * as efs from 'aws-cdk-lib/aws-efs';
@@ -49,7 +47,8 @@ export class AwsCdkStack extends cdk.Stack {
 //*/
     // EFS
     const efsVolumeName = 'efsVolume';
-    const efsMountPath = '/mnt/efs/db';
+    const efsMountPath = '/mnt/efs';
+    const accessPointPath = '/db';
     const dbName = 'pagedb_001';
  
     const domainName = props.domainName;
@@ -75,6 +74,7 @@ export class AwsCdkStack extends cdk.Stack {
 
     //const account = process.env.CDK_DEFAULT_ACCOUNT;
     //const region = process.env.CDK_DEFAULT_REGION;
+    // https://docs.aws.amazon.com/efs/latest/ug/iam-access-control-nfs-efs.html
     const fileSystemPolicy = new iam.PolicyDocument({
       statements: [
         new iam.PolicyStatement({
@@ -91,6 +91,7 @@ export class AwsCdkStack extends cdk.Stack {
             resources: ['*'],
             conditions: {
               Bool: {
+                // make this file system policy non-public
                 'elasticfilesystem:AccessedViaMountTarget': 'true'
               }
             },
@@ -111,27 +112,24 @@ export class AwsCdkStack extends cdk.Stack {
     });
 
     const accessPoint = fileSystem.addAccessPoint('admin', {
-      path: '/',
-/*
+      path: accessPointPath,
       posixUser: {
-        uid: '1001',
-        gid: '1001',
-        secondaryGids: ['0'] // root
+        uid: '0', // root
+        gid: '0'
       },
-//*/
       createAcl: {
-        ownerUid: '1001',
+        ownerUid: '1001', // admin
         ownerGid: '1001',
-        permissions: '0777' // rw-rw-rw- (owner,group,others)
+        permissions: '640' // rw-r----- (owner,group,others)
       }
     });
 
-    const taskDef = new FargateTaskDefinition(this, `${id}TaskDefinition`, {
+    const taskDef = new ecs.FargateTaskDefinition(this, `${id}TaskDefinition`, {
       cpu: taskCpu,
       memoryLimitMiB: taskMemoryLimitMiB
     });
 /*
-    const taskPolicy = new PolicyStatement({
+    const taskPolicy = new iam.PolicyStatement({
       actions: [
         'cognito-idp:Admin*',
         's3:*',
@@ -153,18 +151,17 @@ export class AwsCdkStack extends cdk.Stack {
     });
 
     // create a task definition with CloudWatch Logs
-    const logDriver = new AwsLogDriver({
+    const logDriver = new ecs.AwsLogDriver({
       streamPrefix: `ecs-${id}`
     });
-    const containerDef = new ContainerDefinition(this, `${id}ContainerDefinition`, {
-      image: ContainerImage.fromRegistry(containerImage),
-      // Caused by: java.nio.file.AccessDeniedException: /mnt/efs/db/pagedb.mv.db
-      //user: 'admin', // default 'root'
+    const containerDef = new ecs.ContainerDefinition(this, `${id}ContainerDefinition`, {
+      image: ecs.ContainerImage.fromRegistry(containerImage),
+      user: 'admin', // default 'root'
       taskDefinition: taskDef,
       environment: {
         PROFILE: id,
         STAGE: 'dev',
-        EFS_MOUNT_PATH: efsMountPath,
+        DB_PATH: `${efsMountPath}${accessPointPath}`,
         DB_NAME: dbName,
       },
       logging: logDriver,
@@ -173,7 +170,6 @@ export class AwsCdkStack extends cdk.Stack {
       ]
     });
     EnvironmentUtils.addEnvironments(containerDef, javaOpts);
-
     containerDef.addMountPoints({
       sourceVolume: efsVolumeName,
       containerPath: efsMountPath,

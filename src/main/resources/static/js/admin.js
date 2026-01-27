@@ -64,7 +64,7 @@ YAHOO.page.admin = {
     initPageContextMenu: function(context) {
         // h2[@id=page.{id}]
         const triggerNode = YUS.query('h2[id^=page.]');
-        const pageMenu = new YAHOO.widget.ContextMenu('pageMenu', {
+        const pageContextMenu = new YAHOO.widget.ContextMenu('pageContextMenu', {
             trigger: triggerNode,
             zIndex: 3,
             lazyload: true,
@@ -75,7 +75,7 @@ YAHOO.page.admin = {
                 ]
             ]
         });
-        pageMenu.subscribe('click', function(oType, oArgs) {
+        pageContextMenu.subscribe('click', function(oType, oArgs) {
             const oEvent = oArgs[0];
             const oItem = oArgs[1];
             if (!oItem.cfg.getProperty('disabled')) {
@@ -101,7 +101,7 @@ YAHOO.page.admin = {
     initTabContextMenu: function(context) {
         // li[@id=tab-menu.{id}]
         const triggerNodes = YUS.query('li[id^=tab-menu.]', 'pageDiv');
-        const tabMenu = new YAHOO.widget.ContextMenu('tabMenu', {
+        const tabContextMenu = new YAHOO.widget.ContextMenu('tabContextMenu', {
             trigger: triggerNodes,
             zIndex: 3,
             lazyload: true,
@@ -115,7 +115,7 @@ YAHOO.page.admin = {
                 ]
             ]
         });
-        tabMenu.subscribe('click', function(oType, oArgs) {
+        tabContextMenu.subscribe('click', function(oType, oArgs) {
             const oEvent = oArgs[0];
             const oItem = oArgs[1];
             if (!oItem.cfg.getProperty('disabled')) {
@@ -148,7 +148,7 @@ YAHOO.page.admin = {
     initSectionContextMenu: function(context) {
         // div[@id=section-menu.{id}]
         const triggerNodes = YUS.query('div[id^=section-menu.]', 'pageDiv');
-        const sectionMenu = new YAHOO.widget.ContextMenu('sectionMenu', {
+        const sectionContextMenu = new YAHOO.widget.ContextMenu('sectionContextMenu', {
             trigger: triggerNodes,
             zIndex: 3,
             lazyload: true,
@@ -161,7 +161,7 @@ YAHOO.page.admin = {
                 ]
             ]
         });
-        sectionMenu.subscribe('click', function(oType, oArgs) {
+        sectionContextMenu.subscribe('click', function(oType, oArgs) {
             const oEvent = oArgs[0];
             const oItem = oArgs[1];
             if (!oItem.cfg.getProperty('disabled')) {
@@ -191,7 +191,7 @@ YAHOO.page.admin = {
     initSubSectionContextMenu: function(context) {
         // div[@id=subSection.{id}]/caption
         const triggerNodes = YUS.query('div[id^=data.subSection.] table caption', 'pageDiv');
-        const subSectionMenu = new YAHOO.widget.ContextMenu('subSectionMenu', {
+        const subSectionContextMenu = new YAHOO.widget.ContextMenu('subSectionContextMenu', {
             trigger: triggerNodes,
             zIndex: 3,
             lazyload: true,
@@ -202,7 +202,7 @@ YAHOO.page.admin = {
                 ]
             ]
         });
-        subSectionMenu.subscribe('click', function(oType, oArgs) {
+        subSectionContextMenu.subscribe('click', function(oType, oArgs) {
             const oEvent = oArgs[0];
             const oItem = oArgs[1];
             if (!oItem.cfg.getProperty('disabled')) {

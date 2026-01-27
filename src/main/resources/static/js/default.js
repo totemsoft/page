@@ -70,6 +70,8 @@ YAHOO.page = {
         YAHOO.widget.DataTable.Formatter.number = this.formatNumber;
         YAHOO.widget.DataTable.Formatter.text = this.formatText;
         //
+        YAHOO.page.initMenu();
+        //
         YAHOO.page.tabView = this.initTabView(oContainer);
         // init tab section(s)
         YAHOO.page.dataTables = [];
@@ -91,6 +93,40 @@ YAHOO.page = {
         });
         // fire the custom event
         YAHOO.page.pageReadyEvent.fire({tabView: YAHOO.page.tabView});
+    },
+    initMenu: function() {
+        const menuBar = new YAHOO.widget.MenuBar('pageMenu', {
+            lazyload: true,
+            itemdata: [
+                {
+                    text: 'Edit',
+                    submenu: {
+                        id: 'editMenu',
+                        itemdata: [
+                            [
+                                {
+                                    text: 'Select All',
+                                    helptext: 'Ctrl + A',
+                                    //onclick: { fn: onMenuItemClick },
+                                    keylistener: { ctrl: true, keys: 65 }
+                                }
+                            ]
+                        ]
+                    }
+                },
+                {
+                    text: '<form id="logoutForm" action="/logout" method="post"> \
+                               <button id="logoutButton" type="submit" class="btn btn-info btn-sm"> \
+                                   <span class="glyphicon glyphicon-log-out"></span> Log out \
+                               </button> \
+                           </form>',
+                    onclick: { fn: function() { document.forms['logoutForm'].submit(); } },
+                    classname: 'float-right'
+                }
+            ]
+        });
+        //const logoutButton = new YAHOO.widget.Button("logoutButton", { type: "submit", value: "logout" });
+        menuBar.render(document.body);
     },
     initTabView: function(oContainer) {
         const tabView = new YAHOO.widget.TabView(oContainer/*, {activeIndex: 0}*/);

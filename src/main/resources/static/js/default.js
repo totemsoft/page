@@ -147,15 +147,13 @@ YAHOO.page = {
             // via grid.css
             elSubSections.forEach((elSubSection, index, array) => {
                 const id = elSubSection.id; // subSection.{id}
-                const subSectionId = this.getId(id);
-                const date = YUD.get('pageDate').value;
-                const dataTable = this.initDataTable(YUD.get('data.' + id), '/subSection/' + subSectionId + '/' + date);
+                const dataTable = this.initDataTable(YUD.get('data.' + id));
             });
             // via LayoutManager
             //YAHOO.page.optional.initSubSectionsLayout(section, elSubSections);
         }
     },
-    initDataTable: function(elSubSection, oLiveData) {
+    initDataTable: function(elSubSection) {
         const id = elSubSection.id; // data.subSection.{id}
         const subSectionId = this.getId(id);
         const headerId = 'hd.subSection.' + subSectionId; // hd.subSection.{id}
@@ -164,6 +162,7 @@ YAHOO.page = {
         setTimeout(function(el) {
             el.parentNode.removeChild(el);
         }, 100, headerEl);
+        const oLiveData = '/subSection/';
         const dataSource = new YAHOO.util.XHRDataSource(oLiveData, {
             connXhrMode: 'queueRequests',
             maxCacheEntries: 0,
@@ -175,11 +174,16 @@ YAHOO.page = {
         });
         const r = YUD.getRegion(elSubSection);
         const requestBuilder = function(oState, oDataTable) {
-            return '';
+            const date = YUD.get('pageDate').value;
+            let request = subSectionId + '/' + date;
+            return request;
         };
+        const initialRequest = requestBuilder(null, null);
         const dataTableConfig = {
             caption: caption,
             //dynamicData: true,
+            initialLoad: true,
+            initialRequest: initialRequest,
             generateRequest: requestBuilder,
             width: (r.width - 2) + 'px'
         };

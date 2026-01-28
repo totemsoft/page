@@ -98,16 +98,6 @@ YAHOO.page = {
         const menuBar = new YAHOO.widget.MenuBar('pageMenu', {
             lazyload: true
         });
-        menuBar.addItem({
-            text: '<form id="logoutForm" action="/logout" method="post"> \
-                       <button id="logoutButton" type="submit" class="btn btn-info btn-sm"> \
-                           <span class="glyphicon glyphicon-log-out"></span> Log out \
-                       </button> \
-                   </form>',
-            onclick: { fn: function() { document.forms['logoutForm'].submit(); } },
-            classname: 'float-right'
-        });
-        //
         menuBar.render(document.body);
     },
     initTabView: function(oContainer) {

@@ -28,6 +28,7 @@ public class SecurityConfig {
 
     public static final String ROLE_ADMIN = "ADMIN";
     public static final String HAS_ROLE_ADMIN = "hasRole('ADMIN')";
+    public static final String IS_AUTHENTICATED = "isAuthenticated()";
 
     public static final String ROLE_USER = "USER";
 

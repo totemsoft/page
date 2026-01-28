@@ -96,36 +96,18 @@ YAHOO.page = {
     },
     initMenu: function() {
         const menuBar = new YAHOO.widget.MenuBar('pageMenu', {
-            lazyload: true,
-            itemdata: [
-                {
-                    text: 'Edit',
-                    submenu: {
-                        id: 'editMenu',
-                        itemdata: [
-                            [
-                                {
-                                    text: 'Select All',
-                                    helptext: 'Ctrl + A',
-                                    //onclick: { fn: onMenuItemClick },
-                                    keylistener: { ctrl: true, keys: 65 }
-                                }
-                            ]
-                        ]
-                    }
-                },
-                {
-                    text: '<form id="logoutForm" action="/logout" method="post"> \
-                               <button id="logoutButton" type="submit" class="btn btn-info btn-sm"> \
-                                   <span class="glyphicon glyphicon-log-out"></span> Log out \
-                               </button> \
-                           </form>',
-                    onclick: { fn: function() { document.forms['logoutForm'].submit(); } },
-                    classname: 'float-right'
-                }
-            ]
+            lazyload: true
         });
-        //const logoutButton = new YAHOO.widget.Button("logoutButton", { type: "submit", value: "logout" });
+        menuBar.addItem({
+            text: '<form id="logoutForm" action="/logout" method="post"> \
+                       <button id="logoutButton" type="submit" class="btn btn-info btn-sm"> \
+                           <span class="glyphicon glyphicon-log-out"></span> Log out \
+                       </button> \
+                   </form>',
+            onclick: { fn: function() { document.forms['logoutForm'].submit(); } },
+            classname: 'float-right'
+        });
+        //
         menuBar.render(document.body);
     },
     initTabView: function(oContainer) {

@@ -55,6 +55,29 @@
     </style>
 </head>
 <body class="yui-skin-sam">
+    <div id="pageMenu">
+        <div class="bd">
+            <ul class="first-of-type">
+                <li class="yuimenuitem">
+                    <a class="yuimenuitemlabel" href="#pages">
+                        Pages
+                    </a>
+                    <div id="pages" class="yuimenu">
+                        <div class="bd">
+                            <ul>
+                                <li th:each="page: ${pages}" th:id="|menu.${page.id}|" class="yuimenuitem">
+                                    <a th:href="|/page?pageId=${page.id}|" class="yuimenuitemlabel">
+                                        <em th:text="${page.name}"></em>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+
     <div class="yui-gb">
         <div class="yui-u first">
             <input type="hidden" id="pageId" th:value="${page.id}" />

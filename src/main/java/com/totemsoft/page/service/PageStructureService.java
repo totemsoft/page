@@ -24,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
 @Service
+@PreAuthorize(SecurityConfig.HAS_ROLE_ADMIN)
 @RequiredArgsConstructor
 @Log4j2
 public class PageStructureService {
@@ -35,7 +36,6 @@ public class PageStructureService {
     private final SubSectionRepository subSectionRepository;
     private final TabRepository tabRepository;
 
-    @PreAuthorize(SecurityConfig.HAS_ROLE_ADMIN)
     @Transactional
     public PageResponse savePage(final PageDto pageDto) {
         log.trace("saving: {}", pageDto);
@@ -64,7 +64,6 @@ public class PageStructureService {
             .build();
     }
 
-    @PreAuthorize(SecurityConfig.HAS_ROLE_ADMIN)
     @Transactional
     public void saveTab(final TabDto tabDto) {
         log.trace("saving: {}", tabDto);
@@ -82,7 +81,6 @@ public class PageStructureService {
         tabRepository.save(tab);
     }
 
-    @PreAuthorize(SecurityConfig.HAS_ROLE_ADMIN)
     @Transactional
     public void saveSection(final SectionDto sectionDto) {
         log.trace("saving: {}", sectionDto);
@@ -101,7 +99,6 @@ public class PageStructureService {
         sectionRepository.save(section);
     }
 
-    @PreAuthorize(SecurityConfig.HAS_ROLE_ADMIN)
     @Transactional
     public void saveSubSection(final SubSectionDto subSectionDto) {
         log.trace("saving: {}", subSectionDto);
@@ -121,7 +118,6 @@ public class PageStructureService {
         subSectionRepository.save(subSection);
     }
 
-    @PreAuthorize(SecurityConfig.HAS_ROLE_ADMIN)
     @Transactional
     public void mapSubSection(final SubSectionDto subSectionDto) {
         final var subSection = subSectionRepository.findById(subSectionDto.getId())

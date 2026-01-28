@@ -37,6 +37,7 @@ class PageController {
         log.debug("Found page {}", page.getId());
         model.addAttribute("page", page);
         model.addAttribute("pageDate", pageDate != null ? pageDate : LocalDate.now());
+        model.addAttribute("pages", pageService.findPages());
         model.addAttribute("splitRatios", SplitRatioEnum.values());
         model.addAttribute("tagTypes", pageService.findTagTypes());
         return "page";

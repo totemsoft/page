@@ -1,6 +1,6 @@
 # https://docs.spring.io/spring-boot/docs/current/reference/html/appendix-application-properties.html
 page:
-  dbPath: ${DB_PATH:${java.io.tmpdir}}
+  dbPath: ${DB_PATH:${java.io.tmpdir}/db}
   dbName: ${DB_NAME:pagedb}
 
 logging:

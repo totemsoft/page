@@ -7,8 +7,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
+import com.totemsoft.page.config.SecurityConfig;
 import com.totemsoft.page.model.KeyDto;
 import com.totemsoft.page.model.PageDto;
 import com.totemsoft.page.model.TagDto;
@@ -28,6 +30,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
 @Service
+@PreAuthorize(SecurityConfig.IS_AUTHENTICATED)
 @RequiredArgsConstructor
 @Log4j2
 public class PageService {
@@ -52,8 +55,15 @@ public class PageService {
     }
 
     @Transactional
+    public List<PageDto> findPages() {
+        log.trace("Getting all available pages ...");
+        final var pages = pageRepository.findAll(Sort.by("name"));
+        return mapper.map(pages);
+    }
+
+    @Transactional
     public PageDto findDefaultPage() {
-        log.debug("Getting first available page ...");
+        log.trace("Getting first available page ...");
         final var page = pageRepository.findFirstByOrderByIdAsc()
             .orElseThrow(() -> new EntityNotFoundException(null, Page.class));
         return mapper.map(page);

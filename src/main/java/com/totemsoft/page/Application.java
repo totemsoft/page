@@ -58,7 +58,7 @@ public class Application {
                             deleted = Files.deleteIfExists(p);
                         }
                         return lastModified + "\t" + owner + "\t" + p.toString() + (deleted ? " [*]" : "");
-                    } catch (IOException ignore) {
+                    } catch (Exception ignore) {
                         return "ERROR:\t" + p.toString() + ":\t" + ignore.getMessage();
                     }
                 })

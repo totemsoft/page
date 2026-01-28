@@ -9,8 +9,10 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
+import com.totemsoft.page.config.SecurityConfig;
 import com.totemsoft.page.model.Cell;
 import com.totemsoft.page.model.ColumnDef;
 import com.totemsoft.page.model.ColumnDef.FORMATTER;
@@ -30,6 +32,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
 @Service
+@PreAuthorize(SecurityConfig.IS_AUTHENTICATED)
 @RequiredArgsConstructor
 @Log4j2
 public class SubSectionService {

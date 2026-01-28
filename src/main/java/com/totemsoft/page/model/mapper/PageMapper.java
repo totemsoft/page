@@ -28,6 +28,7 @@ public interface PageMapper {
 
     PageDto map(Page page);
     Page map(PageDto pageDto);
+    List<PageDto> map(List<Page> pages);
 
     Tab map(TabDto tab);
 

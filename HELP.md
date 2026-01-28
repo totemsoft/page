@@ -1,16 +1,19 @@
 # page-builder
-mvn -version
-mvn clean install -Dtest -DfailIfNoTests=false
+    sdk list java
+    sdk install java 25.0.1-tem
 
-mvn eclipse:clean eclipse:eclipse
-mvn dependency:sources
-mvn dependency:tree -DoutputFile=dependency.txt
+    mvn -version
+    mvn clean install -Dtest -DfailIfNoTests=false
 
-./mvnw spring-boot:run
-mvn spring-boot:run -Dspring-boot.run.profiles=local
+    mvn eclipse:clean eclipse:eclipse
+    mvn dependency:sources
+    mvn dependency:tree -DoutputFile=dependency.txt
 
-ps aux | grep java
-kill -9 PID
+    ./mvnw spring-boot:run
+    mvn spring-boot:run -Dspring-boot.run.profiles=local
+
+    ps aux | grep java
+    kill -9 PID
 
 #Docker
 
@@ -25,7 +28,6 @@ kill -9 PID
 
 ## Option 3: Using GraalVM Native Image technology
     curl -s "https://get.sdkman.io" | bash
-    sdk list java
     sdk install java 25-graal
     ./mvnw -Pnative package
     ./target/page-builder

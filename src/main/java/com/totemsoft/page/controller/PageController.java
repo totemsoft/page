@@ -1,6 +1,7 @@
 package com.totemsoft.page.controller;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -30,13 +31,14 @@ class PageController {
     @GetMapping("/page")
     public String main(
             @RequestParam(name = "pageId") Long pageId,
-            @RequestParam(name = "pageDate", required = false) LocalDate pageDate,
+            @RequestParam(name = "pageDate", required = false) Optional<LocalDate> pageDate,
             Model model) {
-        log.debug("Loading page {} for date {} ...", pageId, pageDate);
+        final var date = pageDate.orElse(LocalDate.now());
+        log.debug("Loading page {} for date {} ...", pageId, date);
         final var page = pageService.findPage(pageId);
-        log.debug("Found page {}", page.getId());
+        log.trace("Found page {}", page.getId());
         model.addAttribute("page", page);
-        model.addAttribute("pageDate", pageDate != null ? pageDate : LocalDate.now());
+        model.addAttribute("pageDate", date);
         model.addAttribute("pages", pageService.findPages());
         model.addAttribute("splitRatios", SplitRatioEnum.values());
         model.addAttribute("tagTypes", pageService.findTagTypes());

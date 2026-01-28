@@ -9,7 +9,6 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.springframework.boot.SpringApplication;
@@ -53,16 +52,15 @@ public class Application {
                         .toLocalDateTime();
                     try {
                         final var owner = Files.getOwner(p, LinkOption.NOFOLLOW_LINKS).getName();
-                        boolean deleted = false;
                         if (dbName.isPresent() && !fileName.startsWith(dbName.get() + ".")) {
-                            deleted = Files.deleteIfExists(p);
+                            //Files.deleteIfExists(p);
                         }
-                        return lastModified + "\t" + owner + "\t" + p.toString() + (deleted ? " [*]" : "");
+                        return lastModified + "\t" + owner + "\t" + p.toString() + (!file.exists() ? " [*]" : "");
                     } catch (Exception ignore) {
                         return "ERROR:\t" + p.toString() + ":\t" + ignore.getMessage();
                     }
                 })
-                .collect(Collectors.toUnmodifiableList());
+                .toList();
         }
     }
 

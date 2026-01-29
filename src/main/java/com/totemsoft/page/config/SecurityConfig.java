@@ -56,11 +56,11 @@ public class SecurityConfig {
                 .invalidateHttpSession(true)
             )
             .oauth2Login(c -> c
-                    .loginPage("/login")
-                    .userInfoEndpoint(userInfo -> userInfo.oidcUserService(userService))
-                    .defaultSuccessUrl("/home", true)
-                    .failureUrl("/login?error")
-                )
+                .loginPage("/login")
+                .userInfoEndpoint(userInfo -> userInfo.oidcUserService(userService))
+                .defaultSuccessUrl("/home", true)
+                .failureUrl("/login?error")
+            )
             //.headers(AbstractHttpConfigurer::disable)
             .headers(c -> c.defaultsDisabled().addHeaderWriter(new StaticHeadersWriter(createHeaders())))
             .exceptionHandling(e -> e

@@ -10,8 +10,9 @@ import lombok.extern.log4j.Log4j2;
 
 @Service
 @Log4j2
-class UserService extends OidcUserService {@Override
+class UserService extends OidcUserService {
 
+    @Override
     public OidcUser loadUser(OidcUserRequest userRequest) throws OAuth2AuthenticationException {
         final var user = super.loadUser(userRequest);
         log.debug("Loaded User [{}]: {}", user.getClass().getCanonicalName(), user);

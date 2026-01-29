@@ -96,14 +96,15 @@
             <input type="date" id="pageDate" th:value="${pageDate}" style="margin-block-start:2em;" />
         </div>
         <div class="yui-u" th:fragment="logout" sec:authorize="isAuthenticated()">
-            <div class="yui-ge" style="width: 100%;">
+            <div class="yui-g" style="width: 100%;">
                 <div class="yui-u first">
                     
                 </div>
                 <div class="yui-u">
                     <div class="center" th:inline="text">
                         <span class="bold">User: </span>
-                        <span th:remove="tag" sec:authentication="name">TBD</span>
+                        <span sec:authorize="!hasAuthority('OIDC_USER')" th:remove="tag" sec:authentication="name">TBD</span>
+                        <span sec:authorize="hasAuthority('OIDC_USER')" th:remove="tag" sec:authentication="principal.attributes['email']">TBD</span>
                     </div>
                 </div>
             </div>

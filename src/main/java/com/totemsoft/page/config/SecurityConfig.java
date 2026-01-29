@@ -26,14 +26,15 @@ import org.springframework.security.web.header.writers.StaticHeadersWriter;
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    public static final String ROLE_ADMIN = "ADMIN";
-    public static final String HAS_ROLE_ADMIN = "hasRole('ADMIN')";
     public static final String IS_AUTHENTICATED = "isAuthenticated()";
-
+    public static final String ROLE_ADMIN = "ADMIN";
     public static final String ROLE_USER = "USER";
+    public static final String HAS_ROLE_ADMIN = "hasRole('ADMIN')";
+    public static final String HAS_ROLE_USER = "hasRole('USER')";
+    public static final String HAS_AUTHORITY_OIDC_USER = "hasAuthority('OIDC_USER')";
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, UserService userService) {
         return http
             .csrf(AbstractHttpConfigurer::disable)
             .authorizeHttpRequests(a -> a
@@ -42,20 +43,24 @@ public class SecurityConfig {
                 .requestMatchers("/*.php").denyAll()
                 .anyRequest().authenticated()
             )
-            .formLogin(c -> {
-                c.permitAll();
-                c.loginProcessingUrl("/login");
-                c.loginPage("/login.html");
-                c.defaultSuccessUrl("/home", true); // redirect
-                c.failureUrl("/login?error"); // redirect
-            })
-            .logout(c -> {
-                c.permitAll();
-                c.logoutUrl("/logout");
-                c.logoutSuccessUrl("/"); // redirect
-                c.deleteCookies("JSESSIONID", "authenticated");
-                c.invalidateHttpSession(true);
-            })
+            .formLogin(c -> c
+                .loginProcessingUrl("/login")
+                .loginPage("/login.html")
+                .defaultSuccessUrl("/home", true)
+                .failureUrl("/login?error")
+            )
+            .logout(c -> c
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/")
+                .deleteCookies("JSESSIONID", "authenticated")
+                .invalidateHttpSession(true)
+            )
+            .oauth2Login(c -> c
+                    .loginPage("/login")
+                    .userInfoEndpoint(userInfo -> userInfo.oidcUserService(userService))
+                    .defaultSuccessUrl("/home", true)
+                    .failureUrl("/login?error")
+                )
             //.headers(AbstractHttpConfigurer::disable)
             .headers(c -> c.defaultsDisabled().addHeaderWriter(new StaticHeadersWriter(createHeaders())))
             .exceptionHandling(e -> e
@@ -80,12 +85,12 @@ public class SecurityConfig {
     public UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
         return new InMemoryUserDetailsManager(List.of(
             User.builder()
-                .username("user")
+                .username("user@company.com")
                 .password(passwordEncoder.encode("Passw0rd"))
                 .roles(ROLE_USER)
                 .build(),
             User.builder()
-                .username("admin")
+                .username("admin@company.com")
                 .password(passwordEncoder.encode("Passw0rd"))
                 .roles(ROLE_ADMIN)
                 .build()

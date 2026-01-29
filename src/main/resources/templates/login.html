@@ -12,6 +12,7 @@
         .bold { font-weight:bold; }
         .italic { font-style:italic; }
         .error { color: red; }
+        .float-right { float: right !important; }
         input[type=text],
         input[type=password] {
           width: 100%;
@@ -45,20 +46,26 @@
         <form th:action="@{/login}" method="post">
             <div>
                 <label for="username" th:text="#{login.username.label}" class="bold">TBD</label>
-                <input type="text" th:placeholder="#{login.username.placeholder}" name="username" value="admin"/>
+                <input type="text" th:placeholder="#{login.username.placeholder}" name="username" value="admin@company.com"/>
             </div>
             <div>
                 <label for="password" th:text="#{login.password.label}" class="bold">TBD</label>
                 <input type="password" th:placeholder="#{login.password.placeholder}" name="password" value="Passw0rd"/>
             </div>
             <div>
-                <input type="submit" th:value="#{login.submit}" />
-            </div>
-            <div>
                 <input type="checkbox" checked="checked" name="remember" />
                 <label for="remember" th:text="#{login.remember}">TBD</label>
             </div>
+            <div>
+                <input type="submit" th:value="#{login.submit}" />
+            </div>
         </form>
+
+        <div th:if="${@environment.getProperty('GOOGLE_CLIENT_ID') != null}" class="float-right">
+            <a th:href="@{/oauth2/authorization/google}" >
+                <img src="/css/assets/google/standard-button-blue.png" style="height: 40px;" alt="Sign in with Google" />
+            </a>
+        </div>
     </div>
 </body>
 </html>

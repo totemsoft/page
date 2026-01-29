@@ -61,7 +61,7 @@
             </div>
         </form>
 
-        <div th:unless="${#strings.isEmpty(@environment.getProperty('GOOGLE_CLIENT_ID'))}" class="float-right">
+        <div class="float-right">
             <a th:href="@{/oauth2/authorization/google}" >
                 <img src="/css/assets/google/standard-button-blue.png" style="height: 40px;" alt="Sign in with Google" />
             </a>

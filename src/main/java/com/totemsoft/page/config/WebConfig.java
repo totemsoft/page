@@ -3,11 +3,9 @@ package com.totemsoft.page.config;
 import javax.naming.directory.SearchResult;
 
 import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
-import org.springframework.boot.web.context.servlet.ApplicationServletEnvironment;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportRuntimeHints;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -41,9 +39,10 @@ import com.totemsoft.page.model.TagTypeDto;
     SubSectionResult.class,
     TabDto.class,
     TagDto.class,
-    TagTypeDto.class,
-    ApplicationServletEnvironment.class,
-    OAuth2AuthenticationToken.class
+    TagTypeDto.class
+    //ApplicationServletEnvironment.class,
+    //OAuth2AuthenticationToken.class,
+    //OAuth2AuthenticatedPrincipal.class
 })
 @ImportRuntimeHints(CustomRuntimeHintsRegistrar.class)
 public class WebConfig implements WebMvcConfigurer {

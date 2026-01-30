@@ -1,5 +1,6 @@
 package com.totemsoft.page.config;
 
+import org.apache.tomcat.util.http.InvalidParameterException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -21,6 +22,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<ErrorResponse> handle(EntityNotFoundException ex, WebRequest request) throws Exception {
         final HttpStatus status = HttpStatus.NOT_FOUND;
+        return error(status, ex, null);
+    }
+
+    @ExceptionHandler(InvalidParameterException.class)
+    public ResponseEntity<ErrorResponse> handle(InvalidParameterException ex, WebRequest request) throws Exception {
+        final HttpStatus status = HttpStatus.BAD_REQUEST;
         return error(status, ex, null);
     }
 

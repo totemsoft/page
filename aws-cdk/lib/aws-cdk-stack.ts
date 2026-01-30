@@ -169,7 +169,8 @@ export class AwsCdkStack extends cdk.Stack {
         { containerPort: 8080, name: 'page-builder-http' }
       ]
     });
-    EnvironmentUtils.addEnvironments(containerDef, javaOpts);
+    const googleSecretName = `dev/${id}/google/credentials`;
+    EnvironmentUtils.addEnvironments(this, containerDef, googleSecretName, javaOpts);
     containerDef.addMountPoints({
       sourceVolume: efsVolumeName,
       containerPath: efsMountPath,

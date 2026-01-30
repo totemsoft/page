@@ -71,6 +71,13 @@
                                     </a>
                                 </li>
                             </ul>
+                            <ul sec:authorize="hasRole('ROLE_ADMIN')">
+                                <li class="yuimenuitem">
+                                    <a href="javascript:YAHOO.page.admin.addPage();" class="yuimenuitemlabel">
+                                        <em>Add Page</em>
+                                    </a>
+                                </li>
+                            </ul>
                         </div>
                     </div>
                 </li>

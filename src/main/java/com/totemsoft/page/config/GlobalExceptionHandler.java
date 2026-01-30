@@ -14,19 +14,19 @@ import com.totemsoft.page.service.EntityNotFoundException;
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(Throwable.class)
-    public final ResponseEntity<ErrorResponse> defaultErrorHandler(Throwable ex, WebRequest request) throws Exception {
+    public final ResponseEntity<ErrorResponse> defaultErrorHandler(Throwable ex, WebRequest request) {
         final HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
         return error(status, ex, "Unexpected Server Error");
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handle(EntityNotFoundException ex, WebRequest request) throws Exception {
+    public ResponseEntity<ErrorResponse> handle(EntityNotFoundException ex, WebRequest request) {
         final HttpStatus status = HttpStatus.NOT_FOUND;
         return error(status, ex, null);
     }
 
     @ExceptionHandler(InvalidParameterException.class)
-    public ResponseEntity<ErrorResponse> handle(InvalidParameterException ex, WebRequest request) throws Exception {
+    public ResponseEntity<ErrorResponse> handle(InvalidParameterException ex, WebRequest request) {
         final HttpStatus status = HttpStatus.BAD_REQUEST;
         return error(status, ex, null);
     }

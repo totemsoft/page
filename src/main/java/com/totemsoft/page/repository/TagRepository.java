@@ -10,6 +10,8 @@ import com.totemsoft.page.model.entity.Tag;
 @Repository
 public interface TagRepository extends JpaRepository<Tag, Long> {
 
+    List<Tag> findByTagTypeId(int tagTypeId);
+
     List<Tag> findByTagTypeIdAndTitleContainingIgnoreCase(int tagTypeId, String title);
 
 }

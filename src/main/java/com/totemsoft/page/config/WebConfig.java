@@ -18,7 +18,6 @@ import com.totemsoft.page.model.Row;
 import com.totemsoft.page.model.SectionDto;
 import com.totemsoft.page.model.SeriesDataDto;
 import com.totemsoft.page.model.SubSectionDto;
-import com.totemsoft.page.model.SubSectionResult;
 import com.totemsoft.page.model.TabDto;
 import com.totemsoft.page.model.TagDto;
 import com.totemsoft.page.model.TagTypeDto;
@@ -36,7 +35,6 @@ import com.totemsoft.page.model.TagTypeDto;
     SectionDto.class,
     SeriesDataDto.class,
     SubSectionDto.class,
-    SubSectionResult.class,
     TabDto.class,
     TagDto.class,
     TagTypeDto.class

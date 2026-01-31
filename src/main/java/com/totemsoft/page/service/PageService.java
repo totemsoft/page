@@ -76,6 +76,12 @@ public class PageService {
     }
 
     @Transactional
+    public List<TagDto> findTags(int tagTypeId) {
+        final var tags = tagRepository.findByTagTypeId(tagTypeId);
+        return mapper.mapTags(tags);
+    }
+
+    @Transactional
     public List<TagDto> findTags(int tagTypeId, String title) {
         final var tags = tagRepository.findByTagTypeIdAndTitleContainingIgnoreCase(tagTypeId, title);
         return mapper.mapTags(tags);

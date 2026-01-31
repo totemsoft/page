@@ -8,7 +8,29 @@
         <div id="tagTypesDialog">
             <div class="hd">Edit Tag Types</div>
             <div class="bd">
-                <div id="tagTypes"></div>
+                <div id="tagTypes">
+                    <div class="hd"></div>
+                    <div class="bd" id="bd.tagTypes">
+                        <div id="data.tagTypes"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="tagsDialog">
+            <div class="hd">Edit Tags</div>
+            <div class="bd">
+                <div class="table-container">
+                    <div>
+                        <div class="right">Tag Type:</div>
+                        <div th:replace="~{page::selectTagTypeFragment('tags.tagType') }"></div>
+                    </div>
+                </div>
+                <div id="tags">
+                    <div class="hd"></div>
+                    <div class="bd" id="bd.tags">
+                        <div id="data.tags"></div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

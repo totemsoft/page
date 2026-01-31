@@ -2,6 +2,9 @@ package com.totemsoft.page.model;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
+
+import com.totemsoft.page.model.ColumnDef.FORMATTER;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
@@ -18,5 +21,34 @@ public class SeriesDataDto {
 
     @NotBlank
     private String title;
+
+    public static List<ColumnDef> columns() {
+        return List.of(
+            ColumnDef.builder()
+                .key("id")
+                .label("ID")
+                //.hidden(true) // TODO: fix dataTable.doBeforeLoadData insertColumn issue
+                .formatter(FORMATTER.NUMBER.name().toLowerCase())
+                .className(CssClasName.RIGHT)
+                .build(),
+            ColumnDef.builder()
+                .key("date")
+                .label("Date")
+                //.formatter(FORMATTER.DATE.name().toLowerCase())
+                //.dateOptions("{format: '%d/%m/%Y', locale: 'en'}")
+                .build(),
+            ColumnDef.builder()
+                .key("value")
+                .label("Value")
+                .formatter(FORMATTER.CURRENCY.name().toLowerCase())
+                //.currencyOptions("{}")
+                .className(CssClasName.RIGHT)
+                .build(),
+            ColumnDef.builder()
+                .key("title")
+                .label("Name")
+                .build()
+            );
+    }
 
 }

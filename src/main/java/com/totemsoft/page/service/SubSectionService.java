@@ -15,11 +15,9 @@ import org.springframework.stereotype.Service;
 import com.totemsoft.page.config.SecurityConfig;
 import com.totemsoft.page.model.Cell;
 import com.totemsoft.page.model.ColumnDef;
-import com.totemsoft.page.model.ColumnDef.FORMATTER;
-import com.totemsoft.page.model.CssClasName;
 import com.totemsoft.page.model.Row;
+import com.totemsoft.page.model.SearchResult;
 import com.totemsoft.page.model.SeriesDataDto;
-import com.totemsoft.page.model.SubSectionResult;
 import com.totemsoft.page.model.entity.SeriesData;
 import com.totemsoft.page.model.entity.SubSection;
 import com.totemsoft.page.model.entity.Tag;
@@ -44,7 +42,7 @@ public class SubSectionService {
     private final SeriesDataMapper mapper;
 
     @Transactional
-    public SubSectionResult<Row> find(long subSectionId,
+    public SearchResult<Row> find(long subSectionId,
             Optional<Integer> rowTagTypeId,
             Optional<Integer> columnTagTypeId) {
         log.debug("find({}, {}, {}) ...", subSectionId, rowTagTypeId, columnTagTypeId);
@@ -53,8 +51,8 @@ public class SubSectionService {
         //
         if (rowTagTypeId.isEmpty() || columnTagTypeId.isEmpty()) {
             log.trace("No RowTagType/ColumnTagType set for sub-section {}.", subSectionId);
-            return SubSectionResult.<Row>builder()
-                .columns(findColumns(Set.of()))
+            return SearchResult.<Row>builder()
+                .columns(Row.columns(Set.of()))
                 .data(List.of())
                 .build();
         }
@@ -74,14 +72,14 @@ public class SubSectionService {
             .cells(filterRowCells(List.of(), rowTag, columnTags))
             .build())
         );
-        return SubSectionResult.<Row>builder()
-            .columns(findColumns(columnTags))
+        return SearchResult.<Row>builder()
+            .columns(Row.columns(columnTags))
             .data(result)
             .build();
     }
 
     @Transactional
-    public SubSectionResult<?> find(long subSectionId, LocalDate date, Optional<Boolean> skipColumns) {
+    public SearchResult<?> find(long subSectionId, LocalDate date, Optional<Boolean> skipColumns) {
         log.trace("findRows({}, {}) ...", subSectionId, date);
         final var subSection = subSectionRepository.findById(subSectionId)
             .orElseThrow(() -> new EntityNotFoundException(subSectionId, SubSection.class));
@@ -91,8 +89,8 @@ public class SubSectionService {
         final var columnTagTypeId = subSection.getColumnTagTypeId();
         if (rowTagTypeId == null || columnTagTypeId == null) {
             log.trace("No RowTagType/ColumnTagType set for sub-section {}.", subSectionId);
-            return SubSectionResult.<SeriesDataDto>builder()
-                .columns(skipColumns.orElse(false) ? null : findDefaultColumns())
+            return SearchResult.<SeriesDataDto>builder()
+                .columns(skipColumns.orElse(false) ? null : SeriesDataDto.columns())
                 .data(mapper.map(data))
                 .build();
         }
@@ -114,8 +112,8 @@ public class SubSectionService {
                 rowTag, columnTags))
             .build())
         );
-        return SubSectionResult.<Row>builder()
-            .columns(skipColumns.orElse(false) ? null : findColumns(columnTags))
+        return SearchResult.<Row>builder()
+            .columns(skipColumns.orElse(false) ? null : Row.columns(columnTags))
             .data(result)
             .build();
     }
@@ -141,52 +139,6 @@ public class SubSectionService {
             .forEach(d -> cells.put(columnTag.getName(), mapper.map(d)))
         );
         return cells;
-    }
-
-    private List<ColumnDef> findColumns(Set<Tag> columnTags) {
-        final var columnDefs = new ArrayList<ColumnDef>();
-        columnDefs.add(ColumnDef.builder()
-            .key(ColumnDef.COLUMN_TAG)
-            .label("&#160;") // &nbsp;
-            .formatter(ColumnDef.COLUMN_TAG.toLowerCase())
-            .className(CssClasName.TAG)
-            .build());
-        columnTags.forEach(t -> columnDefs.add(ColumnDef.builder()
-            .key(t.getName())
-            .label(t.getTitle())
-            .formatter(FORMATTER.CURRENCY.name().toLowerCase())
-            .className(CssClasName.RIGHT)
-            .build()));
-        return columnDefs;
-    }
-
-    private List<ColumnDef> findDefaultColumns() {
-        return List.of(
-            ColumnDef.builder()
-                .key("id")
-                .label("ID")
-                //.hidden(true) // TODO: fix dataTable.doBeforeLoadData insertColumn issue
-                .formatter(FORMATTER.NUMBER.name().toLowerCase())
-                .className(CssClasName.RIGHT)
-                .build(),
-            ColumnDef.builder()
-                .key("date")
-                .label("Date")
-                //.formatter(FORMATTER.DATE.name().toLowerCase())
-                //.dateOptions("{format: '%d/%m/%Y', locale: 'en'}")
-                .build(),
-            ColumnDef.builder()
-                .key("value")
-                .label("Value")
-                .formatter(FORMATTER.CURRENCY.name().toLowerCase())
-                //.currencyOptions("{}")
-                .className(CssClasName.RIGHT)
-                .build(),
-            ColumnDef.builder()
-                .key("title")
-                .label("Name")
-                .build()
-            );
     }
 
 }

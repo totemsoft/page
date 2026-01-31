@@ -552,7 +552,7 @@ YAHOO.page.admin = {
         //};
         // 3. fired when the DataTable's DOM is rendered or dirty. 
         //dataTable.subscribe('renderEvent', function() {
-        //    // TODO: init subSection context menu
+        //    
         //});
         YAHOO.page.admin.previewDataTable = dataTable;
         //

@@ -15,6 +15,9 @@ import lombok.NoArgsConstructor;
 @Builder
 public class SearchResult<T> {
 
+    @JsonProperty("columns")
+    private List<ColumnDef> columns;
+
     @JsonProperty("records")
     private List<T> data;
 

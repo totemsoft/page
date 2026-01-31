@@ -94,6 +94,11 @@
                                         <em>Edit Tag Types</em>
                                     </a>
                                 </li>
+                                <li class="yuimenuitem">
+                                    <a href="javascript:YAHOO.page.setup.editTags();" class="yuimenuitemlabel">
+                                        <em>Edit Tags</em>
+                                    </a>
+                                </li>
                             </ul>
                         </div>
                     </div>
@@ -196,6 +201,12 @@
     </div>
 
     <div id="fragments" class="hidden">
+        <div th:fragment="selectTagTypeFragment(selectId)">
+            <select th:id="${selectId}">
+                <option value="" th:text="#{option.null}"></option>
+                <option th:each="item: ${tagTypes}" th:value="${item.id}" th:text="${item.name}"></option>
+            </select>
+        </div>
         <div th:fragment="subSectionFragment(sectionId, id, name, index, rowTagTypeId, columnTagTypeId)">
             <input type="hidden" th:id="|subSection.sectionId.${id}|" th:value="${sectionId}" />
             <input type="hidden" th:id="|subSection.index.${id}|" th:value="${index}" />

@@ -5,30 +5,30 @@
 </head>
 <body>
     <div th:fragment="setup()">
-        <div id="tagTypesDialog">
+        <div id="tagTypeDialog">
             <div class="hd">Edit Tag Types</div>
             <div class="bd">
-                <div id="tagTypes">
+                <div id="tagType">
                     <div class="hd"></div>
-                    <div class="bd" id="bd.tagTypes">
-                        <div id="data.tagTypes"></div>
+                    <div class="bd" id="bd.tagType">
+                        <div id="data.tagType"></div>
                     </div>
                 </div>
             </div>
         </div>
-        <div id="tagsDialog">
+        <div id="tagDialog">
             <div class="hd">Edit Tags</div>
             <div class="bd">
                 <div class="table-container">
                     <div>
                         <div class="right">Tag Type:</div>
-                        <div th:replace="~{page::selectTagTypeFragment('tags.tagType') }"></div>
+                        <div th:replace="~{page::selectTagTypeFragment('tag.tagType') }"></div>
                     </div>
                 </div>
-                <div id="tags">
+                <div id="tag">
                     <div class="hd"></div>
-                    <div class="bd" id="bd.tags">
-                        <div id="data.tags"></div>
+                    <div class="bd" id="bd.tag">
+                        <div id="data.tag"></div>
                     </div>
                 </div>
             </div>

@@ -20,11 +20,23 @@ import lombok.Data;
 @Builder
 public class ColumnDef {
 
-    public enum FORMATTER {
-        CURRENCY, DATE, NUMBER, TAG
+    public enum FormatterEnum {
+        CURRENCY,
+        DATE,
+        NUMBER,
+        TAG;
     }
 
-    public static final String COLUMN_TAG = FORMATTER.TAG.name();
+    public static final String COLUMN_TAG = FormatterEnum.TAG.name();
+
+    public enum CellEditorEnum {
+        CHECKBOX,
+        DATE,
+        DROPDOWN,
+        RADIO,
+        TEXTAREA,
+        TEXTBOX;
+    }
 
     @NotBlank
     private String key;
@@ -36,6 +48,8 @@ public class ColumnDef {
     private String currencyOptions;
 
     private String dateOptions;
+
+    private String editor;
 
     private boolean hidden;
 

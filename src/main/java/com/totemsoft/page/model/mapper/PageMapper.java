@@ -37,6 +37,7 @@ public interface PageMapper {
     Tag map(TagDto tagDto);
 
     TagTypeDto map(TagType tagType);
+    TagType map(TagTypeDto tagTypeDto);
     List<TagTypeDto> mapTagTypes(List<TagType> tagTypes);
 
     Section map(SectionDto sectionDto);

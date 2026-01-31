@@ -1,7 +1,7 @@
 YAHOO.namespace('page.setup');
 
 YAHOO.page.setup = {
-    initDataTable: function(entitiesName, requestBuilder) {
+    initDataTable: function(entityName, requestBuilder, saveEvent) {
         const oLiveData = '/setup/';
         const dataSource = new YAHOO.util.XHRDataSource(oLiveData, {
             connXhrMode: 'queueRequests',
@@ -12,7 +12,7 @@ YAHOO.page.setup = {
                 metaFields: {columns:'columns'}
             }
         });
-        const elContainer = YUD.get(entitiesName);
+        const elContainer = YUD.get(entityName);
         const r = YUD.getRegion(elContainer);
         const initialRequest = requestBuilder(null, null);
         const dataTableConfig = {
@@ -31,12 +31,22 @@ YAHOO.page.setup = {
             const columnDefs = meta.columns;
             if (columnDefs) {
                 //this.disable();
+                let editable = false;
                 columnDefs.forEach((columnDef, index) => {
                     if (!this.getColumn(columnDef.key)) {
                         const column = this.insertColumn(columnDef, index);
+                        if (columnDef.editor) {
+                            editable = true;
+                            column.editor.subscribe('saveEvent', saveEvent);
+                        }
                     }
                 })
                 this.getDataSource().responseSchema.fields = columnDefs.map(columnDef => columnDef.key);
+                if (editable) {
+                    this.subscribe('cellMouseoverEvent', this.onEventHighlightCell);
+                    this.subscribe('cellMouseoutEvent', this.onEventUnhighlightCell);
+                    this.subscribe('cellClickEvent', this.onEventShowCellEditor);
+                }
                 //this.undisable();
             }
             return true;
@@ -66,23 +76,35 @@ YAHOO.page.setup = {
     },
     editTagTypes: function() {
         console.log('editTagTypes:');
-        const entitiesName = 'tagTypes';
+        const entityName = 'tagType';
         if (!YAHOO.page.setup.tagTypesDialog) {
             const w = YUD.getViewportWidth();
-            YAHOO.page.setup.tagTypesDialog = YAHOO.page.openEditDialog(entitiesName + 'Dialog', {
+            YAHOO.page.setup.tagTypesDialog = YAHOO.page.openEditDialog(entityName + 'Dialog', {
                 fixedcenter: 'contained',
                 width: (w / 3) + 'px',
                 buttons: [
-                    {text: 'OK', isDefault: true, handler: function() {
-                        this.hide();
+                    {text: 'Close', isDefault: true, handler: function() {
+                        this.cancel();
                     }}
                 ]
             });
             const requestBuilder = function(oState, oDataTable) {
-                let request = '' + entitiesName;
+                let request = '' + entityName;
                 return request;
             };
-            YAHOO.page.setup.tagTypesDataTable = YAHOO.page.setup.initDataTable(entitiesName, requestBuilder);
+            const saveEvent = function(oArgs) {
+                //const el = oArgs.target; // radio/checkbox, el.checked
+                const key = this.getColumn().field;
+                const row = this.getRecord()._oData;
+                const value = oArgs.newData;
+                const tagTypeDto = {
+                    id: row.id, // PK
+                    name: key === 'name' ? value : row.name,
+                    title: key === 'title' ? value : row.title
+                };
+                YAHOO.page.sendPostRequest('/setup/' + entityName, YAHOO.page.emptyCallback, tagTypeDto);
+            };
+            YAHOO.page.setup.tagTypesDataTable = YAHOO.page.setup.initDataTable(entityName, requestBuilder, saveEvent);
         } else {
             YAHOO.page.setup.updateDataTable(YAHOO.page.setup.tagTypesDataTable);
         }
@@ -91,28 +113,40 @@ YAHOO.page.setup = {
     },
     editTags: function() {
         console.log('editTags:');
-        const entitiesName = 'tags';
+        const entityName = 'tag';
         if (!YAHOO.page.setup.tagsDialog) {
             const w = YUD.getViewportWidth();
-            YAHOO.page.setup.tagsDialog = YAHOO.page.openEditDialog(entitiesName + 'Dialog', {
+            YAHOO.page.setup.tagsDialog = YAHOO.page.openEditDialog(entityName + 'Dialog', {
                 fixedcenter: 'contained',
                 width: (w / 2) + 'px',
                 buttons: [
-                    {text: 'OK', isDefault: true, handler: function() {
-                        this.hide();
+                    {text: 'Close', isDefault: true, handler: function() {
+                        this.cancel();
                     }}
                 ]
             });
             const requestBuilder = function(oState, oDataTable) {
-                let request = '' + entitiesName + '?1=1';
-                const elTagType = YUD.get(entitiesName + '.tagType');
+                let request = '' + entityName + '?1=1';
+                const elTagType = YUD.get(entityName + '.tagType');
                 if (elTagType.value) {
                     request += '&tagTypeId=' + elTagType.value;
                 }
                 return request;
             };
-            YAHOO.page.setup.tagsDataTable = YAHOO.page.setup.initDataTable(entitiesName, requestBuilder);
-            const elTagType = YUD.get(entitiesName + '.tagType');
+            const saveEvent = function(oArgs) {
+                //const el = oArgs.target; // radio/checkbox, el.checked
+                const key = this.getColumn().field;
+                const row = this.getRecord()._oData;
+                const value = oArgs.newData;
+                const tagDto = {
+                    id: row.id, // PK
+                    name: key === 'name' ? value : row.name,
+                    title: key === 'title' ? value : row.title
+                };
+                YAHOO.page.sendPostRequest('/setup/' + entityName, YAHOO.page.emptyCallback, tagDto);
+            };
+            YAHOO.page.setup.tagsDataTable = YAHOO.page.setup.initDataTable(entityName, requestBuilder, saveEvent);
+            const elTagType = YUD.get(entityName + '.tagType');
             YUE.addListener(elTagType, 'change', function(ev) {
                 YAHOO.page.setup.updateDataTable(YAHOO.page.setup.tagsDataTable);
             });

@@ -120,6 +120,15 @@ YAHOO.page = {
         dialog.render(document.body);
         return dialog;
     },
+    emptyCallback: {
+        cache: false,
+        success: function(oResponse) {
+            // do nothing
+        },
+        failure: function(oResponse) {
+            YAHOO.page.failureHandler(oResponse);
+        }
+    },
     reloadWindowCallback: {
         cache: false,
         success: function(oResponse) {

@@ -31,6 +31,7 @@ public class SecurityConfig {
     public static final String ROLE_SETUP = "SETUP";
     public static final String ROLE_USER = "USER";
     public static final String HAS_ROLE_ADMIN = "hasRole('ADMIN')";
+    public static final String HAS_ROLE_SETUP = "hasRole('SETUP')";
     public static final String HAS_ROLE_USER = "hasRole('USER')";
     public static final String HAS_AUTHORITY_OIDC_USER = "hasAuthority('OIDC_USER')";
 

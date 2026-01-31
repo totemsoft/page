@@ -48,6 +48,90 @@ YAHOO.page = {
         const className = oColumn.className || (oData ? oData.className : null);
         YAHOO.page.addClass(el.parentNode, className);
     },
+    parseJsonData: function(oData, ignoreErrors) {
+        if (!oData) {
+            return null;
+        }
+        // encode Back Slashes
+        oData = oData.replace(/\\/g, '\\\\');
+        try {
+            return YAHOO.lang.JSON.parse(oData);
+        } catch (e) {
+            if (ignoreErrors) {
+                return null;
+            }
+            throw e;
+        }
+    },
+    sendGetRequest: function(action, callback) {
+        YUC.asyncRequest('GET', action, callback); 
+    },
+    sendPostRequest: function(action, callback, postdata) {
+        YUC.setDefaultPostHeader(true);
+        if (postdata && YL.isObject(postdata)) {
+            if (postdata instanceof Map) {
+                // Convert the Map to a plain object
+                postdata = Object.fromEntries(postdata);
+            }
+            postdata = YL.JSON.stringify(postdata);
+            YUC.setDefaultPostHeader(false);
+            //YUC.initHeader('Accept', 'application/json');
+            YUC.initHeader('Content-Type', 'application/json;charset=UTF-8');
+        }
+        YUC.asyncRequest('POST', action, callback, postdata); 
+    },
+    failureHandler: function(oResponse) {
+        const status = oResponse && oResponse.status ? oResponse.status : '';
+        const message = oResponse && oResponse.responseText ? oResponse.responseText : oResponse.statusText;
+        console.log('Failure: ' + status + '<br/>' + message);
+    },
+    openEditDialog: function(el, oConfig, fnSubmitHandler, oEventDef) {
+        const dialog = new YAHOO.widget.SimpleDialog(el, {
+            close: true,
+            draggable: true,
+            fixedcenter: oConfig && oConfig.fixedcenter !== undefined ? oConfig.fixedcenter : true,
+            visible: false,
+            modal: false,
+            icon: null,
+            height: oConfig && oConfig.height !== undefined ? oConfig.height : null,
+            width: oConfig && oConfig.width !== undefined ? oConfig.width : null,
+            autofillheight: 'body',
+            constraintoviewport: oConfig && oConfig.constraintoviewport !== undefined ? oConfig.constraintoviewport : true,
+            context: ['showbtn', 'tl', 'bl'],
+            buttons: oConfig && oConfig.buttons !== undefined ? oConfig.buttons : [
+                {text: 'Save', isDefault: true, handler: {
+                    fn: fnSubmitHandler,
+                    obj: el,
+                    scope: this
+                }},
+                {text: 'Cancel', handler: function() {
+                    this.cancel();
+                }}
+            ]
+        });
+        dialog.cfg.queueProperty('keylisteners', new YAHOO.util.KeyListener(
+            document,
+            { keys: 27 },
+            { fn: function() {this.cancel();}, scope: dialog, correctScope: true }
+        ));
+        if (oEventDef) {
+            dialog.subscribe(oEventDef.name, oEventDef.handler);
+        }
+        dialog.render(document.body);
+        return dialog;
+    },
+    reloadWindowCallback: {
+        cache: false,
+        success: function(oResponse) {
+            const data = YAHOO.page.parseJsonData(oResponse.responseText, true);
+            const pageId = data && data.pageId ? data.pageId : YAHOO.page.getPageId();
+            const date = YUD.get('pageDate').value;
+            YAHOO.page.reloadWindow(pageId, date);
+        },
+        failure: function(oResponse) {
+            YAHOO.page.failureHandler(oResponse);
+        }
+    },
     reloadWindow: function(pageId, pageDate) {
         const win = window.parent ? window.parent : window;
         if (pageId)  {
@@ -70,8 +154,6 @@ YAHOO.page = {
         YAHOO.widget.DataTable.Formatter.number = this.formatNumber;
         YAHOO.widget.DataTable.Formatter.text = this.formatText;
         //
-        YAHOO.page.initMenu();
-        //
         YAHOO.page.tabView = this.initTabView(oContainer);
         // init tab section(s)
         YAHOO.page.dataTables = [];
@@ -80,6 +162,9 @@ YAHOO.page = {
             const sections = this.initSections(elTab);
             this.pageMap.set(tab, sections);
         });
+        //
+        YAHOO.page.initMenu();
+        //
         const pageId = YAHOO.page.getPageId();
         const subName = '' + pageId;
         var activeIndex = parseInt(YAHOO.util.Cookie.getSub(tabViewActiveTabCookie, subName));
@@ -96,6 +181,7 @@ YAHOO.page = {
     },
     initMenu: function() {
         const menuBar = new YAHOO.widget.MenuBar('pageMenu', {
+            zIndex: 2,
             lazyload: true
         });
         menuBar.render(document.body);
@@ -124,7 +210,7 @@ YAHOO.page = {
     initSection: function(elTab, elSection) {
         const w = YUD.getViewportWidth();
         const section = new YAHOO.widget.Panel(elSection, {
-            zIndex: 2,
+            zIndex: 1,
             width: w + 'px',
             autofillheight: 'body',
             constraintoviewport: false,

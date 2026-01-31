@@ -1,55 +1,6 @@
 YAHOO.namespace('page.admin');
 
 YAHOO.page.admin = {
-    parseJsonData: function(oData, ignoreErrors) {
-        if (!oData) {
-            return null;
-        }
-        // encode Back Slashes
-        oData = oData.replace(/\\/g, '\\\\');
-        try {
-            return YAHOO.lang.JSON.parse(oData);
-        } catch (e) {
-            if (ignoreErrors) {
-                return null;
-            }
-            throw e;
-        }
-    },
-    sendGetRequest: function(action, callback) {
-        YUC.asyncRequest('GET', action, callback); 
-    },
-    sendPostRequest: function(action, callback, postdata) {
-        YUC.setDefaultPostHeader(true);
-        if (postdata && YL.isObject(postdata)) {
-            if (postdata instanceof Map) {
-                // Convert the Map to a plain object
-                postdata = Object.fromEntries(postdata);
-            }
-            postdata = YL.JSON.stringify(postdata);
-            YUC.setDefaultPostHeader(false);
-            //YUC.initHeader('Accept', 'application/json');
-            YUC.initHeader('Content-Type', 'application/json;charset=UTF-8');
-        }
-        YUC.asyncRequest('POST', action, callback, postdata); 
-    },
-    failureHandler: function(oResponse) {
-        const status = oResponse && oResponse.status ? oResponse.status : '';
-        const message = oResponse && oResponse.responseText ? oResponse.responseText : oResponse.statusText;
-        console.log('Failure: ' + status + '<br/>' + message);
-    },
-    reloadWindowCallback: {
-        cache: false,
-        success: function(oResponse) {
-            const data = YAHOO.page.admin.parseJsonData(oResponse.responseText, true);
-            const pageId = data && data.pageId ? data.pageId : YAHOO.page.getPageId();
-            const date = YUD.get('pageDate').value;
-            YAHOO.page.reloadWindow(pageId, date);
-        },
-        failure: function(oResponse) {
-            YAHOO.page.admin.failureHandler(oResponse);
-        }
-    },
     fnSubscriberPageReady: function(type, args) {
         YAHOO.page.admin.tabView = args[0].tabView;
         const context = [];
@@ -66,7 +17,7 @@ YAHOO.page.admin = {
         const triggerNode = YUS.query('h2[id^=page.]');
         const pageContextMenu = new YAHOO.widget.ContextMenu('pageContextMenu', {
             trigger: triggerNode,
-            zIndex: 3,
+            zIndex: 2,
             lazyload: true,
             itemdata: [
                 [
@@ -103,7 +54,7 @@ YAHOO.page.admin = {
         const triggerNodes = YUS.query('li[id^=tab-menu.]', 'pageDiv');
         const tabContextMenu = new YAHOO.widget.ContextMenu('tabContextMenu', {
             trigger: triggerNodes,
-            zIndex: 3,
+            zIndex: 2,
             lazyload: true,
             itemdata: [
                 [
@@ -150,7 +101,7 @@ YAHOO.page.admin = {
         const triggerNodes = YUS.query('div[id^=section-menu.]', 'pageDiv');
         const sectionContextMenu = new YAHOO.widget.ContextMenu('sectionContextMenu', {
             trigger: triggerNodes,
-            zIndex: 3,
+            zIndex: 2,
             lazyload: true,
             itemdata: [
                 [
@@ -193,7 +144,7 @@ YAHOO.page.admin = {
         const triggerNodes = YUS.query('div[id^=data.subSection.] table caption', 'pageDiv');
         const subSectionContextMenu = new YAHOO.widget.ContextMenu('subSectionContextMenu', {
             trigger: triggerNodes,
-            zIndex: 3,
+            zIndex: 2,
             lazyload: true,
             itemdata: [
                 [
@@ -229,7 +180,7 @@ YAHOO.page.admin = {
         const tooltip = new YAHOO.widget.Tooltip('contextMenuTooltip', {
             context: context,
             text: 'Right-click here to open the context menu for edit.',
-            zIndex: 4,
+            zIndex: 3,
             //preventcontextoverlap: true,
             autodismissdelay: 3000,
             //hidedelay: 250,
@@ -242,127 +193,79 @@ YAHOO.page.admin = {
         //    this.cfg.setProperty('text', 'Right-click here to open the context menu for edit.');
         //});
     },
-    openEditDialog: function(el, fnSubmitHandler, oEventDef, oConfig) {
-        const dialog = new YAHOO.widget.SimpleDialog(el, {
-            close: true,
-            draggable: true,
-            fixedcenter: oConfig && oConfig.fixedcenter !== undefined ? oConfig.fixedcenter : true,
-            visible: false,
-            modal: false,
-            icon: null,
-            height: oConfig && oConfig.height !== undefined ? oConfig.height : null,
-            width: oConfig && oConfig.width !== undefined ? oConfig.width : null,
-            autofillheight: 'body',
-            constraintoviewport: oConfig && oConfig.constraintoviewport !== undefined ? oConfig.constraintoviewport : true,
-            context: ['showbtn', 'tl', 'bl'],
-            buttons: [
-                {text: 'Save', isDefault: true, handler: {
-                    fn: fnSubmitHandler,
-                    obj: el,
-                    scope: this
-                }},
-                {text: 'Cancel', handler: function() {
-                    this.cancel();
-                }}
-            ]
-        });
-        dialog.cfg.queueProperty('keylisteners', new YAHOO.util.KeyListener(
-            document,
-            { keys: 27 },
-            { fn: function() {this.cancel();}, scope: dialog, correctScope: true }
-        ));
-        if (oEventDef) {
-            dialog.subscribe(oEventDef.name, oEventDef.handler);
+    openEditPageDialog: function(pageId) {
+        if (!YAHOO.page.admin.editPageDialog) {
+            const fnSubmitHandler = function() {
+                const pageDto = {
+                    id: pageId, // PK
+                    name: YUD.get('page.name').value
+                };
+                YAHOO.page.sendPostRequest('/page', YAHOO.page.reloadWindowCallback, pageDto);
+            };
+            YAHOO.page.admin.editPageDialog = YAHOO.page.openEditDialog('editPageDialog', {},
+                fnSubmitHandler);
         }
-        dialog.render(document.body);
-        return dialog;
+        YAHOO.page.admin.editPageDialog.bringToTop();
+        YAHOO.page.admin.editPageDialog.show();
+        return YAHOO.page.admin.editPageDialog;
     },
     editPage: function(pageId, pageName) {
         console.log('editPage: pageId=' + pageId + ', pageName=' + pageName);
-        if (!YAHOO.page.admin.editPageDialog) {
-            const fnSubmitHandler = function() {
-                const pageDto = {
-                    id: pageId,
-                    name: YUD.get('page.name').value
-                };
-                YAHOO.page.admin.sendPostRequest('/page', YAHOO.page.admin.reloadWindowCallback, pageDto);
-            };
-            YAHOO.page.admin.editPageDialog = YAHOO.page.admin.openEditDialog('editPageDialog',
-                fnSubmitHandler);
-        }
         YUD.get('page.name').value = pageName;
-        YAHOO.page.admin.editPageDialog.bringToTop();
-        YAHOO.page.admin.editPageDialog.show();
+        YAHOO.page.admin.openEditPageDialog(pageId);
     },
     addPage: function() {
         console.log('addPage:');
-        if (!YAHOO.page.admin.editPageDialog) {
+        YUD.get('page.name').value = '';
+        YAHOO.page.admin.openEditPageDialog(null);
+    },
+    openEditTabDialog: function(tabId) {
+        if (!YAHOO.page.admin.editTabDialog) {
             const fnSubmitHandler = function() {
-                const pageDto = {
-                    name: YUD.get('page.name').value
+                const tabDto = {
+                    pageId: YAHOO.page.getPageId(), // owner
+                    id: tabId, // PK
+                    name: YUD.get('tab.name').value,
+                    index: YUD.get('tab.index').value
                 };
-                YAHOO.page.admin.sendPostRequest('/page', YAHOO.page.admin.reloadWindowCallback, pageDto);
+                YAHOO.page.sendPostRequest('/page/tab', YAHOO.page.reloadWindowCallback, tabDto);
             };
-            YAHOO.page.admin.editPageDialog = YAHOO.page.admin.openEditDialog('editPageDialog',
+            YAHOO.page.admin.editTabDialog = YAHOO.page.openEditDialog('editTabDialog', {},
                 fnSubmitHandler);
         }
-        YUD.get('page.name').value = '';
-        YAHOO.page.admin.editPageDialog.bringToTop();
-        YAHOO.page.admin.editPageDialog.show();
+        YAHOO.page.admin.editTabDialog.bringToTop();
+        YAHOO.page.admin.editTabDialog.show();
+        return YAHOO.page.admin.editTabDialog;
     },
     editTab: function(tabId, tabName) {
         console.log('editTab: tabId=' + tabId + ', tabName=' + tabName);
-        if (!YAHOO.page.admin.editTabDialog) {
-            const fnSubmitHandler = function() {
-                const tabDto = {
-                    id: tabId,
-                    name: YUD.get('tab.name').value,
-                    index: YUD.get('tab.index').value
-                };
-                YAHOO.page.admin.sendPostRequest('/page/tab', YAHOO.page.admin.reloadWindowCallback, tabDto);
-            };
-            YAHOO.page.admin.editTabDialog = YAHOO.page.admin.openEditDialog('editTabDialog',
-                fnSubmitHandler);
-        }
         YUD.get('tab.name').value = tabName;
         YUD.get('tab.index').value = YUD.get('tab.index.' + tabId).value;
-        YAHOO.page.admin.editTabDialog.bringToTop();
-        YAHOO.page.admin.editTabDialog.show();
+        YAHOO.page.admin.openEditTabDialog(tabId);
     },
     addTab: function() {
         console.log('addTab:');
-        if (!YAHOO.page.admin.editTabDialog) {
-            const fnSubmitHandler = function() {
-                const tabDto = {
-                    pageId: YAHOO.page.getPageId(),
-                    name: YUD.get('tab.name').value,
-                    index: YUD.get('tab.index').value
-                };
-                YAHOO.page.admin.sendPostRequest('/page/tab', YAHOO.page.admin.reloadWindowCallback, tabDto);
-            };
-            YAHOO.page.admin.editTabDialog = YAHOO.page.admin.openEditDialog('editTabDialog',
-                fnSubmitHandler);
-        }
         YUD.get('tab.name').value = '';
         YUD.get('tab.index').value = '1';
-        YAHOO.page.admin.editTabDialog.bringToTop();
-        YAHOO.page.admin.editTabDialog.show();
+        YAHOO.page.admin.openEditTabDialog(null);
     },
     openEditSectionDialog: function() {
         if (!YAHOO.page.admin.editSectionDialog) {
             const fnSubmitHandler = function() {
                 const elSplitRatio = YUD.get('section.splitRatio');
-                YAHOO.page.admin.sendPostRequest('/page/section', YAHOO.page.admin.reloadWindowCallback, {
-                    id: YUD.get('section.id').value,
+                YAHOO.page.sendPostRequest('/page/section', YAHOO.page.reloadWindowCallback, {
+                    tabId: YUD.get('section.tabId').value, // owner
+                    id: YUD.get('section.id').value, // PK
                     name: YUD.get('section.name').value,
                     index: YUD.get('section.index').value,
-                    splitRatio: elSplitRatio.value,
-                    tabId: YUD.get('section.tabId').value
+                    splitRatio: elSplitRatio.value
                 });
             };
-            YAHOO.page.admin.editSectionDialog = YAHOO.page.admin.openEditDialog('editSectionDialog',
+            YAHOO.page.admin.editSectionDialog = YAHOO.page.openEditDialog('editSectionDialog', {},
                 fnSubmitHandler);
         }
+        YAHOO.page.admin.editSectionDialog.bringToTop();
+        YAHOO.page.admin.editSectionDialog.show();
         return YAHOO.page.admin.editSectionDialog;
     },
     editSection: function(sectionId, sectionName) {
@@ -372,9 +275,7 @@ YAHOO.page.admin = {
         YUD.get('section.index').value = YUD.get('section.index.' + sectionId).value;
         const elSplitRatio = YUD.get('section.splitRatio');
         elSplitRatio.value = YUD.get('section.splitRatio.' + sectionId).value;
-        const dialog = YAHOO.page.admin.openEditSectionDialog();
-        dialog.bringToTop();
-        dialog.show();
+        YAHOO.page.admin.openEditSectionDialog();
     },
     addSection: function(tabId) {
         console.log('addSection: tabId=' + tabId);
@@ -384,27 +285,27 @@ YAHOO.page.admin = {
         const elSplitRatio = YUD.get('section.splitRatio');
         elSplitRatio.selectedIndex = 0;
         YUD.get('section.tabId').value = tabId;
-        const dialog = YAHOO.page.admin.openEditSectionDialog();
-        dialog.bringToTop();
-        dialog.show();
+        YAHOO.page.admin.openEditSectionDialog();
     },
     openEditSubSectionDialog: function() {
         if (!YAHOO.page.admin.editSubSectionDialog) {
             const fnSubmitHandler = function() {
                 const elRowTagType = YUD.get('subSection.rowTagType');
                 const elColumnTagType = YUD.get('subSection.columnTagType');
-                YAHOO.page.admin.sendPostRequest('/page/subSection', YAHOO.page.admin.reloadWindowCallback, {
-                    id: YUD.get('subSection.id').value,
+                YAHOO.page.sendPostRequest('/page/subSection', YAHOO.page.reloadWindowCallback, {
+                    sectionId: YUD.get('subSection.sectionId').value, // owner
+                    id: YUD.get('subSection.id').value,  // PK
                     name: YUD.get('subSection.name').value,
                     index: YUD.get('subSection.index').value,
-                    sectionId: YUD.get('subSection.sectionId').value,
                     rowTagTypeId: elRowTagType.value,
                     columnTagTypeId: elColumnTagType.value
                 });
             };
-            YAHOO.page.admin.editSubSectionDialog = YAHOO.page.admin.openEditDialog('editSubSectionDialog',
+            YAHOO.page.admin.editSubSectionDialog = YAHOO.page.openEditDialog('editSubSectionDialog', {},
                 fnSubmitHandler);
         }
+        YAHOO.page.admin.editSubSectionDialog.bringToTop();
+        YAHOO.page.admin.editSubSectionDialog.show();
         return YAHOO.page.admin.editSubSectionDialog;
     },
     editSubSection: function(subSectionId, subSectionName) {
@@ -417,9 +318,7 @@ YAHOO.page.admin = {
         elRowTagType.value = YUD.get('subSection.rowTagTypeId.' + subSectionId).value;
         const elColumnTagType = YUD.get('subSection.columnTagType');
         elColumnTagType.value = YUD.get('subSection.columnTagTypeId.' + subSectionId).value;
-        const dialog = YAHOO.page.admin.openEditSubSectionDialog();
-        dialog.bringToTop();
-        dialog.show();
+        YAHOO.page.admin.openEditSubSectionDialog();
     },
     addSubSection: function(sectionId) {
         console.log('addSubSection: sectionId=' + sectionId);
@@ -431,9 +330,7 @@ YAHOO.page.admin = {
         elRowTagType.selectedIndex = 0;
         const elColumnTagType = YUD.get('subSection.columnTagType');
         elColumnTagType.selectedIndex = 0;
-        const dialog = YAHOO.page.admin.openEditSubSectionDialog();
-        dialog.bringToTop();
-        dialog.show();
+        YAHOO.page.admin.openEditSubSectionDialog();
     },
     openMapSubSectionKeysDialog: function(subSectionId) {
         if (!YAHOO.page.admin.mapSubSectionKeysDialog) {
@@ -450,7 +347,7 @@ YAHOO.page.admin = {
                     keyIds.add(data.id);
                 }
                 const keys = Array.from(keyIds).map(keyId => ({id: keyId}));
-                YAHOO.page.admin.sendPostRequest('/page/subSection/map', YAHOO.page.admin.reloadWindowCallback, {
+                YAHOO.page.sendPostRequest('/page/subSection/map', YAHOO.page.reloadWindowCallback, {
                     id: YUD.get('subSectionKeys.id').value,
                     rowTagTypeId: elRowTagType.value,
                     columnTagTypeId: elColumnTagType.value,
@@ -465,11 +362,12 @@ YAHOO.page.admin = {
                 }
             };
             const w = YUD.getViewportWidth();
-            YAHOO.page.admin.mapSubSectionKeysDialog = YAHOO.page.admin.openEditDialog('mapSubSectionKeysDialog',
-                fnSubmitHandler, oEventDef, {
+            YAHOO.page.admin.mapSubSectionKeysDialog = YAHOO.page.openEditDialog('mapSubSectionKeysDialog', {
                     fixedcenter: 'contained',
-                    width: (w / 3) + 'px'
-                });
+                    width: (w / 2) + 'px'
+                },
+                fnSubmitHandler, 
+                oEventDef);
             // preview
             YAHOO.page.admin.initPreviewDataTable();
         } else {
@@ -483,6 +381,8 @@ YAHOO.page.admin = {
             // preview
             YAHOO.page.admin.updatePreviewDataTable();
         }
+        YAHOO.page.admin.mapSubSectionKeysDialog.bringToTop();
+        YAHOO.page.admin.mapSubSectionKeysDialog.show();
         return YAHOO.page.admin.mapSubSectionKeysDialog;
     },
     initSearchKeys: function(subSectionId) {
@@ -567,7 +467,7 @@ YAHOO.page.admin = {
                 if (!YAHOO.page.admin.keysDataTableContextMenu) {
                     const contextMenu = new YAHOO.widget.ContextMenu('subSectionKeysSearchResultContextMenu', {
                         trigger: YAHOO.page.admin.keysDataTable.getTbodyEl(),
-                        zIndex: 10,
+                        zIndex: 3,
                         lazyload: false,
                         itemdata: [
                             {text:'Remove Key(s)'}
@@ -708,23 +608,23 @@ YAHOO.page.admin = {
     },
     findSubSectionKeys: function() {
         const subSectionId = YUD.get('subSectionKeys.id').value;
-        YAHOO.page.admin.sendGetRequest('/page/key/' + subSectionId,
+        YAHOO.page.sendGetRequest('/page/key/' + subSectionId,
             YAHOO.page.admin.findKeysCallback);
     },
     findKeys: function() {
-        YAHOO.page.admin.sendPostRequest('/page/key',
+        YAHOO.page.sendPostRequest('/page/key',
             YAHOO.page.admin.findKeysCallback,
             YAHOO.page.admin.tagTypeMap);
     },
     findKeysCallback: {
         cache: false,
         success: function(oResponse) {
-            const data = YAHOO.page.admin.parseJsonData(oResponse.responseText, true);
+            const data = YAHOO.page.parseJsonData(oResponse.responseText, true);
             const dataTable = YAHOO.page.admin.keysDataTable;
             dataTable.addRows(data.records);
             dataTable.sortColumn(dataTable.getColumn('id'), YAHOO.widget.DataTable.CLASS_ASC);
         },
-        failure: YAHOO.page.admin.failureHandler
+        failure: YAHOO.page.failureHandler
     },
     mapSubSectionKeys: function(subSectionId, subSectionName) {
         console.log('mapSubSectionKeys: subSectionId=' + subSectionId + ', subSectionName=' + subSectionName);
@@ -734,9 +634,7 @@ YAHOO.page.admin = {
         elRowTagType.value = YUD.get('subSection.rowTagTypeId.' + subSectionId).value;
         const elColumnTagType = YUD.get('subSectionKeys.columnTagType');
         elColumnTagType.value = YUD.get('subSection.columnTagTypeId.' + subSectionId).value;
-        const dialog = YAHOO.page.admin.openMapSubSectionKeysDialog();
-        dialog.bringToTop();
-        dialog.show();
+        YAHOO.page.admin.openMapSubSectionKeysDialog();
     }
 };
 

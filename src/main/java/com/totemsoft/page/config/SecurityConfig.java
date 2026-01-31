@@ -28,6 +28,7 @@ public class SecurityConfig {
 
     public static final String IS_AUTHENTICATED = "isAuthenticated()";
     public static final String ROLE_ADMIN = "ADMIN";
+    public static final String ROLE_SETUP = "SETUP";
     public static final String ROLE_USER = "USER";
     public static final String HAS_ROLE_ADMIN = "hasRole('ADMIN')";
     public static final String HAS_ROLE_USER = "hasRole('USER')";
@@ -92,7 +93,7 @@ public class SecurityConfig {
             User.builder()
                 .username("admin@company.com")
                 .password(passwordEncoder.encode("Passw0rd"))
-                .roles(ROLE_ADMIN)
+                .roles(ROLE_ADMIN, ROLE_SETUP)
                 .build()
         ));
     }

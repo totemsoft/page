@@ -8,6 +8,7 @@
     <script type="text/javascript" src="/js/yui/yui-combine.js"></script>
     <script type="text/javascript" src="/js/default.js"></script>
     <script type="text/javascript" th:src="@{/js/admin.js}" sec:authorize="hasRole('ROLE_ADMIN')"></script>
+    <script type="text/javascript" th:src="@{/js/setup.js}" sec:authorize="hasRole('ROLE_SETUP')"></script>
     <style type="text/css">
         .bold { font-weight: bold !important; }
         .italic { font-style: italic !important; }
@@ -75,6 +76,22 @@
                                 <li class="yuimenuitem">
                                     <a href="javascript:YAHOO.page.admin.addPage();" class="yuimenuitemlabel">
                                         <em>Add Page</em>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </li>
+                <li sec:authorize="hasRole('ROLE_SETUP')" class="yuimenuitem">
+                    <a class="yuimenuitemlabel" href="#setup">
+                        Setup
+                    </a>
+                    <div id="setup" class="yuimenu">
+                        <div class="bd">
+                            <ul>
+                                <li class="yuimenuitem">
+                                    <a href="javascript:YAHOO.page.setup.editTagTypes();" class="yuimenuitemlabel">
+                                        <em>Edit Tag Types</em>
                                     </a>
                                 </li>
                             </ul>
@@ -191,6 +208,7 @@
         </div>
     </div>
 
-    <div th:insert="~{admin :: admin ( splitRatios=${splitRatios} )}" sec:authorize="hasRole('ROLE_ADMIN')" class="hidden"></div>
+    <div th:insert="~{admin :: admin(splitRatios=${splitRatios})}" sec:authorize="hasRole('ROLE_ADMIN')" class="hidden"></div>
+    <div th:insert="~{setup :: setup()}" sec:authorize="hasRole('ROLE_SETUP')" class="hidden"></div>
 </body>
 </html>

@@ -32,6 +32,7 @@ public class TagDto {
             ColumnDef.builder()
                 .key("name")
                 .label("Name")
+                .sortable(true)
                 .editor(editable ? CellEditorEnum.TEXTBOX.name().toLowerCase() : null)
                 .build(),
             ColumnDef.builder()

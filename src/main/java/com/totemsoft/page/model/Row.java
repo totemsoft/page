@@ -27,7 +27,7 @@ public class Row {
         final var columnDefs = new ArrayList<ColumnDef>();
         columnDefs.add(ColumnDef.builder()
             .key(ColumnDef.COLUMN_TAG)
-            .label("&#160;") // &nbsp;
+            .label(CssClasName.NBSP)
             .formatter(ColumnDef.COLUMN_TAG.toLowerCase())
             .className(CssClasName.TAG)
             .build());

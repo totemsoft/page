@@ -14,16 +14,18 @@ YAHOO.page.setup = {
         });
         const elContainer = YUD.get(entityName);
         const r = YUD.getRegion(elContainer);
+        const h = YUD.getViewportHeight();
         const initialRequest = requestBuilder(null, null);
         const dataTableConfig = {
             //caption: caption,
             initialLoad: true,
             initialRequest: initialRequest,
             generateRequest: requestBuilder,
+            height: h / 3 * 2 + 'px',
             width: (r.width - 2) + 'px'
         };
         const oColumnDefs = [];
-        const dataTable = new YAHOO.widget.DataTable(elContainer,
+        const dataTable = new YAHOO.widget.ScrollingDataTable(elContainer,
             oColumnDefs, dataSource, dataTableConfig);
         // 1. access data before it gets added to RecordSet and rendered to the TBODY
         dataTable.doBeforeLoadData = function(oRequest, oResponse, oPayload) {
@@ -83,6 +85,9 @@ YAHOO.page.setup = {
                 fixedcenter: 'contained',
                 width: (w / 3) + 'px',
                 buttons: [
+                    {text: 'Add', title: 'Add new Tag Type', handler: function() {
+                        YAHOO.page.setup.tagTypesDataTable.addRow({id: null, name: '', title: ''});
+                    }},
                     {text: 'Close', isDefault: true, handler: function() {
                         this.cancel();
                     }}
@@ -102,7 +107,9 @@ YAHOO.page.setup = {
                     name: key === 'name' ? value : row.name,
                     title: key === 'title' ? value : row.title
                 };
-                YAHOO.page.sendPostRequest('/setup/' + entityName, YAHOO.page.emptyCallback, tagTypeDto);
+                if (tagTypeDto.name && tagTypeDto.title) {
+                    YAHOO.page.sendPostRequest('/setup/' + entityName, YAHOO.page.emptyCallback, tagTypeDto);
+                }
             };
             YAHOO.page.setup.tagTypesDataTable = YAHOO.page.setup.initDataTable(entityName, requestBuilder, saveEvent);
         } else {
@@ -120,6 +127,9 @@ YAHOO.page.setup = {
                 fixedcenter: 'contained',
                 width: (w / 2) + 'px',
                 buttons: [
+                    {text: 'Add', title: 'Add new Tag', handler: function() {
+                        YAHOO.page.setup.tagsDataTable.addRow({id: null, name: '', title: ''});
+                    }},
                     {text: 'Close', isDefault: true, handler: function() {
                         this.cancel();
                     }}
@@ -138,22 +148,33 @@ YAHOO.page.setup = {
                 const key = this.getColumn().field;
                 const row = this.getRecord()._oData;
                 const value = oArgs.newData;
+                const tagTypeId = parseInt(YUD.get(entityName + '.tagType').value);
                 const tagDto = {
                     id: row.id, // PK
                     name: key === 'name' ? value : row.name,
-                    title: key === 'title' ? value : row.title
+                    title: key === 'title' ? value : row.title,
+                    tagTypeId: tagTypeId
                 };
-                YAHOO.page.sendPostRequest('/setup/' + entityName, YAHOO.page.emptyCallback, tagDto);
+                if (tagDto.name && tagDto.title) {
+                    YAHOO.page.sendPostRequest('/setup/' + entityName, YAHOO.page.emptyCallback, tagDto);
+                }
             };
             YAHOO.page.setup.tagsDataTable = YAHOO.page.setup.initDataTable(entityName, requestBuilder, saveEvent);
+            // enable/disable add button
+            const configAddButton = function(elTagType) {
+                const buttons = YAHOO.page.setup.tagsDialog.getButtons();
+                buttons[0].set('disabled', !elTagType.value);
+            };
             const elTagType = YUD.get(entityName + '.tagType');
+            configAddButton(elTagType);
             YUE.addListener(elTagType, 'change', function(ev) {
                 YAHOO.page.setup.updateDataTable(YAHOO.page.setup.tagsDataTable);
+                configAddButton(this);
             });
         } else {
             YAHOO.page.setup.updateDataTable(YAHOO.page.setup.tagsDataTable);
         }
         YAHOO.page.setup.tagsDialog.bringToTop();
         YAHOO.page.setup.tagsDialog.show();
-    },
+    }
 };

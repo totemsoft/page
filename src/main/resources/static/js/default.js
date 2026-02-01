@@ -99,12 +99,12 @@ YAHOO.page = {
             constraintoviewport: oConfig && oConfig.constraintoviewport !== undefined ? oConfig.constraintoviewport : true,
             context: ['showbtn', 'tl', 'bl'],
             buttons: oConfig && oConfig.buttons !== undefined ? oConfig.buttons : [
-                {text: 'Save', isDefault: true, handler: {
+                {text: 'Save', handler: {
                     fn: fnSubmitHandler,
                     obj: el,
                     scope: this
                 }},
-                {text: 'Cancel', handler: function() {
+                {text: 'Cancel', isDefault: true, handler: function() {
                     this.cancel();
                 }}
             ]

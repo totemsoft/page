@@ -184,7 +184,7 @@ YAHOO.page.setup = {
             const w = YUD.getViewportWidth();
             YAHOO.page.setup.keysDialog = YAHOO.page.openEditDialog(entityName + 'Dialog', {
                 fixedcenter: 'contained',
-                width: (w / 3) + 'px',
+                width: (w / 2) + 'px',
                 buttons: [
                     {text: 'Add', title: 'Add new Key', handler: function() {
                         YAHOO.page.setup.keysDataTable.addRow({id: null, name: '', title: ''});

@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonValue;
-import com.totemsoft.page.model.ColumnDef.FormatterEnum;
+import com.totemsoft.page.model.ColumnDef.CellFormatterEnum;
 import com.totemsoft.page.model.entity.Tag;
 
 import lombok.AllArgsConstructor;
@@ -34,7 +34,7 @@ public class Row {
         columnTags.forEach(t -> columnDefs.add(ColumnDef.builder()
             .key(t.getName())
             .label(t.getTitle())
-            .formatter(FormatterEnum.CURRENCY.name().toLowerCase())
+            .formatter(CellFormatterEnum.CURRENCY.name().toLowerCase())
             .className(CssClasName.RIGHT)
             .build()));
         return columnDefs;

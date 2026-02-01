@@ -5,7 +5,7 @@ import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.totemsoft.page.model.ColumnDef.CellEditorEnum;
-import com.totemsoft.page.model.ColumnDef.FormatterEnum;
+import com.totemsoft.page.model.ColumnDef.CellFormatterEnum;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
@@ -39,7 +39,7 @@ public class KeyDto {
                 .key("id")
                 .label("ID")
                 //.hidden(true) // TODO: fix dataTable.doBeforeLoadData insertColumn issue
-                .formatter(FormatterEnum.NUMBER.name().toLowerCase())
+                .formatter(CellFormatterEnum.NUMBER.name().toLowerCase())
                 .className(CssClasName.RIGHT)
                 .build(),
             ColumnDef.builder()
@@ -52,6 +52,10 @@ public class KeyDto {
                 .key("title")
                 .label("Title")
                 .editor(editable ? CellEditorEnum.TEXTAREA.name().toLowerCase() : null)
+                .build(),
+            ColumnDef.builder()
+                .key("tagSummary")
+                .label("Tag Summary")
                 .build()
             );
     }

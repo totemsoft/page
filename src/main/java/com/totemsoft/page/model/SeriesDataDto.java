@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-import com.totemsoft.page.model.ColumnDef.FormatterEnum;
+import com.totemsoft.page.model.ColumnDef.CellFormatterEnum;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
@@ -28,19 +28,19 @@ public class SeriesDataDto {
                 .key("id")
                 .label("ID")
                 //.hidden(true) // TODO: fix dataTable.doBeforeLoadData insertColumn issue
-                .formatter(FormatterEnum.NUMBER.name().toLowerCase())
+                .formatter(CellFormatterEnum.NUMBER.name().toLowerCase())
                 .className(CssClasName.RIGHT)
                 .build(),
             ColumnDef.builder()
                 .key("date")
                 .label("Date")
-                //.formatter(FormatterEnum.DATE.name().toLowerCase())
+                //.formatter(CellFormatterEnum.DATE.name().toLowerCase())
                 //.dateOptions("{format: '%d/%m/%Y', locale: 'en'}")
                 .build(),
             ColumnDef.builder()
                 .key("value")
                 .label("Value")
-                .formatter(FormatterEnum.CURRENCY.name().toLowerCase())
+                .formatter(CellFormatterEnum.CURRENCY.name().toLowerCase())
                 //.currencyOptions("{}")
                 .className(CssClasName.RIGHT)
                 .build(),

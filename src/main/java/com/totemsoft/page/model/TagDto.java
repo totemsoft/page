@@ -3,7 +3,7 @@ package com.totemsoft.page.model;
 import java.util.List;
 
 import com.totemsoft.page.model.ColumnDef.CellEditorEnum;
-import com.totemsoft.page.model.ColumnDef.FormatterEnum;
+import com.totemsoft.page.model.ColumnDef.CellFormatterEnum;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
@@ -26,7 +26,7 @@ public class TagDto {
                 .key("id")
                 .label("ID")
                 //.hidden(true) // TODO: fix dataTable.doBeforeLoadData insertColumn issue
-                .formatter(FormatterEnum.NUMBER.name().toLowerCase())
+                .formatter(CellFormatterEnum.NUMBER.name().toLowerCase())
                 .className(CssClasName.RIGHT)
                 .build(),
             ColumnDef.builder()

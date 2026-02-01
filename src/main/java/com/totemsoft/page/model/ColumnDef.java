@@ -20,14 +20,14 @@ import lombok.Data;
 @Builder
 public class ColumnDef {
 
-    public enum FormatterEnum {
+    public enum CellFormatterEnum {
         CURRENCY,
         DATE,
         NUMBER,
         TAG;
     }
 
-    public static final String COLUMN_TAG = FormatterEnum.TAG.name();
+    public static final String COLUMN_TAG = CellFormatterEnum.TAG.name();
 
     public enum CellEditorEnum {
         CHECKBOX,

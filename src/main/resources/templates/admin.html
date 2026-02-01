@@ -84,11 +84,11 @@
                     </div>
                     <div>
                         <div>Row Tag Type:</div>
-                        <div th:replace="~{ ::selectTagTypeFragment('subSection.rowTagType') }"></div>
+                        <div th:replace="~{page::selectTagTypeFragment('subSection.rowTagType')}"></div>
                     </div>
                     <div>
                         <div>Column Tag Type:</div>
-                        <div th:replace="~{ ::selectTagTypeFragment('subSection.columnTagType') }"></div>
+                        <div th:replace="~{page::selectTagTypeFragment('subSection.columnTagType')}"></div>
                     </div>
                 </div>
             </div>
@@ -98,7 +98,7 @@
             <div class="bd">
                 <div id="subSectionKeys" class="yui-gd">
                     <div id="subSectionKeysSearch" class="yui-u first">
-                        <div th:replace="~{ ::keysFragment }"></div>
+                        <div th:replace="~{ ::keysSearchFragment }"></div>
                         <div class="yui-gd nowrap" style="width: auto;">
                             <div class="yui-u first">
                                 <input type="button" id="subSectionKeysClearButton" title="Clear Search Results" value="Clear" />
@@ -127,11 +127,11 @@
                         <div>
                             <div>
                                 <div>Row Tag Type:</div>
-                                <div th:replace="~{ ::selectTagTypeFragment('subSectionKeys.rowTagType') }"></div>
+                                <div th:replace="~{page::selectTagTypeFragment('subSectionKeys.rowTagType')}"></div>
                             </div>
                             <div>
                                 <div>Column Tag Type:</div>
-                                <div th:replace="~{ ::selectTagTypeFragment('subSectionKeys.columnTagType') }"></div>
+                                <div th:replace="~{page::selectTagTypeFragment('subSectionKeys.columnTagType')}"></div>
                             </div>
                         </div>
                     </div>
@@ -147,13 +147,7 @@
     </div>
 
     <div id="admin-fragments" class="hidden">
-        <div th:fragment="selectTagTypeFragment(selectId)">
-            <select th:id="${selectId}">
-                <option value="" th:text="#{option.null}"></option>
-                <option th:each="item: ${tagTypes}" th:value="${item.id}" th:text="${item.name}"></option>
-            </select>
-        </div>
-        <div th:fragment="keysFragment">
+        <div th:fragment="keysSearchFragment">
             <div th:each="item: ${tagTypes}">
                 <label th:for="|input.subSectionKeys.tagType.${item.id}|" th:text="|${item.id}:${item.name}|" class="bold"></label>
                 <div th:id="|subSectionKeys.tagType.${item.id}|">

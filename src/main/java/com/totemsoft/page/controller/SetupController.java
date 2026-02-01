@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.totemsoft.page.model.KeyDto;
 import com.totemsoft.page.model.SearchResult;
 import com.totemsoft.page.model.TagDto;
 import com.totemsoft.page.model.TagTypeDto;
@@ -50,6 +51,19 @@ class SetupController {
     @PostMapping("/setup/tag")
     void saveTag(@RequestBody TagDto tagDto) {
         setupService.saveTag(tagDto);
+    }
+
+    @GetMapping("/setup/key")
+    SearchResult<KeyDto> findKeys() {
+        return SearchResult.<KeyDto>builder()
+            .columns(KeyDto.columns(true))
+            .data(setupService.findKeys())
+            .build();
+    }
+
+    @PostMapping("/setup/key")
+    void saveKey(@RequestBody KeyDto keyDto) {
+        setupService.saveKey(keyDto);
     }
 
 }

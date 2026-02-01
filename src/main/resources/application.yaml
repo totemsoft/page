@@ -29,7 +29,6 @@ spring:
       max-lifetime: 1800000
   devtools:
     add-properties: false
-  getenv.ignore: false
   jackson:
     default-property-inclusion: non_null
   jpa:

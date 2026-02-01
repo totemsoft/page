@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.totemsoft.page.model.ColumnDef.CellEditorEnum;
+import com.totemsoft.page.model.ColumnDef.FormatterEnum;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
@@ -29,6 +31,29 @@ public class KeyDto {
         return tags.stream()
             .map(t -> t.getTagTypeId() + ":" + t.getName())
             .collect(Collectors.joining(","));
+    }
+
+    public static List<ColumnDef> columns(boolean editable) {
+        return List.of(
+            ColumnDef.builder()
+                .key("id")
+                .label("ID")
+                //.hidden(true) // TODO: fix dataTable.doBeforeLoadData insertColumn issue
+                .formatter(FormatterEnum.NUMBER.name().toLowerCase())
+                .className(CssClasName.RIGHT)
+                .build(),
+            ColumnDef.builder()
+                .key("name")
+                .label("Name")
+                .sortable(true)
+                .editor(editable ? CellEditorEnum.TEXTBOX.name().toLowerCase() : null)
+                .build(),
+            ColumnDef.builder()
+                .key("title")
+                .label("Title")
+                .editor(editable ? CellEditorEnum.TEXTAREA.name().toLowerCase() : null)
+                .build()
+            );
     }
 
 }

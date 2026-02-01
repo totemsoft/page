@@ -176,5 +176,47 @@ YAHOO.page.setup = {
         }
         YAHOO.page.setup.tagsDialog.bringToTop();
         YAHOO.page.setup.tagsDialog.show();
+    },
+    editKeys: function() {
+        console.log('editKeys:');
+        const entityName = 'key';
+        if (!YAHOO.page.setup.keysDialog) {
+            const w = YUD.getViewportWidth();
+            YAHOO.page.setup.keysDialog = YAHOO.page.openEditDialog(entityName + 'Dialog', {
+                fixedcenter: 'contained',
+                width: (w / 3) + 'px',
+                buttons: [
+                    {text: 'Add', title: 'Add new Key', handler: function() {
+                        YAHOO.page.setup.keysDataTable.addRow({id: null, name: '', title: ''});
+                    }},
+                    {text: 'Close', isDefault: true, handler: function() {
+                        this.cancel();
+                    }}
+                ]
+            });
+            const requestBuilder = function(oState, oDataTable) {
+                let request = '' + entityName;
+                return request;
+            };
+            const saveEvent = function(oArgs) {
+                //const el = oArgs.target; // radio/checkbox, el.checked
+                const key = this.getColumn().field;
+                const row = this.getRecord()._oData;
+                const value = oArgs.newData;
+                const keyDto = {
+                    id: row.id, // PK
+                    name: key === 'name' ? value : row.name,
+                    title: key === 'title' ? value : row.title
+                };
+                if (keyDto.name && keyDto.title) {
+                    YAHOO.page.sendPostRequest('/setup/' + entityName, YAHOO.page.emptyCallback, keyDto);
+                }
+            };
+            YAHOO.page.setup.keysDataTable = YAHOO.page.setup.initDataTable(entityName, requestBuilder, saveEvent);
+        } else {
+            YAHOO.page.setup.updateDataTable(YAHOO.page.setup.keysDataTable);
+        }
+        YAHOO.page.setup.keysDialog.bringToTop();
+        YAHOO.page.setup.keysDialog.show();
     }
 };

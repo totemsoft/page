@@ -1,5 +1,9 @@
 -- DML (data) script
-insert into split_ratio (split_ratio_name, split_ratio_title) values
+SET AUTOCOMMIT OFF;
+
+BEGIN TRANSACTION;
+
+INSERT INTO split_ratio (split_ratio_name, split_ratio_title) SELECT * FROM (VALUES
   ('ONE', ''),
   ('HALF', '1/2 - 1/2'),
   ('THIRD', '1/3 - 1/3 - 1/3'),
@@ -8,9 +12,9 @@ insert into split_ratio (split_ratio_name, split_ratio_title) values
   ('ONE_QUATER', '1/4 - 3/4'),
   ('THREE_QUATER', '3/4 - 1/4'),
   ('QUATER', '1/4 - 1/4 - 1/4 - 1/4')
-  ;
+) WHERE NOT EXISTS (SELECT 1 FROM split_ratio);
 
-insert into tag_type (tag_type_name, tag_type_title) values
+INSERT INTO tag_type (tag_type_name, tag_type_title) SELECT * FROM (VALUES
   ('TAG_TYPE_01', 'Tag Type 01'), -- row
   ('TAG_TYPE_02', 'Tag Type 02'), -- column
   ('TAG_TYPE_03', 'Tag Type 03'),
@@ -21,10 +25,9 @@ insert into tag_type (tag_type_name, tag_type_title) values
   ('TAG_TYPE_08', 'Tag Type 08'),
   ('TAG_TYPE_09', 'Tag Type 09'),
   ('TAG_TYPE_10', 'Tag Type 10')
-  ,('TAG_TYPE_00', 'Tag Type 00')
-  ;
+) WHERE NOT EXISTS (SELECT 1 FROM tag_type);
 
-insert into tag (tag_name, tag_title, tag_type_id) values
+INSERT INTO tag (tag_name, tag_title, tag_type_id) SELECT * FROM (VALUES
   ('TAG_01', 'Tag 01', 1), -- row
   ('TAG_02', 'Tag 02', 1), -- row
   ('TAG_03', 'Tag 03', 1), -- row
@@ -37,25 +40,25 @@ insert into tag (tag_name, tag_title, tag_type_id) values
   ('TAG_10', 'Tag 10', 2), -- column
   ('TAG_11', 'Tag 11', 3),
   ('TAG_12', 'Tag 12', 4)
-  ;
+) WHERE NOT EXISTS (SELECT 1 FROM tag);
 
-insert into page (page_name) values
+INSERT INTO page (page_name) SELECT * FROM (VALUES
   ('My First Page')
-  ;
+) WHERE NOT EXISTS (SELECT 1 FROM page);
 
-insert into page_tab (tab_name, tab_index, page_id) values
+INSERT INTO page_tab (tab_name, tab_index, page_id) SELECT * FROM (VALUES
   ('Tab 1', 1, 1),
   ('Tab 2', 2, 1)
-  ;
+) WHERE NOT EXISTS (SELECT 1 FROM page_tab);
 
-insert into page_section (section_name, section_index, section_split_ratio, tab_id) values
+INSERT INTO page_section (section_name, section_index, section_split_ratio, tab_id) SELECT * FROM (VALUES
   ('Section 1', 1, 'ONE',       1),
   ('Section 2', 2, 'HALF',      1),
   ('Section 3', 1, 'ONE_THIRD', 2),
   ('Section 4', 2, 'THIRD',     2)
-  ;
+) WHERE NOT EXISTS (SELECT 1 FROM page_section);
 
-insert into page_sub_section (sub_section_name, sub_section_index, section_id, row_tag_type_id, column_tag_type_id) values
+INSERT INTO page_sub_section (sub_section_name, sub_section_index, section_id, row_tag_type_id, column_tag_type_id) SELECT * FROM (VALUES
   ('SubSection 1', 1, 1, NULL, NULL),
   ('SubSection 2', 1, 2, NULL, NULL),
   ('SubSection 3', 2, 2, NULL, NULL),
@@ -64,9 +67,9 @@ insert into page_sub_section (sub_section_name, sub_section_index, section_id, r
   ('SubSection 6', 1, 4, NULL, NULL),
   ('SubSection 7', 2, 4,    2,    1),
   ('SubSection 8', 3, 4,    1,    2)
-  ;
+) WHERE NOT EXISTS (SELECT 1 FROM page_sub_section);
 
-insert into series_data_key (key_name, key_title) values
+INSERT INTO series_data_key (key_name, key_title) SELECT * FROM (VALUES
   ('KEY_01', 'Key 01'),
   ('KEY_02', 'Key 02'),
   ('KEY_03', 'Key 03'),
@@ -77,9 +80,9 @@ insert into series_data_key (key_name, key_title) values
   ('KEY_08', 'Key 08'),
   ('KEY_09', 'Key 09'),
   ('KEY_10', 'Key 10')
-  ;
+) WHERE NOT EXISTS (SELECT 1 FROM series_data_key);
   
-insert into sub_section_key (sub_section_id, key_id) values
+INSERT INTO sub_section_key (sub_section_id, key_id) SELECT * FROM (VALUES
   -- sub-section #1
   (1, 1),
   -- sub-section #2
@@ -129,9 +132,9 @@ insert into sub_section_key (sub_section_id, key_id) values
   (8, 8),
   (8, 9),
   (8, 10)
-  ;
+) WHERE NOT EXISTS (SELECT 1 FROM sub_section_key);
 
-insert into key_tag (key_id, tag_id) values
+INSERT INTO key_tag (key_id, tag_id) SELECT * FROM (VALUES
   (1, 1),
   (1, 6),
   (2, 1),
@@ -143,4 +146,6 @@ insert into key_tag (key_id, tag_id) values
   (5, 2),
   (5, 10),
   (6, 10)
-  ;
+) WHERE NOT EXISTS (SELECT 1 FROM key_tag);
+
+COMMIT;

@@ -22,6 +22,7 @@ spring:
     password:
     driver-class-name: org.h2.Driver
     hikari:
+      auto-commit: false
       maximum-pool-size: 10
       minimum-idle: 0
       connection-timeout: 30000
@@ -35,10 +36,8 @@ spring:
     hibernate:
       ddl-auto: none # disable automatic DDL generation to avoid conflicts
     open-in-view: false
-#    properties:
-#    - hibernate.bytecode.provider: none
-#    - hibernate.enhancer.enableDirtyTracking: false
-#    - hibernate.enhancer.enableLazyInitialization: false
+    properties:
+    - hibernate.connection.provider_disables_autocommit: true
   main:
     lazy-initialization: true
   messages:
@@ -57,10 +56,12 @@ spring:
   # TODO: move to H2 specific profile
   sql:
     init:
-      continue-on-error: true # continue when duplicate data load error occurs (data.sql)
+      #continue-on-error: true # continue when duplicate data load error occurs (data.sql)
       mode: always
       schema-locations: optional:classpath*:schema.sql
       data-locations: optional:classpath*:data.sql
+  transaction:
+    rollback-on-commit-failure: true
   web:
     resources:
       cache:

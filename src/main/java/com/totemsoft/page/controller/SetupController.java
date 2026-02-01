@@ -35,8 +35,8 @@ class SetupController {
     }
 
     @PostMapping("/setup/tagType")
-    void saveTagType(@RequestBody TagTypeDto tagTypeDto) {
-        setupService.saveTagType(tagTypeDto);
+    Integer saveTagType(@RequestBody TagTypeDto tagTypeDto) {
+        return setupService.saveTagType(tagTypeDto);
     }
 
     @GetMapping("/setup/tag")
@@ -49,8 +49,8 @@ class SetupController {
     }
 
     @PostMapping("/setup/tag")
-    void saveTag(@RequestBody TagDto tagDto) {
-        setupService.saveTag(tagDto);
+    Long saveTag(@RequestBody TagDto tagDto) {
+        return setupService.saveTag(tagDto);
     }
 
     @GetMapping("/setup/key")
@@ -62,8 +62,8 @@ class SetupController {
     }
 
     @PostMapping("/setup/key")
-    void saveKey(@RequestBody KeyDto keyDto) {
-        setupService.saveKey(keyDto);
+    Long saveKey(@RequestBody KeyDto keyDto) {
+        return setupService.saveKey(keyDto);
     }
 
 }

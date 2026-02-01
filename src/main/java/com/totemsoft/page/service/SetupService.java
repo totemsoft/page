@@ -40,7 +40,7 @@ public class SetupService {
     private final TagTypeRepository tagTypeRepository;
 
     @Transactional
-    public void saveTag(TagDto dto) {
+    public Long saveTag(TagDto dto) {
         log.trace("saving: {}", dto);
         final var id = dto.getId();
         Tag entity;
@@ -53,10 +53,11 @@ public class SetupService {
             entity.setTitle(dto.getTitle());
         }
         entity = tagRepository.save(entity);
+        return entity.getId();
     }
 
     @Transactional
-    public void saveTagType(TagTypeDto dto) {
+    public Integer saveTagType(TagTypeDto dto) {
         log.trace("saving: {}", dto);
         final var id = dto.getId();
         TagType entity;
@@ -69,6 +70,7 @@ public class SetupService {
             entity.setTitle(dto.getTitle());
         }
         entity = tagTypeRepository.save(entity);
+        return entity.getId();
     }
 
     @Transactional
@@ -78,7 +80,7 @@ public class SetupService {
     }
 
     @Transactional
-    public void saveKey(KeyDto dto) {
+    public Long saveKey(KeyDto dto) {
         log.trace("saving: {}", dto);
         final var id = dto.getId();
         Key entity;
@@ -91,6 +93,7 @@ public class SetupService {
             entity.setTitle(dto.getTitle());
         }
         entity = keyRepository.save(entity);
+        return entity.getId();
     }
 
 }

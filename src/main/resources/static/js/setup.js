@@ -71,10 +71,27 @@ YAHOO.page.setup = {
             cache: false,
             success: dataTable.onDataReturnInsertRows,
             failure: dataTable.onDataReturnInsertRows,
-            argument: state,
-            scope: dataTable
+            scope: dataTable,
+            argument: state
         };
         dataTable.getDataSource().sendRequest(request, callback);
+    },
+    saveCallback: {
+        cache: false,
+        success: function(oResponse) {
+            const id = parseInt(oResponse.responseText);
+            const self = YAHOO.page.setup.saveCallback;
+            const data = self.argument;
+            if (!data.id) {
+                data.id = id;
+                this.updateRow(this.getState().totalRecords - 1, data);
+            }
+        },
+        failure: function(oResponse) {
+            YAHOO.page.failureHandler(oResponse);
+        },
+        scope: null,   // dataTable
+        argument: null // data
     },
     editTagTypes: function() {
         console.log('editTagTypes:');
@@ -100,15 +117,18 @@ YAHOO.page.setup = {
             const saveEvent = function(oArgs) {
                 //const el = oArgs.target; // radio/checkbox, el.checked
                 const key = this.getColumn().field;
-                const row = this.getRecord()._oData;
+                const data = this.getRecord()._oData;
                 const value = oArgs.newData;
                 const tagTypeDto = {
-                    id: row.id, // PK
-                    name: key === 'name' ? value : row.name,
-                    title: key === 'title' ? value : row.title
+                    id: data.id, // PK
+                    name: key === 'name' ? value : data.name,
+                    title: key === 'title' ? value : data.title
                 };
                 if (tagTypeDto.name && tagTypeDto.title) {
-                    YAHOO.page.sendPostRequest('/setup/' + entityName, YAHOO.page.emptyCallback, tagTypeDto);
+                    const callback = YAHOO.page.setup.saveCallback;
+                    callback.scope = YAHOO.page.setup.tagTypesDataTable;
+                    callback.argument = data;
+                    YAHOO.page.sendPostRequest('/setup/' + entityName, callback, tagTypeDto);
                 }
             };
             YAHOO.page.setup.tagTypesDataTable = YAHOO.page.setup.initDataTable(entityName, requestBuilder, saveEvent);
@@ -146,17 +166,20 @@ YAHOO.page.setup = {
             const saveEvent = function(oArgs) {
                 //const el = oArgs.target; // radio/checkbox, el.checked
                 const key = this.getColumn().field;
-                const row = this.getRecord()._oData;
+                const data = this.getRecord()._oData;
                 const value = oArgs.newData;
                 const tagTypeId = parseInt(YUD.get(entityName + '.tagType').value);
                 const tagDto = {
-                    id: row.id, // PK
-                    name: key === 'name' ? value : row.name,
-                    title: key === 'title' ? value : row.title,
+                    id: data.id, // PK
+                    name: key === 'name' ? value : data.name,
+                    title: key === 'title' ? value : data.title,
                     tagTypeId: tagTypeId
                 };
                 if (tagDto.name && tagDto.title) {
-                    YAHOO.page.sendPostRequest('/setup/' + entityName, YAHOO.page.emptyCallback, tagDto);
+                    const callback = YAHOO.page.setup.saveCallback;
+                    callback.scope = YAHOO.page.setup.tagsDataTable;
+                    callback.argument = data;
+                    YAHOO.page.sendPostRequest('/setup/' + entityName, callback, tagDto);
                 }
             };
             YAHOO.page.setup.tagsDataTable = YAHOO.page.setup.initDataTable(entityName, requestBuilder, saveEvent);
@@ -201,15 +224,18 @@ YAHOO.page.setup = {
             const saveEvent = function(oArgs) {
                 //const el = oArgs.target; // radio/checkbox, el.checked
                 const key = this.getColumn().field;
-                const row = this.getRecord()._oData;
+                const data = this.getRecord()._oData;
                 const value = oArgs.newData;
                 const keyDto = {
-                    id: row.id, // PK
-                    name: key === 'name' ? value : row.name,
-                    title: key === 'title' ? value : row.title
+                    id: data.id, // PK
+                    name: key === 'name' ? value : data.name,
+                    title: key === 'title' ? value : data.title
                 };
                 if (keyDto.name && keyDto.title) {
-                    YAHOO.page.sendPostRequest('/setup/' + entityName, YAHOO.page.emptyCallback, keyDto);
+                    const callback = YAHOO.page.setup.saveCallback;
+                    callback.scope = YAHOO.page.setup.keysDataTable;
+                    callback.argument = data;
+                    YAHOO.page.sendPostRequest('/setup/' + entityName, callback, keyDto);
                 }
             };
             YAHOO.page.setup.keysDataTable = YAHOO.page.setup.initDataTable(entityName, requestBuilder, saveEvent);

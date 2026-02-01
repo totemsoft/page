@@ -53,7 +53,7 @@ public class Application {
                     try {
                         final var owner = Files.getOwner(p, LinkOption.NOFOLLOW_LINKS).getName();
                         if (dbName.isPresent() && !fileName.startsWith(dbName.get() + ".")) {
-                            //Files.deleteIfExists(p);
+                            Files.deleteIfExists(p);
                         }
                         return lastModified + "\t" + owner + "\t" + p.toString() + (!file.exists() ? " [*]" : "");
                     } catch (Exception ignore) {

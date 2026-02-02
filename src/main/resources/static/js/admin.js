@@ -354,20 +354,24 @@ YAHOO.page.admin = {
                     keys: keys
                 });
             };
-            const oEventDef = {
-                name:'beforeShow',
-                handler: function(oType, oArgs) {
-                    YAHOO.page.admin.initKeysDataTable([]);
-                    YAHOO.page.admin.findSubSectionKeys();
-                }
-            };
             const w = YUD.getViewportWidth();
+            const h = YUD.getViewportHeight();
             YAHOO.page.admin.mapSubSectionKeysDialog = YAHOO.page.openEditDialog('mapSubSectionKeysDialog', {
                     fixedcenter: 'contained',
-                    width: (w / 2) + 'px'
+                    width: Math.floor(w / 3 * 2) + 'px',
+                    height: Math.floor(h / 3 * 2) + 'px',
+                    eventDefs: [
+                        {
+                            name: 'beforeShow',
+                            handler: function(oType, oArgs) {
+                                YAHOO.page.admin.initKeysDataTable([]);
+                                YAHOO.page.admin.findSubSectionKeys();
+                            }
+                        }
+                    ]
                 },
-                fnSubmitHandler, 
-                oEventDef);
+                fnSubmitHandler
+            );
             // preview
             YAHOO.page.admin.initPreviewDataTable();
         } else {
@@ -443,9 +447,9 @@ YAHOO.page.admin = {
     initKeysDataTable: function(records) {
         if (!YAHOO.page.admin.keysDataTable) {
             const columnDefs = [
-                {key: 'id', label: 'ID', sortable: true, width: 20},
+                {key: 'id', label: 'ID', width: 20},
                 {key: 'name', label: 'Name', sortable: true, width: 50},
-                {key: 'title', label: 'Title', sortable: true, width: 100},
+                {key: 'title', label: 'Title', width: 100},
                 {key: 'tagSummary', label: 'Tag Summary', width: 200}
             ];
             const fields = columnDefs.map(columnDef => columnDef.key);

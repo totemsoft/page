@@ -74,6 +74,13 @@ public class SetupService {
     }
 
     @Transactional
+    public List<TagDto> findTagsByKey(long keyId) {
+        final var key = keyRepository.findById(keyId)
+            .orElseThrow(() -> new EntityNotFoundException(keyId, Key.class));
+        return setupMapper.map(key).getTags();
+    }
+
+    @Transactional
     public List<KeyDto> findKeys() {
         final var keys = keyRepository.findAll(Sort.by("title"));
         return setupMapper.map(keys);

@@ -21,8 +21,8 @@ YAHOO.page.setup = {
             initialLoad: true,
             initialRequest: initialRequest,
             generateRequest: requestBuilder,
-            height: h / 3 * 2 + 'px',
-            width: (r.width - 2) + 'px'
+            width: r.width + 'px',
+            height: h / 3 * 2 + 'px'
         };
         const oColumnDefs = [];
         const dataTable = new YAHOO.widget.ScrollingDataTable(elContainer,
@@ -53,6 +53,8 @@ YAHOO.page.setup = {
             }
             return true;
         };
+        dataTable.subscribe('rowClickEvent', dataTable.onEventSelectRow);
+        dataTable.subscribe('cellClickEvent', dataTable.onEventSelectCell);
         return dataTable;
     },
     updateDataTable: function(dataTable) {
@@ -100,7 +102,7 @@ YAHOO.page.setup = {
             const w = YUD.getViewportWidth();
             YAHOO.page.setup.tagTypesDialog = YAHOO.page.openEditDialog(entityName + 'Dialog', {
                 fixedcenter: 'contained',
-                width: (w / 3) + 'px',
+                width: Math.floor(w / 3) + 'px',
                 buttons: [
                     {text: 'Add', title: 'Add new Tag Type', handler: function() {
                         YAHOO.page.setup.tagTypesDataTable.addRow({id: null, name: '', title: ''});
@@ -145,7 +147,7 @@ YAHOO.page.setup = {
             const w = YUD.getViewportWidth();
             YAHOO.page.setup.tagsDialog = YAHOO.page.openEditDialog(entityName + 'Dialog', {
                 fixedcenter: 'contained',
-                width: (w / 2) + 'px',
+                width: Math.floor(w / 2) + 'px',
                 buttons: [
                     {text: 'Add', title: 'Add new Tag', handler: function() {
                         YAHOO.page.setup.tagsDataTable.addRow({id: null, name: '', title: ''});
@@ -205,11 +207,13 @@ YAHOO.page.setup = {
         const entityName = 'key';
         if (!YAHOO.page.setup.keysDialog) {
             const w = YUD.getViewportWidth();
+            //const h = YUD.getViewportHeight();
             YAHOO.page.setup.keysDialog = YAHOO.page.openEditDialog(entityName + 'Dialog', {
                 fixedcenter: 'contained',
-                width: (w / 2) + 'px',
+                width: Math.floor(w / 2) + 'px',
+                //height: Math.floor(h / 2) + 'px',
                 buttons: [
-                    {text: 'Add', title: 'Add new Key', handler: function() {
+                    {text: 'Add', handler: function() {
                         YAHOO.page.setup.keysDataTable.addRow({id: null, name: '', title: ''});
                     }},
                     {text: 'Close', isDefault: true, handler: function() {
@@ -238,11 +242,96 @@ YAHOO.page.setup = {
                     YAHOO.page.sendPostRequest('/setup/' + entityName, callback, keyDto);
                 }
             };
-            YAHOO.page.setup.keysDataTable = YAHOO.page.setup.initDataTable(entityName, requestBuilder, saveEvent);
+            const dataTable = YAHOO.page.setup.initDataTable(entityName, requestBuilder, saveEvent);
+            // 3. fired when the DataTable's DOM is rendered or dirty (or postRenderEvent)
+            dataTable.subscribe('renderEvent', function() {
+                const triggerNodes = [];
+                const actionColumn = this.getColumn('action');
+                const rows = this.getRecordSet().getRecords();
+                rows.forEach(row => {
+                    const data = row.getData();
+                    const tdLinerEl = this.getTdLinerEl({record:row, column:actionColumn});
+                    triggerNodes.push(tdLinerEl);
+                }, this);
+                YUE.addListener(triggerNodes, 'click', function(oEvent) {
+                    const tdLinerEl = YUE.getTarget(oEvent); // tdLinerEl
+                    const tdEl = tdLinerEl.parentNode; // td
+                    if (YUD.hasClass(tdEl, 'collapsed')) {
+                        setTimeout(function() {
+                            const dataTable = YAHOO.page.setup.keysDataTable;
+                            const rowId = dataTable.getLastSelectedRecord();
+                            const row = dataTable.getRecord(rowId);
+                            YAHOO.page.setup.editKeyTags(row);
+                        }, 0);
+                    }
+                });
+            });
+            //
+            YAHOO.page.setup.keysDataTable = dataTable;
         } else {
             YAHOO.page.setup.updateDataTable(YAHOO.page.setup.keysDataTable);
         }
         YAHOO.page.setup.keysDialog.bringToTop();
         YAHOO.page.setup.keysDialog.show();
+    },
+    editKeyTags: function(row) {
+        const data = row.getData();
+        const keyId = data.id;
+        console.log('editKeyTags: ' + keyId);
+        const entityName = 'tagByKey';
+        if (!YAHOO.page.setup.keyTagsDialog) {
+            const w = YUD.getViewportWidth();
+            //const h = YUD.getViewportHeight();
+            YAHOO.page.setup.keyTagsDialog = YAHOO.page.openEditDialog(entityName + 'Dialog', {
+                fixedcenter: 'contained',
+                width: Math.floor(w / 2) + 'px',
+                //height: Math.floor(h / 4) + 'px',
+                buttons: [
+                    {text: 'Add', handler: function() {
+                        YAHOO.page.setup.keyTagsDataTable.addRow({id: null, name: '', title: ''});
+                    }},
+                    {text: 'Close', isDefault: true, handler: function() {
+                        this.cancel();
+                    }}
+                ],
+                eventDefs: [
+                    {
+                        name: 'show',
+                        handler: function(oType, oArgs) {
+                            const tdEl = YAHOO.page.setup.keysDataTable.getSelectedTdEls()[0];
+                            YAHOO.page.removeClass(tdEl, 'collapsed');
+                            YAHOO.page.addClass(tdEl, 'expanded');
+                        }
+                    },
+                    {
+                        name: 'hide',
+                        handler: function(oType, oArgs) {
+                            const tdEl = YAHOO.page.setup.keysDataTable.getSelectedTdEls()[0];
+                            YAHOO.page.removeClass(tdEl, 'expanded');
+                            YAHOO.page.addClass(tdEl, 'collapsed');
+                        }
+                    }
+                ]
+            });
+            //
+            const requestBuilder = function(oState, oDataTable) {
+                let request = '' + entityName;
+                request += '/' + (oDataTable ? oDataTable.keyId : keyId);
+                return request;
+            };
+            const saveEvent = function(oArgs) {
+                const el = oArgs.target; // radio/checkbox, el.checked
+                const key = this.getColumn().field;
+                const data = this.getRecord()._oData;
+                const value = oArgs.newData;
+                // TODO: save
+            };
+            YAHOO.page.setup.keyTagsDataTable = YAHOO.page.setup.initDataTable(entityName, requestBuilder, saveEvent);
+        } else {
+            YAHOO.page.setup.keyTagsDataTable.keyId = keyId;
+            YAHOO.page.setup.updateDataTable(YAHOO.page.setup.keyTagsDataTable);
+        }
+        YAHOO.page.setup.keyTagsDialog.bringToTop();
+        YAHOO.page.setup.keyTagsDialog.show();
     }
 };

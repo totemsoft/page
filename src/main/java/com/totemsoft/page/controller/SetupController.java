@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -45,6 +46,14 @@ class SetupController {
         return SearchResult.<TagDto>builder()
             .columns(TagDto.columns(true))
             .data(tagTypeId.isEmpty() ? List.of() : pageService.findTags(tagTypeId.get()))
+            .build();
+    }
+
+    @GetMapping("/setup/tagByKey/{keyId}")
+    SearchResult<TagDto> findTagsByKey(@PathVariable long keyId) {
+        return SearchResult.<TagDto>builder()
+            .columns(TagDto.columns(false))
+            .data(setupService.findTagsByKey(keyId))
             .build();
     }
 

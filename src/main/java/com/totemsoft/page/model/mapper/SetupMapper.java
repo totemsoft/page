@@ -12,6 +12,7 @@ import com.totemsoft.page.model.entity.Key;
 public interface SetupMapper {
 
     Key map(KeyDto keyDto);
+    KeyDto map(Key key);
     List<KeyDto> map(List<Key> keys);
 
 }

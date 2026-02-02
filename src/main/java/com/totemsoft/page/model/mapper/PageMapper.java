@@ -24,7 +24,7 @@ import com.totemsoft.page.model.entity.TagType;
 public interface PageMapper {
 
     List<KeyDto> mapKeys(List<Key> keys);
-    List<Key> mapKeyDtos(List<KeyDto> keys);
+    List<Key> mapKeyDtos(List<KeyDto> keyDtos);
 
     PageDto map(Page page);
     Page map(PageDto pageDto);

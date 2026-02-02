@@ -100,7 +100,7 @@
                     <div id="subSectionKeysSearch" class="yui-u first">
                         <div th:replace="~{ ::keysSearchFragment }"></div>
                         <div class="yui-gd nowrap" style="width: auto;">
-                            <div class="yui-u first">
+                            <div class="yui-u first right">
                                 <input type="button" id="subSectionKeysClearButton" title="Clear Search Results" value="Clear" />
                             </div>
                             <div class="yui-u">
@@ -147,9 +147,9 @@
     </div>
 
     <div id="admin-fragments" class="hidden">
-        <div th:fragment="keysSearchFragment">
+        <div th:fragment="keysSearchFragment" class="table-container">
             <div th:each="item: ${tagTypes}">
-                <label th:for="|input.subSectionKeys.tagType.${item.id}|" th:text="|${item.id}:${item.name}|" class="bold"></label>
+                <div th:text="|${item.id}:${item.name}|" class="bold"></div>
                 <div th:id="|subSectionKeys.tagType.${item.id}|">
                     <input th:id="|input.subSectionKeys.tagType.${item.id}|" />
                     <div th:id="|container.subSectionKeys.tagType.${item.id}|"></div>

@@ -23,6 +23,18 @@ YAHOO.page = {
             YUD.addClass(el, className);
         }
     },
+    removeClass: function(el, className) {
+        if (className && YUD.hasClass(el, className)) {
+            YUD.removeClass(el, className);
+        }
+    },
+    toggleClass: function(el, className) {
+        if (YUD.hasClass(el, className)) {
+            YUD.removeClass(el, className);
+        } else {
+            YUD.addClass(el, className);
+        }
+    },
     formatTag: function(el, oRecord, oColumn, oData, oDataTable) {
         //const oDT = oDataTable || this;
         const value = (YL.isValue(oData)) ? oData : '';
@@ -85,16 +97,17 @@ YAHOO.page = {
         const message = oResponse && oResponse.responseText ? oResponse.responseText : oResponse.statusText;
         console.log('Failure: ' + status + '<br/>' + message);
     },
-    openEditDialog: function(el, oConfig, fnSubmitHandler, oEventDef) {
+    openEditDialog: function(el, oConfig, fnSubmitHandler) {
         const dialog = new YAHOO.widget.SimpleDialog(el, {
+            zIndex: oConfig && oConfig.zIndex !== undefined ? oConfig.zIndex : undefined,
             close: true,
             draggable: true,
             fixedcenter: oConfig && oConfig.fixedcenter !== undefined ? oConfig.fixedcenter : true,
             visible: false,
-            modal: false,
+            modal: oConfig && oConfig.modal !== undefined ? oConfig.modal : false,
             icon: null,
-            height: oConfig && oConfig.height !== undefined ? oConfig.height : null,
             width: oConfig && oConfig.width !== undefined ? oConfig.width : null,
+            height: oConfig && oConfig.height !== undefined ? oConfig.height : null,
             autofillheight: 'body',
             constraintoviewport: oConfig && oConfig.constraintoviewport !== undefined ? oConfig.constraintoviewport : true,
             context: ['showbtn', 'tl', 'bl'],
@@ -114,8 +127,10 @@ YAHOO.page = {
             { keys: 27 },
             { fn: function() {this.cancel();}, scope: dialog, correctScope: true }
         ));
-        if (oEventDef) {
-            dialog.subscribe(oEventDef.name, oEventDef.handler);
+        if (oConfig && oConfig.eventDefs !== undefined) {
+            oConfig.eventDefs.forEach(oEventDef => {
+                dialog.subscribe(oEventDef.name, oEventDef.handler);
+            });
         }
         dialog.render(document.body);
         return dialog;
@@ -320,7 +335,7 @@ YAHOO.page = {
             YAHOO.page.moveSections();
             return oPayload || {};
         };
-        // 3. fired when the DataTable's DOM is rendered or dirty. 
+        // 3. fired when the DataTable's DOM is rendered or dirty (or postRenderEvent)
         //dataTable.subscribe('renderEvent', function() {
         //    // TODO: init subSection context menu
         //});

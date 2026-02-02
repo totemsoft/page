@@ -56,6 +56,11 @@ public class KeyDto {
             ColumnDef.builder()
                 .key("tagSummary")
                 .label("Tag Summary")
+                .build(),
+            ColumnDef.builder()
+                .key("action")
+                .label(CssClasName.NBSP)
+                .className("collapsed")
                 .build()
             );
     }

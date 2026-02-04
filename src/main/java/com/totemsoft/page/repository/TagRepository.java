@@ -12,6 +12,6 @@ public interface TagRepository extends JpaRepository<Tag, Long> {
 
     List<Tag> findByTagTypeId(int tagTypeId);
 
-    List<Tag> findByTagTypeIdAndTitleContainingIgnoreCase(int tagTypeId, String title);
+    List<Tag> findByTagTypeIdAndNameContainingIgnoreCase(int tagTypeId, String name);
 
 }

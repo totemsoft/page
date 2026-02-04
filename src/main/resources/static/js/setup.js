@@ -36,10 +36,22 @@ YAHOO.page.setup = {
                 let editable = false;
                 columnDefs.forEach((columnDef, index) => {
                     if (!this.getColumn(columnDef.key)) {
+                        const oConfigs = {
+                            disableBtns: columnDef.disableBtns
+                        };
+                        if (columnDef.editor === 'dropdown' && columnDef.dropdownOptions !== undefined) {
+                            oConfigs.dropdownOptions = columnDef.dropdownOptions;
+                            oConfigs.multiple = columnDef.multiple;
+                            columnDef.editor = new YAHOO.widget.DropdownCellEditor(oConfigs);
+                        } else if (columnDef.editor === 'textbox') {
+                            columnDef.editor = new YAHOO.widget.TextboxCellEditor(oConfigs);
+                        }
                         const column = this.insertColumn(columnDef, index);
-                        if (columnDef.editor) {
+                        if (column.editor) {
                             editable = true;
-                            column.editor.subscribe('saveEvent', saveEvent);
+                            if (saveEvent !== undefined) {
+                                column.editor.subscribe('saveEvent', saveEvent);
+                            }
                         }
                     }
                 })
@@ -53,8 +65,6 @@ YAHOO.page.setup = {
             }
             return true;
         };
-        dataTable.subscribe('rowClickEvent', dataTable.onEventSelectRow);
-        dataTable.subscribe('cellClickEvent', dataTable.onEventSelectCell);
         return dataTable;
     },
     updateDataTable: function(dataTable) {
@@ -119,7 +129,7 @@ YAHOO.page.setup = {
             const saveEvent = function(oArgs) {
                 //const el = oArgs.target; // radio/checkbox, el.checked
                 const key = this.getColumn().field;
-                const data = this.getRecord()._oData;
+                const data = this.getRecord().getData();
                 const value = oArgs.newData;
                 const tagTypeDto = {
                     id: data.id, // PK
@@ -133,7 +143,10 @@ YAHOO.page.setup = {
                     YAHOO.page.sendPostRequest('/setup/' + entityName, callback, tagTypeDto);
                 }
             };
-            YAHOO.page.setup.tagTypesDataTable = YAHOO.page.setup.initDataTable(entityName, requestBuilder, saveEvent);
+            const dataTable = YAHOO.page.setup.initDataTable(entityName, requestBuilder, saveEvent);
+            dataTable.subscribe('rowClickEvent', dataTable.onEventSelectRow);
+            dataTable.subscribe('cellClickEvent', dataTable.onEventSelectCell);
+            YAHOO.page.setup.tagTypesDataTable = dataTable;
         } else {
             YAHOO.page.setup.updateDataTable(YAHOO.page.setup.tagTypesDataTable);
         }
@@ -168,7 +181,7 @@ YAHOO.page.setup = {
             const saveEvent = function(oArgs) {
                 //const el = oArgs.target; // radio/checkbox, el.checked
                 const key = this.getColumn().field;
-                const data = this.getRecord()._oData;
+                const data = this.getRecord().getData();
                 const value = oArgs.newData;
                 const tagTypeId = parseInt(YUD.get(entityName + '.tagType').value);
                 const tagDto = {
@@ -184,7 +197,10 @@ YAHOO.page.setup = {
                     YAHOO.page.sendPostRequest('/setup/' + entityName, callback, tagDto);
                 }
             };
-            YAHOO.page.setup.tagsDataTable = YAHOO.page.setup.initDataTable(entityName, requestBuilder, saveEvent);
+            const dataTable = YAHOO.page.setup.initDataTable(entityName, requestBuilder, saveEvent);
+            dataTable.subscribe('rowClickEvent', dataTable.onEventSelectRow);
+            dataTable.subscribe('cellClickEvent', dataTable.onEventSelectCell);
+            YAHOO.page.setup.tagsDataTable = dataTable;
             // enable/disable add button
             const configAddButton = function(elTagType) {
                 const buttons = YAHOO.page.setup.tagsDialog.getButtons();
@@ -228,7 +244,7 @@ YAHOO.page.setup = {
             const saveEvent = function(oArgs) {
                 //const el = oArgs.target; // radio/checkbox, el.checked
                 const key = this.getColumn().field;
-                const data = this.getRecord()._oData;
+                const data = this.getRecord().getData();
                 const value = oArgs.newData;
                 const keyDto = {
                     id: data.id, // PK
@@ -243,6 +259,8 @@ YAHOO.page.setup = {
                 }
             };
             const dataTable = YAHOO.page.setup.initDataTable(entityName, requestBuilder, saveEvent);
+            dataTable.subscribe('rowClickEvent', dataTable.onEventSelectRow);
+            dataTable.subscribe('cellClickEvent', dataTable.onEventSelectCell);
             // 3. fired when the DataTable's DOM is rendered or dirty (or postRenderEvent)
             dataTable.subscribe('renderEvent', function() {
                 const triggerNodes = [];
@@ -257,16 +275,20 @@ YAHOO.page.setup = {
                     const tdLinerEl = YUE.getTarget(oEvent); // tdLinerEl
                     const tdEl = tdLinerEl.parentNode; // td
                     if (YUD.hasClass(tdEl, 'collapsed')) {
+                        YAHOO.page.removeClass(tdEl, 'collapsed');
+                        YAHOO.page.addClass(tdEl, 'expanded');
                         setTimeout(function() {
                             const dataTable = YAHOO.page.setup.keysDataTable;
                             const rowId = dataTable.getLastSelectedRecord();
                             const row = dataTable.getRecord(rowId);
                             YAHOO.page.setup.editKeyTags(row);
                         }, 0);
+                    } else {
+                        YAHOO.page.removeClass(tdEl, 'expanded');
+                        YAHOO.page.addClass(tdEl, 'collapsed');
                     }
                 });
             });
-            //
             YAHOO.page.setup.keysDataTable = dataTable;
         } else {
             YAHOO.page.setup.updateDataTable(YAHOO.page.setup.keysDataTable);
@@ -281,36 +303,34 @@ YAHOO.page.setup = {
         const entityName = 'tagByKey';
         if (!YAHOO.page.setup.keyTagsDialog) {
             const w = YUD.getViewportWidth();
-            //const h = YUD.getViewportHeight();
+            const fnSubmitHandler = function() {
+                // TODO: save all table data
+                
+            };
             YAHOO.page.setup.keyTagsDialog = YAHOO.page.openEditDialog(entityName + 'Dialog', {
                 fixedcenter: 'contained',
-                width: Math.floor(w / 2) + 'px',
-                //height: Math.floor(h / 4) + 'px',
+                width: Math.floor(w / 3) + 'px',
+                //modal: true, // prevent typing in AutoComplete
                 buttons: [
                     {text: 'Add', handler: function() {
-                        YAHOO.page.setup.keyTagsDataTable.addRow({id: null, name: '', title: ''});
+                        YAHOO.page.setup.keyTagsDataTable.addRow({id: null, name: '', tagTypeId: null, title: ''});
                     }},
+                    {text: 'Save', handler: fnSubmitHandler},
                     {text: 'Close', isDefault: true, handler: function() {
                         this.cancel();
                     }}
                 ],
                 eventDefs: [
-                    {
-                        name: 'show',
-                        handler: function(oType, oArgs) {
-                            const tdEl = YAHOO.page.setup.keysDataTable.getSelectedTdEls()[0];
-                            YAHOO.page.removeClass(tdEl, 'collapsed');
-                            YAHOO.page.addClass(tdEl, 'expanded');
-                        }
-                    },
-                    {
-                        name: 'hide',
-                        handler: function(oType, oArgs) {
-                            const tdEl = YAHOO.page.setup.keysDataTable.getSelectedTdEls()[0];
-                            YAHOO.page.removeClass(tdEl, 'expanded');
-                            YAHOO.page.addClass(tdEl, 'collapsed');
-                        }
-                    }
+                    {name: 'show', handler: function(oType, oArgs) {
+                        const tdEl = YAHOO.page.setup.keysDataTable.getSelectedTdEls()[0];
+                        YAHOO.page.removeClass(tdEl, 'collapsed');
+                        YAHOO.page.addClass(tdEl, 'expanded');
+                    }},
+                    {name: 'hide', handler: function(oType, oArgs) {
+                        const tdEl = YAHOO.page.setup.keysDataTable.getSelectedTdEls()[0];
+                        YAHOO.page.removeClass(tdEl, 'expanded');
+                        YAHOO.page.addClass(tdEl, 'collapsed');
+                    }}
                 ]
             });
             //
@@ -319,19 +339,61 @@ YAHOO.page.setup = {
                 request += '/' + (oDataTable ? oDataTable.keyId : keyId);
                 return request;
             };
-            const saveEvent = function(oArgs) {
-                const el = oArgs.target; // radio/checkbox, el.checked
-                const key = this.getColumn().field;
-                const data = this.getRecord()._oData;
-                const value = oArgs.newData;
-                // TODO: save
-            };
-            YAHOO.page.setup.keyTagsDataTable = YAHOO.page.setup.initDataTable(entityName, requestBuilder, saveEvent);
+            const dataTable = YAHOO.page.setup.initDataTable(entityName, requestBuilder);
+            dataTable.subscribe('dropdownChangeEvent', function(oArgs) {
+                const elDropdown = oArgs.target;
+                const oRecord = this.getRecord(elDropdown);
+                oRecord.setData('tagTypeId', elDropdown.value);
+            });
+            // 3. fired when the DataTable's DOM is rendered or dirty (renderEvent or postRenderEvent)
+            dataTable.subscribe('renderEvent', function() {
+                // edit tag (name column) for selected tagType (tagTypeId column)
+                const editor = this.getColumn('name').editor;
+                editor.doAfterRender = function() {
+                    if (!this.autoComplete) {
+                        YAHOO.page.setup.initTagByKeyAutoComplete(this);
+                    }
+                };
+            });
+            YAHOO.page.setup.keyTagsDataTable = dataTable;
         } else {
+            YAHOO.page.setup.tagByKeyAutoComplete = null;
             YAHOO.page.setup.keyTagsDataTable.keyId = keyId;
             YAHOO.page.setup.updateDataTable(YAHOO.page.setup.keyTagsDataTable);
         }
         YAHOO.page.setup.keyTagsDialog.bringToTop();
         YAHOO.page.setup.keyTagsDialog.show();
+    },
+    initTagByKeyAutoComplete: function(editor) {
+        console.log('initTagByKeyAutoComplete:');
+        const input = editor.textbox;
+        const container = YUD.get('container.tagByKey');
+        const data = editor.getRecord().getData();
+        const keyId = data.id;
+        const tagTypeId = data.tagTypeId;
+        const value = input.value;
+        //
+        const requestBuilder = function(sQuery) {
+            const data = editor.getRecord().getData();
+            return data.tagTypeId + '?query=' + sQuery;
+        };
+        const ds = new YAHOO.util.XHRDataSource('/page/tag/');
+        ds.responseType = YAHOO.util.XHRDataSource.TYPE_JSON;
+        ds.responseSchema = {
+            resultsList: 'records',
+            fields: ['name', 'id']
+        };
+        const ac = new YAHOO.widget.AutoComplete(input, container, ds, {
+            prehighlightClassName: 'yui-ac-prehighlight',
+            generateRequest: requestBuilder,
+            autoHighlight: false,
+            allowBrowserAutocomplete: false,
+            forceSelection: true,
+            typeAheadDelay: 0.5,
+            queryDelay: 0.4,
+            minQueryLength: 1,
+            maxResultsDisplayed: 100
+        });
+        editor.autoComplete = ac;
     }
 };

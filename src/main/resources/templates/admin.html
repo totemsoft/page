@@ -149,7 +149,7 @@
     <div id="admin-fragments" class="hidden">
         <div th:fragment="keysSearchFragment" class="table-container">
             <div th:each="item: ${tagTypes}">
-                <div th:text="|${item.id}:${item.name}|" class="bold"></div>
+                <div th:text="|${item.id}:${item.name}|" th:title="${item.title}" class="bold"></div>
                 <div th:id="|subSectionKeys.tagType.${item.id}|">
                     <input th:id="|input.subSectionKeys.tagType.${item.id}|" />
                     <div th:id="|container.subSectionKeys.tagType.${item.id}|"></div>

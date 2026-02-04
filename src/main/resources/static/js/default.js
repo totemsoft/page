@@ -97,6 +97,16 @@ YAHOO.page = {
         const message = oResponse && oResponse.responseText ? oResponse.responseText : oResponse.statusText;
         console.log('Failure: ' + status + '<br/>' + message);
     },
+    isElementObscured: function(element) {
+        const r = YUD.getRegion(element);
+        // Check a point near the center of the element
+        const x = r.left + r.width / 2;
+        const y = r.top + r.height / 2;
+        // Get the top-most element at that point
+        const topElement = document.elementFromPoint(x, y);
+        // Check if the top element is the original element or a descendant of it
+        return !element.contains(topElement);
+    },
     openEditDialog: function(el, oConfig, fnSubmitHandler) {
         const dialog = new YAHOO.widget.SimpleDialog(el, {
             zIndex: oConfig && oConfig.zIndex !== undefined ? oConfig.zIndex : undefined,
@@ -122,10 +132,15 @@ YAHOO.page = {
                 }}
             ]
         });
+        const escapeKeyListener = function() {
+            if (!YAHOO.page.isElementObscured(this.body)) {
+                this.cancel();
+            }
+        };
         dialog.cfg.queueProperty('keylisteners', new YAHOO.util.KeyListener(
             document,
             { keys: 27 },
-            { fn: function() {this.cancel();}, scope: dialog, correctScope: true }
+            { fn: escapeKeyListener, scope: dialog, correctScope: true }
         ));
         if (oConfig && oConfig.eventDefs !== undefined) {
             oConfig.eventDefs.forEach(oEventDef => {

@@ -45,20 +45,20 @@ public class PageService {
 
     private final TagTypeRepository tagTypeRepository;
 
-    private final PageMapper mapper;
+    private final PageMapper pageMapper;
 
     @Transactional
     public PageDto findPage(long pageId) {
         final var page = pageRepository.findById(pageId)
             .orElseThrow(() -> new EntityNotFoundException(pageId, Page.class));
-        return mapper.map(page);
+        return pageMapper.map(page);
     }
 
     @Transactional
     public List<PageDto> findPages() {
         log.trace("Getting all available pages ...");
         final var pages = pageRepository.findAll(Sort.by("name"));
-        return mapper.map(pages);
+        return pageMapper.map(pages);
     }
 
     @Transactional
@@ -66,25 +66,25 @@ public class PageService {
         log.trace("Getting first available page ...");
         final var page = pageRepository.findFirstByOrderByIdAsc()
             .orElseThrow(() -> new EntityNotFoundException(null, Page.class));
-        return mapper.map(page);
+        return pageMapper.map(page);
     }
 
     @Transactional
     public List<TagTypeDto> findTagTypes() {
         final var tagTypes = tagTypeRepository.findAll(Sort.by("title"));
-        return mapper.mapTagTypes(tagTypes);
+        return pageMapper.mapTagTypes(tagTypes);
     }
 
     @Transactional
     public List<TagDto> findTags(int tagTypeId) {
         final var tags = tagRepository.findByTagTypeId(tagTypeId);
-        return mapper.mapTags(tags);
+        return pageMapper.mapTags(tags);
     }
 
     @Transactional
-    public List<TagDto> findTags(int tagTypeId, String title) {
-        final var tags = tagRepository.findByTagTypeIdAndTitleContainingIgnoreCase(tagTypeId, title);
-        return mapper.mapTags(tags);
+    public List<TagDto> findTags(int tagTypeId, String name) {
+        final var tags = tagRepository.findByTagTypeIdAndNameContainingIgnoreCase(tagTypeId, name);
+        return pageMapper.mapTags(tags);
     }
 
     @Transactional
@@ -94,7 +94,7 @@ public class PageService {
         // all keys from sub-section
         final var keys = subSection.getKeys();
         log.trace("keys: {}", keys);
-        return mapper.mapKeys(keys);
+        return pageMapper.mapKeys(keys);
     }
 
     @Transactional
@@ -119,7 +119,7 @@ public class PageService {
             ));
         }
         log.trace("keys: {}", keys);
-        return mapper.mapKeys(keys);
+        return pageMapper.mapKeys(keys);
     }
 
 }

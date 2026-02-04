@@ -1,5 +1,7 @@
 package com.totemsoft.page.model;
 
+import java.util.List;
+
 import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 import lombok.Data;
@@ -11,7 +13,9 @@ import lombok.Data;
     formatter: 'date'
         currencyOptions: {}
         dateOptions: {format: '%d/%m/%Y', locale: 'en'}
-        dropdownOptions:
+    dropdownOptions: [{label: 'Alabama', value: 'AL'}]
+    editor: 'dropdown'
+        dropdownOptions: [{label: 'Alabama', value: 'AL'}]
     resizeable: true
     sortable: true
     sortOptions: {defaultDir:YAHOO.widget.DataTable.CLASS_DESC}
@@ -21,9 +25,19 @@ import lombok.Data;
 public class ColumnDef {
 
     public enum CellFormatterEnum {
+        BUTTON,
+        CHECKBOX,
         CURRENCY,
         DATE,
+        DROPDOWN,
+        EMAIL,
+        LINK,
         NUMBER,
+        RADIO,
+        TEXT,
+        TEXTAREA,
+        TEXTBOX,
+        // custom formatter(s)
         TAG;
     }
 
@@ -51,6 +65,12 @@ public class ColumnDef {
 
     private String editor;
 
+    private List<DropdownOption> dropdownOptions;
+
+    private boolean multiple;
+
+    private boolean disableBtns;
+
     private boolean hidden;
 
     private boolean resizeable;
@@ -66,5 +86,14 @@ public class ColumnDef {
     private Integer minWidth;
 
     private Integer maxAutoWidth;
+
+    @Data
+    public static class DropdownOption {
+
+        private String value;
+
+        private String label;
+
+    }
 
 }

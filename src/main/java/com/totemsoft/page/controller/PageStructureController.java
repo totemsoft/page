@@ -60,9 +60,9 @@ class PageStructureController {
     @GetMapping("/page/tag/{tagTypeId}")
     SearchResult<TagDto> findTags(
             @PathVariable(name = "tagTypeId") int tagTypeId,
-            @RequestParam(name = "query") String title) {
+            @RequestParam(name = "query") String name) {
         return SearchResult.<TagDto>builder()
-            .data(pageService.findTags(tagTypeId, title))
+            .data(pageService.findTags(tagTypeId, name))
             .build();
     }
 

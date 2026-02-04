@@ -31,7 +31,7 @@ class SetupController {
     SearchResult<TagTypeDto> findTagTypes() {
         return SearchResult.<TagTypeDto>builder()
             .columns(TagTypeDto.columns(true))
-            .data(pageService.findTagTypes())
+            .data(setupService.findTagTypes())
             .build();
     }
 
@@ -46,14 +46,6 @@ class SetupController {
         return SearchResult.<TagDto>builder()
             .columns(TagDto.columns(true))
             .data(tagTypeId.isEmpty() ? List.of() : pageService.findTags(tagTypeId.get()))
-            .build();
-    }
-
-    @GetMapping("/setup/tagByKey/{keyId}")
-    SearchResult<TagDto> findTagsByKey(@PathVariable long keyId) {
-        return SearchResult.<TagDto>builder()
-            .columns(TagDto.columns(false))
-            .data(setupService.findTagsByKey(keyId))
             .build();
     }
 
@@ -73,6 +65,14 @@ class SetupController {
     @PostMapping("/setup/key")
     Long saveKey(@RequestBody KeyDto keyDto) {
         return setupService.saveKey(keyDto);
+    }
+
+    @GetMapping("/setup/tagByKey/{keyId}")
+    SearchResult<TagDto> findTagsByKey(@PathVariable long keyId) {
+        return SearchResult.<TagDto>builder()
+            .columns(TagDto.columnsTagsByKey(setupService.tagTypeDropdownOptions()))
+            .data(setupService.findTagsByKey(keyId))
+            .build();
     }
 
 }

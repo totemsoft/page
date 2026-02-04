@@ -7,12 +7,14 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import com.totemsoft.page.config.SecurityConfig;
+import com.totemsoft.page.model.ColumnDef.DropdownOption;
 import com.totemsoft.page.model.KeyDto;
 import com.totemsoft.page.model.TagDto;
 import com.totemsoft.page.model.TagTypeDto;
 import com.totemsoft.page.model.entity.Key;
 import com.totemsoft.page.model.entity.Tag;
 import com.totemsoft.page.model.entity.TagType;
+import com.totemsoft.page.model.mapper.DropdownOptionMapper;
 import com.totemsoft.page.model.mapper.PageMapper;
 import com.totemsoft.page.model.mapper.SetupMapper;
 import com.totemsoft.page.repository.KeyRepository;
@@ -28,6 +30,8 @@ import lombok.extern.log4j.Log4j2;
 @RequiredArgsConstructor
 @Log4j2
 public class SetupService {
+
+    private final DropdownOptionMapper dropdownOptionMapper;
 
     private final PageMapper pageMapper;
 
@@ -71,6 +75,18 @@ public class SetupService {
         }
         entity = tagTypeRepository.save(entity);
         return entity.getId();
+    }
+
+    @Transactional
+    public List<TagTypeDto> findTagTypes() {
+        final var tagTypes = tagTypeRepository.findAll(Sort.by("title"));
+        return pageMapper.mapTagTypes(tagTypes);
+    }
+
+    @Transactional
+    public List<DropdownOption> tagTypeDropdownOptions() {
+        final var tagTypes = tagTypeRepository.findAll(Sort.by("title"));
+        return dropdownOptionMapper.map(tagTypes);
     }
 
     @Transactional

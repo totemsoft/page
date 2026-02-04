@@ -398,7 +398,6 @@ YAHOO.page.admin = {
             const id = elAutoComplete.id; // subSectionKeys.tagType.{id}
             const tagTypeId = YAHOO.page.getId(id);
             const input = YUD.get('input.' + id);
-            const hidden = YUD.get('hidden.' + id);
             const container = YUD.get('container.' + id);
             const ds = new YAHOO.util.XHRDataSource('/page/tag/' + tagTypeId);
             ds.responseType = YAHOO.util.XHRDataSource.TYPE_JSON;
@@ -418,15 +417,15 @@ YAHOO.page.admin = {
                 animSpeed: 0.4
             });
             ac.dataRequestEvent.subscribe(function(type, args) {
-                const ac = args[0]; // The AutoComplete instance
-                //const query = args[1] <String> The query string
-                //const request = args[2] <Object> The request
+                const ac = args[0];
+                //const query = args[1]; // <String> The query string
+                //const request = args[2]; // <Object> The request
                 const input = ac.getInputEl();
                 const tagTypeId = YAHOO.page.getId(input.id);
                 YAHOO.page.admin.tagTypeMap.set(tagTypeId, input.value);
             });
             ac.itemSelectEvent.subscribe(function(type, args) {
-                const ac = args[0]; // The AutoComplete instance
+                const ac = args[0];
                 //const elLI = args[1]; // The selected <li> element item
                 const oData = args[2]; // The data returned for the item, either as an object, or mapped from the schema into an array
                 // update with the selected item's ID

@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.totemsoft.page.model.ColumnDef.CellEditorEnum;
 import com.totemsoft.page.model.ColumnDef.CellFormatterEnum;
+import com.totemsoft.page.model.ColumnDef.DropdownOption;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
@@ -39,6 +40,26 @@ public class TagDto {
                 .key("title")
                 .label("Title")
                 .editor(editable ? CellEditorEnum.TEXTAREA.name().toLowerCase() : null)
+                .build()
+            );
+    }
+
+    public static List<ColumnDef> columnsTagsByKey(List<DropdownOption> dropdownOptions) {
+        return List.of(
+            ColumnDef.builder()
+                .key("tagTypeId")
+                .label("Tag Type")
+                .formatter(CellFormatterEnum.DROPDOWN.name().toLowerCase())
+                .dropdownOptions(dropdownOptions)
+                //.editor(CellEditorEnum.DROPDOWN.name().toLowerCase())
+                //.disableBtns(true)
+                .build(),
+            ColumnDef.builder()
+                .key("name")
+                .label("Name")
+                .editor(CellEditorEnum.TEXTBOX.name().toLowerCase())
+                .disableBtns(true)
+                .sortable(true)
                 .build()
             );
     }

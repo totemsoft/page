@@ -12,12 +12,14 @@ import com.totemsoft.page.model.KeyDto;
 import com.totemsoft.page.model.TagDto;
 import com.totemsoft.page.model.TagTypeDto;
 import com.totemsoft.page.model.entity.Key;
+import com.totemsoft.page.model.entity.KeyTag;
 import com.totemsoft.page.model.entity.Tag;
 import com.totemsoft.page.model.entity.TagType;
 import com.totemsoft.page.model.mapper.DropdownOptionMapper;
 import com.totemsoft.page.model.mapper.PageMapper;
 import com.totemsoft.page.model.mapper.SetupMapper;
 import com.totemsoft.page.repository.KeyRepository;
+import com.totemsoft.page.repository.KeyTagRepository;
 import com.totemsoft.page.repository.TagRepository;
 import com.totemsoft.page.repository.TagTypeRepository;
 
@@ -38,6 +40,8 @@ public class SetupService {
     private final SetupMapper setupMapper;
 
     private final KeyRepository keyRepository;
+
+    private final KeyTagRepository keyTagRepository;
 
     private final TagRepository tagRepository;
 
@@ -117,6 +121,18 @@ public class SetupService {
         }
         entity = keyRepository.save(entity);
         return entity.getId();
+    }
+
+    @Transactional
+    public void saveKeyTags(long keyId, List<Long> tagIds) {
+        keyTagRepository.deleteAllByKeyId(keyId);
+        tagIds.forEach(tagId -> keyTagRepository.save(
+            KeyTag.builder()
+                .keyId(keyId)
+                .tagId(tagId)
+                .build()
+            )
+        );
     }
 
 }

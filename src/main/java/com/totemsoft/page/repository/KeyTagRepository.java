@@ -9,9 +9,10 @@ import org.springframework.stereotype.Repository;
 
 import com.totemsoft.page.model.entity.Key;
 import com.totemsoft.page.model.entity.KeyTag;
+import com.totemsoft.page.model.entity.KeyTagId;
 
 @Repository
-public interface KeyTagRepository extends JpaRepository<KeyTag, Long> {
+public interface KeyTagRepository extends JpaRepository<KeyTag, KeyTagId> {
 
     @Query("SELECT kt.key FROM KeyTag kt WHERE kt.tagId IN :tagIds")
     Set<Key> findByTagIdIn(
@@ -19,6 +20,8 @@ public interface KeyTagRepository extends JpaRepository<KeyTag, Long> {
 
     @Query("SELECT kt.key FROM KeyTag kt WHERE kt.tag.tagTypeId = :tagTypeId AND UPPER(kt.tag.title) LIKE UPPER(:tagTitle)")
     Set<Key> findByTagTypeIdAndTagTitleContainingIgnoreCase(
-        @Param("tagTypeId") Integer tagTypeId, @Param("tagTitle") String tagTitle);
+        @Param("tagTypeId") Integer tagTypeId,
+        @Param("tagTitle") String tagTitle);
 
+    void deleteAllByKeyId(Long keyId);
 }

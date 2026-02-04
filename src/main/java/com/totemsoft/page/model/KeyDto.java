@@ -39,8 +39,9 @@ public class KeyDto {
                 .key("id")
                 .label("ID")
                 //.hidden(true) // TODO: fix dataTable.doBeforeLoadData insertColumn issue
-                .formatter(CellFormatterEnum.NUMBER.name().toLowerCase())
-                .className(CssClasName.RIGHT)
+                //.formatter(CellFormatterEnum.NUMBER.name().toLowerCase())
+                //.className(CssClasName.RIGHT)
+                .className("hidden")
                 .build(),
             ColumnDef.builder()
                 .key("name")

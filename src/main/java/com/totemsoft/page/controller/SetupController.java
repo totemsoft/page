@@ -75,4 +75,9 @@ class SetupController {
             .build();
     }
 
+    @PostMapping("/setup/key/{keyId}/tags")
+    void saveKeyTags(@PathVariable long keyId,
+            @RequestBody List<Long> tagIds) {
+        setupService.saveKeyTags(keyId, tagIds);
+    }
 }

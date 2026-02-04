@@ -275,14 +275,18 @@ YAHOO.page.setup = {
                     const tdLinerEl = YUE.getTarget(oEvent); // tdLinerEl
                     const tdEl = tdLinerEl.parentNode; // td
                     if (YUD.hasClass(tdEl, 'collapsed')) {
-                        YAHOO.page.removeClass(tdEl, 'collapsed');
-                        YAHOO.page.addClass(tdEl, 'expanded');
-                        setTimeout(function() {
-                            const dataTable = YAHOO.page.setup.keysDataTable;
-                            const rowId = dataTable.getLastSelectedRecord();
-                            const row = dataTable.getRecord(rowId);
-                            YAHOO.page.setup.editKeyTags(row);
-                        }, 0);
+                        const dataTable = YAHOO.page.setup.keysDataTable;
+                        const rowId = dataTable.getLastSelectedRecord();
+                        const row = dataTable.getRecord(rowId);
+                        const data = row.getData();
+                        const keyId = data.id;
+                        if (keyId) {
+                            YAHOO.page.removeClass(tdEl, 'collapsed');
+                            YAHOO.page.addClass(tdEl, 'expanded');
+                            setTimeout(function(keyId) {
+                                YAHOO.page.setup.editKeyTags(keyId);
+                            }, 0, keyId);
+                        }
                     } else {
                         YAHOO.page.removeClass(tdEl, 'expanded');
                         YAHOO.page.addClass(tdEl, 'collapsed');
@@ -296,17 +300,33 @@ YAHOO.page.setup = {
         YAHOO.page.setup.keysDialog.bringToTop();
         YAHOO.page.setup.keysDialog.show();
     },
-    editKeyTags: function(row) {
-        const data = row.getData();
-        const keyId = data.id;
+    editKeyTags: function(keyId) {
         console.log('editKeyTags: ' + keyId);
         const entityName = 'tagByKey';
         if (!YAHOO.page.setup.keyTagsDialog) {
-            const w = YUD.getViewportWidth();
-            const fnSubmitHandler = function() {
-                // TODO: save all table data
-                
+            const submitCallback = {
+                cache: false,
+                success: function(oResponse) {
+                    YAHOO.page.setup.updateDataTable(YAHOO.page.setup.keysDataTable);
+                    YAHOO.page.setup.keyTagsDialog.cancel();
+                },
+                failure: function(oResponse) {
+                    YAHOO.page.failureHandler(oResponse);
+                }
             };
+            const fnSubmitHandler = function() {
+                const tagIds = [];
+                const rows = YAHOO.page.setup.keyTagsDataTable.getRecordSet().getRecords();
+                rows.forEach(row => {
+                    const data = row.getData();
+                    const tagId = data.id;
+                    if (tagId) {
+                        tagIds.push(tagId);
+                    }
+                }, YAHOO.page.setup.keyTagsDataTable);
+                YAHOO.page.sendPostRequest('/setup/key/' + keyId + '/tags', submitCallback, tagIds);
+            };
+            const w = YUD.getViewportWidth();
             YAHOO.page.setup.keyTagsDialog = YAHOO.page.openEditDialog(entityName + 'Dialog', {
                 fixedcenter: 'contained',
                 width: Math.floor(w / 3) + 'px',
@@ -377,6 +397,7 @@ YAHOO.page.setup = {
             const data = editor.getRecord().getData();
             return data.tagTypeId + '?query=' + sQuery;
         };
+        // /page/tag/{tagTypeId}?query=sQuery
         const ds = new YAHOO.util.XHRDataSource('/page/tag/');
         ds.responseType = YAHOO.util.XHRDataSource.TYPE_JSON;
         ds.responseSchema = {
@@ -391,8 +412,28 @@ YAHOO.page.setup = {
             forceSelection: true,
             typeAheadDelay: 0.5,
             queryDelay: 0.4,
-            minQueryLength: 1,
+            minQueryLength: 0,
             maxResultsDisplayed: 100
+        });
+        // to fix input cleared
+        ac.textboxFocusEvent.subscribe(function(type, args) {
+            const ac = args[0];
+            const row = editor.getRecord();
+            const data = row.getData();
+            ac.sendQuery('' + data.name);
+        });
+        // update dataTable with new tag data
+        ac.itemSelectEvent.subscribe(function(type, args) {
+            const ac = args[0];
+            //const elLI = args[1]; // The selected <li> element item
+            const oData = args[2]; // The data returned for the item, either as an object, or mapped from the schema into an array
+            // update with the selected item's tagId
+            const row = editor.getRecord();
+            const tagDto = row.getData();
+            tagDto.id = oData[1];
+            tagDto.name = oData[0];
+            const dataTable = editor.getDataTable();
+            dataTable.updateRow(row, tagDto); // clone {...tagDto}
         });
         editor.autoComplete = ac;
     }

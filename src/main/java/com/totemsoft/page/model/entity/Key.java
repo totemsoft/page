@@ -13,7 +13,6 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -43,10 +42,11 @@ public class Key {
     @Column(name = "key_name")
     private String name;
 
+    @ToString.Include
     @Column(name = "key_title")
     private String title;
 
-    @Size(min = 2)
+    //@Size(min = 2) // we can save empty tags for key (eg work-in-progress)
     @ManyToMany
     @JoinTable(name = "key_tag",
         joinColumns = @JoinColumn(name = "key_id", referencedColumnName = "key_id"),

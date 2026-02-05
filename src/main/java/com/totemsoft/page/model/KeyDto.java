@@ -22,6 +22,7 @@ public class KeyDto {
     @NotBlank
     private String name;
 
+    @ToString.Include
     private String title;
 
     @JsonIgnore
@@ -39,9 +40,10 @@ public class KeyDto {
                 .key("id")
                 .label("ID")
                 //.hidden(true) // TODO: fix dataTable.doBeforeLoadData insertColumn issue
-                //.formatter(CellFormatterEnum.NUMBER.name().toLowerCase())
-                //.className(CssClasName.RIGHT)
-                .className("hidden")
+                .formatter(CellFormatterEnum.NUMBER.name().toLowerCase())
+                .className(CssClasName.RIGHT)
+                //.className("hidden")
+                .width(50)
                 .build(),
             ColumnDef.builder()
                 .key("name")
@@ -62,6 +64,7 @@ public class KeyDto {
                 .key("action")
                 .label(CssClasName.NBSP)
                 .className("collapsed")
+                .width(25)
                 .build()
             );
     }

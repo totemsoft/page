@@ -459,8 +459,8 @@ YAHOO.page.admin = {
             const r = YUD.getRegion('subSectionKeys'); // yui-gd 1/3 - 2/3, 32% - 66%
             const dataTableConfig = {
                 caption: '',
-                height: r.height + 'px',
-                width: Math.floor(r.width * 0.66) + 'px'
+                width: Math.floor(r.width * 0.66) + 'px',
+                height: r.height + 'px'
             };
             const dataTable = new YAHOO.widget.ScrollingDataTable('subSectionKeysSearchResult',
                 columnDefs, dataSource, dataTableConfig

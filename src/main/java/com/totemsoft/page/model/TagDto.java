@@ -29,6 +29,7 @@ public class TagDto {
                 //.hidden(true) // TODO: fix dataTable.doBeforeLoadData insertColumn issue
                 .formatter(CellFormatterEnum.NUMBER.name().toLowerCase())
                 .className(CssClasName.RIGHT)
+                .width(50)
                 .build(),
             ColumnDef.builder()
                 .key("name")

@@ -21,7 +21,7 @@ YAHOO.page.setup = {
             initialLoad: true,
             initialRequest: initialRequest,
             generateRequest: requestBuilder,
-            width: r.width + 'px',
+            width: (r.width - 2) + 'px',
             height: h / 3 * 2 + 'px'
         };
         const oColumnDefs = [];
@@ -271,22 +271,23 @@ YAHOO.page.setup = {
                     const tdLinerEl = this.getTdLinerEl({record:row, column:actionColumn});
                     triggerNodes.push(tdLinerEl);
                 }, this);
+                //this.subscribe('cellClickEvent', function(oArgs) {});
                 YUE.addListener(triggerNodes, 'click', function(oEvent) {
                     const tdLinerEl = YUE.getTarget(oEvent); // tdLinerEl
                     const tdEl = tdLinerEl.parentNode; // td
                     if (YUD.hasClass(tdEl, 'collapsed')) {
-                        const dataTable = YAHOO.page.setup.keysDataTable;
-                        const rowId = dataTable.getLastSelectedRecord();
-                        const row = dataTable.getRecord(rowId);
-                        const data = row.getData();
-                        const keyId = data.id;
-                        if (keyId) {
-                            YAHOO.page.removeClass(tdEl, 'collapsed');
-                            YAHOO.page.addClass(tdEl, 'expanded');
-                            setTimeout(function(keyId) {
+                        setTimeout(function() {
+                            const dataTable = YAHOO.page.setup.keysDataTable;
+                            const rowId = dataTable.getLastSelectedRecord();
+                            const row = dataTable.getRecord(rowId);
+                            const data = row.getData();
+                            const keyId = data.id;
+                            if (keyId) {
+                                YAHOO.page.removeClass(tdEl, 'collapsed');
+                                YAHOO.page.addClass(tdEl, 'expanded');
                                 YAHOO.page.setup.editKeyTags(keyId);
-                            }, 0, keyId);
-                        }
+                            }
+                        }, 0);
                     } else {
                         YAHOO.page.removeClass(tdEl, 'expanded');
                         YAHOO.page.addClass(tdEl, 'collapsed');

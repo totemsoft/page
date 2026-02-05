@@ -10,7 +10,10 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 
 import com.totemsoft.page.service.EntityNotFoundException;
 
+import lombok.extern.log4j.Log4j2;
+
 @ControllerAdvice
+@Log4j2
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(Throwable.class)
@@ -32,6 +35,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     }
 
     private ResponseEntity<ErrorResponse> error(HttpStatus status, Throwable ex, String message) {
+        log.error(message, ex);
         final var error = new ErrorResponse(
                 status,
                 message == null ? ex.getMessage() : (message + ": " + ex.getMessage()));

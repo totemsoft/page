@@ -1,11 +1,18 @@
 package com.totemsoft.page.config;
 
+import java.util.Map;
+import java.util.function.Predicate;
+
 import javax.naming.directory.SearchResult;
 
 import org.springframework.aot.hint.annotation.RegisterReflectionForBinding;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportRuntimeHints;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.web.client.RestClient;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -21,6 +28,8 @@ import com.totemsoft.page.model.SubSectionDto;
 import com.totemsoft.page.model.TabDto;
 import com.totemsoft.page.model.TagDto;
 import com.totemsoft.page.model.TagTypeDto;
+
+import lombok.extern.log4j.Log4j2;
 
 @Configuration
 @EnableScheduling
@@ -43,6 +52,7 @@ import com.totemsoft.page.model.TagTypeDto;
     //OAuth2AuthenticatedPrincipal.class
 })
 @ImportRuntimeHints(CustomRuntimeHintsRegistrar.class)
+@Log4j2
 public class WebConfig implements WebMvcConfigurer {
 
     @Override
@@ -60,5 +70,25 @@ public class WebConfig implements WebMvcConfigurer {
 //            .setCacheControl(CacheControl.noCache().cachePrivate().mustRevalidate())
 //            .setCachePeriod(86400);
 //    }
+
+    @Bean
+    RestClient exchangeRatesApiRestClient(
+            @Value("${page.exchangeratesapi.io.base-url}") String baseUrl,
+            @Value("${page.exchangeratesapi.io.access-key}") String accessKey) {
+        return RestClient.builder()
+            .baseUrl(baseUrl)
+            //.defaultApiVersion("v1")
+            .defaultUriVariables(Map.of("access_key", accessKey))
+            .defaultStatusHandler(
+                Predicate.not(HttpStatusCode::is2xxSuccessful),
+                (request, response) -> {
+                    final var error = new String(response.getBody().readAllBytes());
+                    log.error("API request failed. Response status: {}, body: {}", 
+                        response.getStatusCode(), error);
+                    throw new RuntimeException(error);
+                }
+            )
+            .build();
+    }
 
 }

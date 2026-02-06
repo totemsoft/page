@@ -6,11 +6,12 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @SpringBootTest
-//@AutoConfigureMockMvc
 class ApplicationTests {
 
     @MockitoBean
     private ClientRegistrationRepository clientRegistrationRepository;
+
+    //private MockRestServiceServer mockServer;
 
     @Test
     void contextLoads() {

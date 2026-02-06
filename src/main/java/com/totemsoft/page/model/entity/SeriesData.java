@@ -46,6 +46,10 @@ public class SeriesData {
     private BigDecimal value;
 
     @ToString.Include
+    @Column(name = "currency_code")
+    private String currency;
+
+    @ToString.Include
     @NotBlank
     @Column(name = "series_data_title")
     private String title;

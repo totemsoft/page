@@ -2,6 +2,10 @@
 page:
   dbPath: ${DB_PATH:${java.io.tmpdir}/db}
   dbName: ${DB_NAME:pagedb}
+  exchangeratesapi.io:
+    base-currency: AUD
+    base-url: https://api.exchangeratesapi.io/v1
+    access-key: ${EXCHANGERATESAPI_ACCESS_KEY}
 
 logging:
   level:

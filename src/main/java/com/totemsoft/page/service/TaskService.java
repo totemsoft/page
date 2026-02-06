@@ -6,11 +6,14 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 import org.apache.commons.lang3.RandomStringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import com.totemsoft.page.model.entity.Currency;
 import com.totemsoft.page.model.entity.SeriesData;
+import com.totemsoft.page.repository.CurrencyRepository;
 import com.totemsoft.page.repository.KeyRepository;
 import com.totemsoft.page.repository.SeriesDataRepository;
 
@@ -23,15 +26,53 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class TaskService {
 
+    @Value("${page.exchangeratesapi.io.base-currency}")
+    private String baseCurrency;
+
+    private final CurrencyRepository currencyRepository;
+
+    private final ExchangeRateService exchangeRateService;
+
     private final KeyRepository keyRepository;
 
     private final SeriesDataRepository seriesDataRepository;
 
     @Scheduled(cron = "@daily") // @midnight
+    @Scheduled(initialDelay = 5_000) // one-time
+    @Transactional
+    public void exchangeRateTask() {
+        log.info(">>> exchangeRateTask for {} started at: {}", baseCurrency, LocalTime.now());
+        try {
+            // retrieve from API
+            if (!currencyRepository.existsById(baseCurrency)) {
+                final var supportedSymbols = exchangeRateService.symbols();
+                log.debug("supportedSymbols: {}", supportedSymbols);
+                supportedSymbols.getSymbols().forEach((code, title) -> 
+                    currencyRepository.save(
+                        Currency.builder().code(code).title(title).build()
+                    )
+                );
+            }
+            // retrieve from DB
+            final var currencies = currencyRepository.findAll().stream()
+                .map(Currency::getCode)
+                .toList();
+            final var date = LocalDate.now().minusDays(1);
+            final String symbols = String.join(",", currencies);
+            log.debug("date: {}, base: {}, symbols: {}", date, baseCurrency, symbols);
+            //final var exchangeRates = exchangeRateService.historicalRates(date, baseCurrency, symbols);
+            
+            log.info("<<< exchangeRateTask executed at: {}", LocalTime.now());
+        } catch (Throwable ignore) {
+            log.warn("<<< exchangeRateTask failed:", ignore);
+        }
+    }
+
+    @Scheduled(cron = "@daily") // @midnight
     @Scheduled(initialDelay = 10_000) // one-time
     @Transactional
-    public void dailyTask() {
-        log.info(">>> Daily task started at: {}", LocalTime.now());
+    void seriesDataTask() {
+        log.info(">>> seriesDataTask started at: {}", LocalTime.now());
         try {
             final var date = LocalDate.now();
             if (seriesDataRepository.existsByDate(date)) {
@@ -44,9 +85,9 @@ public class TaskService {
                 final var d = loadData(key.getId(), date);
                 log.trace("saved: {}", d);
             });
-            log.info("<<< Daily task executed at: {}", LocalTime.now());
+            log.info("<<< seriesDataTask executed at: {}", LocalTime.now());
         } catch (Throwable ignore) {
-            log.warn("<<< Daily task failed:", ignore);
+            log.warn("<<< seriesDataTask failed:", ignore);
         }
     }
 
@@ -55,6 +96,7 @@ public class TaskService {
             .keyId(keyId)
             .date(date)
             .value(randomValue(1_000, 1_000_000))
+            .currency(baseCurrency)
             .title(randomTitle(16, 32))
             .build());
     }

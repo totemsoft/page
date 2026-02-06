@@ -1,6 +1,5 @@
 package com.totemsoft.page.config;
 
-import java.util.Map;
 import java.util.function.Predicate;
 
 import javax.naming.directory.SearchResult;
@@ -73,12 +72,10 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Bean
     RestClient exchangeRatesApiRestClient(
-            @Value("${page.exchangeratesapi.io.base-url}") String baseUrl,
-            @Value("${page.exchangeratesapi.io.access-key}") String accessKey) {
+            @Value("${page.exchangeratesapi.io.base-url}") String baseUrl) {
         return RestClient.builder()
             .baseUrl(baseUrl)
             //.defaultApiVersion("v1")
-            .defaultUriVariables(Map.of("access_key", accessKey))
             .defaultStatusHandler(
                 Predicate.not(HttpStatusCode::is2xxSuccessful),
                 (request, response) -> {

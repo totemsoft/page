@@ -35,6 +35,11 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class TaskService {
 
+    /** default page currency */
+    @Value("${page.currency}")
+    private String currency;
+
+    /** exchangeratesapi base currency */
     @Value("${page.exchangeratesapi.io.base-currency}")
     private String baseCurrency;
 
@@ -54,8 +59,8 @@ public class TaskService {
     public void exchangeRateTask() {
         log.info(">>> exchangeRateTask for {} started at: {}", baseCurrency, LocalTime.now());
         try {
-            // retrieve currencies via API
-            if (!currencyRepository.existsById(baseCurrency)) {
+            // retrieve currencies via API (one page default currency EUR is loaded via data.sql)
+            if (currencyRepository.count() < 2) {
                 final var symbols = exchangeRateService.symbols();
                 saveCurrencies(symbols.getSymbols());
             }
@@ -144,7 +149,7 @@ public class TaskService {
             .keyId(keyId)
             .date(date)
             .value(randomValue(1_000, 1_000_000))
-            .currency(baseCurrency)
+            .currency(currency)
             .title(randomTitle(16, 32))
             .build());
     }

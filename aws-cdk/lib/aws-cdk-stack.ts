@@ -49,7 +49,8 @@ export class AwsCdkStack extends cdk.Stack {
     const efsVolumeName = 'efsVolume';
     const efsMountPath = '/mnt/efs';
     const accessPointPath = '/db';
-    const dbName = 'pagedb_002';
+    const dbName = 'pagedb_001';
+    const dbNamePrev = 'pagedb_002';
  
     const domainName = props.domainName;
 
@@ -161,6 +162,7 @@ export class AwsCdkStack extends cdk.Stack {
       environment: {
         DB_PATH: `${efsMountPath}${accessPointPath}`,
         DB_NAME: dbName,
+        DB_NAME_PREV: dbNamePrev
       },
       logging: logDriver,
       portMappings: [

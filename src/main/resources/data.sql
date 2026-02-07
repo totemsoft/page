@@ -3,6 +3,10 @@ SET AUTOCOMMIT OFF;
 
 BEGIN TRANSACTION;
 
+INSERT INTO currency (currency_code, currency_title) SELECT * FROM (VALUES
+  ('EUR', '')
+) WHERE NOT EXISTS (SELECT 1 FROM currency);
+
 INSERT INTO split_ratio (split_ratio_name, split_ratio_title) SELECT * FROM (VALUES
   ('ONE', ''),
   ('HALF', '1/2 - 1/2'),

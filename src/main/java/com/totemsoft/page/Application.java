@@ -32,10 +32,14 @@ public class Application {
         final var dbPath = System.getenv("DB_PATH");
         final var dbNamePrev = System.getenv("DB_NAME_PREV");
         final var dbName = System.getenv("DB_NAME");
-        log.info("File to copy from directory {}: {} -> {}", dbPath, dbNamePrev, dbName);
+        final var dbSuffix = ".mv.db";
+        if (dbPath == null || dbNamePrev == null || dbName == null) {
+            log.info("Could not copy from DB_PATH={}: DB_NAME_PREV={} -> DB_NAME={}", dbPath, dbNamePrev, dbName);
+            return;
+        }
         try {
-            final var source = Paths.get(dbPath + '/' + dbNamePrev + ".mv.db");
-            final var target = Paths.get(dbPath + '/' + dbName + ".mv.db");
+            final var source = Paths.get(dbPath + '/' + dbNamePrev + dbSuffix);
+            final var target = Paths.get(dbPath + '/' + dbName + dbSuffix);
             final var result = Files.copy(source, target, StandardCopyOption.REPLACE_EXISTING);
             log.info("File copied: {} -> {} = {}", source, target, result);
         } catch (Exception e) {

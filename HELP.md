@@ -42,6 +42,7 @@
 * [Securing a Web Application](https://spring.io/guides/gs/securing-web)
 * [OAuth 2.0 Login](https://docs.spring.io/spring-security/reference/reactive/oauth2/login/index.html)
 * [Testing OAuth 2.0](https://docs.spring.io/spring-security/reference/reactive/test/web/oauth2.html)
+* [Clients – Google Auth Platform – Google Cloud console](https://console.cloud.google.com/auth/clients)
 * [MapStruct: Reference Guide](https://mapstruct.org/documentation/stable/reference/html/)
 * [Tutorial: Using Thymeleaf](https://www.thymeleaf.org/doc/tutorials/3.1/usingthymeleaf.html)
 * [Thymeleaf + Spring Security integration basics](https://www.thymeleaf.org/doc/articles/springsecurity.html)
@@ -50,3 +51,4 @@
 * [Building Native Images with Maven: An End-to-End Guide](https://graalvm.github.io/native-build-tools/latest/end-to-end-maven-guide.html)
 * [Spring Framework: Ahead of Time Optimizations](https://docs.spring.io/spring-framework/reference/core/aot.html#aot.hints.register-reflection)
 * [Download Oracle GraalVM](https://www.graalvm.org/downloads/)
+* [Account Dashboard | exchangeratesapi API](https://manage.exchangeratesapi.io/dashboard)

@@ -9,6 +9,13 @@ Configuring environments:
 * `export VPC_NAME=<vpc-name>`
 * `export DOMAIN_NAME=company.com`
 
+AWS Secrets
+* Google secret: dev/${stack.stackName}/google/credentials
+** client_id
+** client_secret
+* ExchangeRatesApi secret: dev/${stack.stackName}/exchangeRates/credentials
+** access_key
+
 Deploy stack:
 * `alias cdk="npx aws-cdk"`
 * `cdk bootstrap`

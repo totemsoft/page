@@ -49,7 +49,7 @@ export class AwsCdkStack extends cdk.Stack {
     const efsVolumeName = 'efsVolume';
     const efsMountPath = '/mnt/efs';
     const accessPointPath = '/db';
-    const dbName = 'pagedb_001';
+    const dbName = 'pagedb_002';
  
     const domainName = props.domainName;
 
@@ -159,8 +159,6 @@ export class AwsCdkStack extends cdk.Stack {
       user: 'admin', // default 'root'
       taskDefinition: taskDef,
       environment: {
-        PROFILE: id,
-        STAGE: 'dev',
         DB_PATH: `${efsMountPath}${accessPointPath}`,
         DB_NAME: dbName,
       },
@@ -169,8 +167,7 @@ export class AwsCdkStack extends cdk.Stack {
         { containerPort: 8080, name: 'page-builder-http' }
       ]
     });
-    const googleSecretName = `dev/${id}/google/credentials`;
-    EnvironmentUtils.addEnvironments(this, containerDef, googleSecretName, javaOpts);
+    EnvironmentUtils.addEnvironments(this, id, containerDef, javaOpts);
     containerDef.addMountPoints({
       sourceVolume: efsVolumeName,
       containerPath: efsMountPath,

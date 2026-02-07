@@ -167,7 +167,7 @@ export class AwsCdkStack extends cdk.Stack {
         { containerPort: 8080, name: 'page-builder-http' }
       ]
     });
-    EnvironmentUtils.addEnvironments(this, id, containerDef, javaOpts);
+    EnvironmentUtils.addEnvironments(this, containerDef, javaOpts);
     containerDef.addMountPoints({
       sourceVolume: efsVolumeName,
       containerPath: efsMountPath,

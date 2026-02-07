@@ -3,7 +3,7 @@ import * as ecs from 'aws-cdk-lib/aws-ecs';
 import * as sm from 'aws-cdk-lib/aws-secretsmanager';
 
 export class EnvironmentUtils {
-  static addEnvironments(stack: Stack, id: string, containerDef: ecs.ContainerDefinition,
+  static addEnvironments(stack: Stack, containerDef: ecs.ContainerDefinition,
       javaOpts: string | null | undefined): void {
     const stage = 'dev';
     const smPartialArn = `arn:aws:secretsmanager:${stack.region}:${stack.account}:secret`;

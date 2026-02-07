@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.List;
@@ -22,8 +23,24 @@ import lombok.extern.log4j.Log4j2;
 public class Application {
 
     public static void main(String[] args) {
+        copyDatabase();
         final var ctx = SpringApplication.run(Application.class, args);
         cleanupDirectory(ctx.getEnvironment());
+    }
+
+    private static void copyDatabase() {
+        final var dbPath = System.getenv("DB_PATH");
+        final var dbNamePrev = System.getenv("DB_NAME_PREV");
+        final var dbName = System.getenv("DB_NAME");
+        log.info("File to copy from directory {}: {} -> {}", dbPath, dbNamePrev, dbName);
+        try {
+            final var source = Paths.get(dbPath + '/' + dbNamePrev + ".mv.db");
+            final var target = Paths.get(dbPath + '/' + dbName + ".mv.db");
+            final var result = Files.copy(source, target, StandardCopyOption.REPLACE_EXISTING);
+            log.info("File copied: {} -> {} = {}", source, target, result);
+        } catch (Exception e) {
+            log.warn("FAILED to copyDatabase: {}", e.getMessage());
+        }
     }
 
     private static void cleanupDirectory(Environment env) {
@@ -36,7 +53,7 @@ public class Application {
                 .forEach(d -> sb.append("\n\t" + d));
             log.info(sb.toString());
         } catch (Throwable e) {
-            log.error("FAILED to cleanupDirectory:", e);
+            log.warn("FAILED to cleanupDirectory:", e);
         }
     }
 

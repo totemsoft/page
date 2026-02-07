@@ -49,8 +49,9 @@ export class AwsCdkStack extends cdk.Stack {
     const efsVolumeName = 'efsVolume';
     const efsMountPath = '/mnt/efs';
     const accessPointPath = '/db';
+    const dbPath =`${efsMountPath}${accessPointPath}`;
     const dbName = 'pagedb_001';
-    const dbNamePrev = 'pagedb_002';
+    const dbNamePrev = 'pagedb_003'; // to copy in Application#main
  
     const domainName = props.domainName;
 
@@ -132,6 +133,10 @@ export class AwsCdkStack extends cdk.Stack {
 /*
     const taskPolicy = new iam.PolicyStatement({
       actions: [
+        'ssmmessages:CreateControlChannel',
+        'ssmmessages:CreateDataChannel',
+        'ssmmessages:OpenControlChannel',
+        'ssmmessages:OpenDataChannel',
         'cognito-idp:Admin*',
         's3:*',
         'ses:*'
@@ -158,9 +163,13 @@ export class AwsCdkStack extends cdk.Stack {
     const containerDef = new ecs.ContainerDefinition(this, `${id}ContainerDefinition`, {
       image: ecs.ContainerImage.fromRegistry(containerImage),
       user: 'admin', // default 'root'
+ //     command: [
+ //       '/bin/sh', '-c',
+ //       `cp -f ${dbPath}/${dbNamePrev}.mv.db ${dbPath}/${dbName}.mv.db > /app/data.txt && tail -f /dev/null`
+ //     ],
       taskDefinition: taskDef,
       environment: {
-        DB_PATH: `${efsMountPath}${accessPointPath}`,
+        DB_PATH: dbPath,
         DB_NAME: dbName,
         DB_NAME_PREV: dbNamePrev
       },
@@ -189,13 +198,14 @@ export class AwsCdkStack extends cdk.Stack {
     const albFargateService = new ApplicationLoadBalancedFargateService(this, `${id}FargateService`, {
       cluster,
       taskDefinition: taskDef,
+      enableExecuteCommand: true, // Enable Execute Command on the Service/Task
       taskSubnets: vpcSubnets,
       desiredCount: 1,
       publicLoadBalancer: true,
       assignPublicIp: true,
       circuitBreaker: {
-          enable: true,
-          rollback: true
+        enable: true,
+        rollback: true
       },
       domainName: `${id}.${domainName}`,
       domainZone,

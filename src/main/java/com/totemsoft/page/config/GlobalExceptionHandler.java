@@ -19,7 +19,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(Throwable.class)
     public final ResponseEntity<ErrorResponse> defaultErrorHandler(Throwable ex, WebRequest request) {
         final HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
-        return error(status, ex, "Unexpected Server Error");
+        return error(status, ex, "Unexpected Server ApiError");
     }
 
     @ExceptionHandler(EntityNotFoundException.class)

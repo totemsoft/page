@@ -1,5 +1,6 @@
 package com.totemsoft.page.service;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -53,7 +54,7 @@ class ExchangeRateService {
         return response.getBody();
     }
 
-    ExchangeRates historicalRates(String date, String base, Optional<String> symbols) {
+    ExchangeRates historicalRates(LocalDate date, String base, Optional<String> symbols) {
         log.debug(">>> loading exchangeRates for date: {}, base: {}, symbols: {}", date, base, symbols);
         final var response = exchangeRatesApiRestClient.get()
             .uri(uriBuilder -> uriBuilder

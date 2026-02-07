@@ -12,6 +12,9 @@ import org.springframework.javapoet.ClassName;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 
+import com.totemsoft.page.model.exchange.ExchangeRateSymbols;
+import com.totemsoft.page.model.exchange.ExchangeRates;
+
 public class CustomRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 
     @Override
@@ -26,7 +29,10 @@ public class CustomRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
                 .withMethod("getAttributes", List.of(), ExecutableMode.INVOKE))
         ;
         // Register for serialization
-        //hints.serialization().registerType(MyData.class);
+        hints.serialization()
+            .registerType(ExchangeRates.class)
+            .registerType(ExchangeRateSymbols.class)
+        ;
         // Register for resources
         //hints.resources().registerPattern("*.properties");
     }

@@ -79,6 +79,7 @@ public class WebConfig implements WebMvcConfigurer {
             .defaultStatusHandler(
                 Predicate.not(HttpStatusCode::is2xxSuccessful),
                 (request, response) -> {
+                    // ApiError
                     final var error = new String(response.getBody().readAllBytes());
                     log.error("API request failed. Response status: {}, body: {}", 
                         response.getStatusCode(), error);

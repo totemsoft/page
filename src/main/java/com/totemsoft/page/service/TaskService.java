@@ -69,7 +69,7 @@ public class TaskService {
             //final var symbols = Optional.of(String.join(",", currencies));
             // retrieve rates for currencies via API
             final var symbols = Optional.<String>empty(); // String.join(",", currencies);
-            final var exchangeRates = exchangeRateService.historicalRates(date.toString(), baseCurrency, symbols);
+            final var exchangeRates = exchangeRateService.historicalRates(date, baseCurrency, symbols);
             if (baseCurrency.compareTo(exchangeRates.getBase()) != 0) {
                 log.error("ERROR: {} != {}", baseCurrency, exchangeRates.getBase());
                 return;
@@ -89,7 +89,7 @@ public class TaskService {
     }
 
     private void saveCurrencies(Map<String, String> symbols) {
-        log.debug(">>> saving symbols: {}", symbols);
+        log.info(">>> saving symbols:");
         symbols.forEach((code, title) -> currencyRepository.save(
             Currency.builder()
                 .code(code)
@@ -99,6 +99,7 @@ public class TaskService {
     }
 
     private List<ExchangeRate> saveExchangeRates(ExchangeRates exchangeRates) {
+        log.info(">>> saving exchangeRates:");
         final var timestamp = Timestamp.from(Instant.ofEpochMilli(exchangeRates.getTimestamp()));
         final var date = exchangeRates.getDate();
         final var result = new ArrayList<ExchangeRate>(exchangeRates.getRates().size());
@@ -126,7 +127,7 @@ public class TaskService {
                 log.info("<<< seriesData already loaded for: {}", date);
                 return;
             }
-            final var pageable = PageRequest.of(0, 100);
+            final var pageable = PageRequest.of(0, 10);
             final var keys = keyRepository.findAll(pageable).getContent();
             keys.forEach(key -> {
                 final var d = saveSeriesData(key.getId(), date);

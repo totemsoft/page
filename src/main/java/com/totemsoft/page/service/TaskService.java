@@ -85,7 +85,7 @@ public class TaskService {
             }
             // save rates to DB
             final var rates = saveExchangeRates(exchangeRates);
-            // TODO: save rate to SeriesData (key)
+            // TODO: save rates to SeriesData (save Key)
             //keyRepository.save(key);
             log.info("<<< exchangeRateTask executed at: {}", LocalTime.now());
         } catch (Throwable ignore) {
@@ -94,7 +94,7 @@ public class TaskService {
     }
 
     private void saveCurrencies(Map<String, String> symbols) {
-        log.info(">>> saving symbols:");
+        log.info(">>> saving {} symbols ...", symbols.size());
         symbols.forEach((code, title) -> currencyRepository.save(
             Currency.builder()
                 .code(code)
@@ -104,11 +104,12 @@ public class TaskService {
     }
 
     private List<ExchangeRate> saveExchangeRates(ExchangeRates exchangeRates) {
-        log.info(">>> saving exchangeRates:");
+        final var rates = exchangeRates.getRates();
+        log.info(">>> saving {} exchangeRates ...", rates.size());
         final var timestamp = Timestamp.from(Instant.ofEpochMilli(exchangeRates.getTimestamp()));
         final var date = exchangeRates.getDate();
-        final var result = new ArrayList<ExchangeRate>(exchangeRates.getRates().size());
-        exchangeRates.getRates().forEach((code, rate) -> {
+        final var result = new ArrayList<ExchangeRate>(rates.size());
+        rates.forEach((code, rate) -> {
             final var exchangeRate = exchangeRateRepository.save(ExchangeRate.builder()
                 .code(code)
                 .date(date)

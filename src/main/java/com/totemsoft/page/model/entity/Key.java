@@ -3,6 +3,8 @@ package com.totemsoft.page.model.entity;
 import java.util.List;
 import java.util.Optional;
 
+import org.hibernate.annotations.NaturalId;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -39,6 +41,7 @@ public class Key {
 
     @ToString.Include
     @NotBlank
+    @NaturalId(mutable = true)
     @Column(name = "key_name")
     private String name;
 

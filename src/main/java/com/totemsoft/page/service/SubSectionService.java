@@ -125,18 +125,18 @@ public class SubSectionService {
             log.warn("No key(s) found for sub-section {}.", subSection.getId());
             return List.of();
         }
-        return seriesDataRepository.findByDateIsAndKeyIn(date, keys);
+        return seriesDataRepository.findByDateAndKeyIn(date, keys);
     }
 
     private Map<String, Cell<?>> filterRowCells(List<SeriesData> data, Tag rowTag, Set<Tag> columnTags) {
         final var cells = new HashMap<String, Cell<?>>(1 + columnTags.size());
         cells.put(ColumnDef.COLUMN_TAG, Cell.<String>builder()
             .id(rowTag.getId())
-            .value(rowTag.getTitle())
+            .value(rowTag.getLabel())
             .build());
         columnTags.forEach(columnTag -> data.stream()
             .filter(d -> d.getKey().anyMatch(columnTag.getId()))
-            .forEach(d -> cells.put(columnTag.getName(), mapper.map(d)))
+            .forEach(d -> cells.put(columnTag.getKey(), mapper.map(d)))
         );
         return cells;
     }

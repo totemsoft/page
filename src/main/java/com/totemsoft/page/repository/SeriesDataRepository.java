@@ -2,6 +2,7 @@ package com.totemsoft.page.repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -14,6 +15,8 @@ public interface SeriesDataRepository extends JpaRepository<SeriesData, Long> {
 
     boolean existsByDate(LocalDate date);
 
-    List<SeriesData> findByDateIsAndKeyIn(LocalDate date, List<Key> keys);
+    Optional<SeriesData> findByDateAndKeyId(LocalDate date, long keyId);
+
+    List<SeriesData> findByDateAndKeyIn(LocalDate date, List<Key> keys);
 
 }

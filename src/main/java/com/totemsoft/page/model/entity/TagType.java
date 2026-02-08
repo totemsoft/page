@@ -1,5 +1,7 @@
 package com.totemsoft.page.model.entity;
 
+import org.hibernate.annotations.NaturalId;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -33,9 +35,11 @@ public class TagType {
 
     @ToString.Include
     @NotBlank
+    @NaturalId
     @Column(name = "tag_type_name")
     private String name;
 
+    //@NotBlank
     @Column(name = "tag_type_title")
     private String title;
 

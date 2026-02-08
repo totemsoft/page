@@ -32,8 +32,8 @@ public class Row {
             .className(CssClasName.TAG)
             .build());
         columnTags.forEach(t -> columnDefs.add(ColumnDef.builder()
-            .key(t.getName())
-            .label(t.getTitle())
+            .key(t.getKey())
+            .label(t.getLabel())
             .formatter(CellFormatterEnum.CURRENCY.name().toLowerCase())
             .className(CssClasName.RIGHT)
             .build()));

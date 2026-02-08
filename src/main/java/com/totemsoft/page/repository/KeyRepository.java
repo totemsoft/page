@@ -1,5 +1,6 @@
 package com.totemsoft.page.repository;
 
+import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,5 +16,7 @@ public interface KeyRepository extends JpaRepository<Key, Long> {
 
     @Query("SELECT k FROM Key k WHERE :tag MEMBER OF k.tags")
     Set<Key> findByTag(@Param("tag") Tag tag);
+
+    Optional<Key> findByName(String name);
 
 }

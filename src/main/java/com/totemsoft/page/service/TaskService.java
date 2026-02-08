@@ -19,12 +19,17 @@ import org.springframework.stereotype.Component;
 
 import com.totemsoft.page.model.entity.Currency;
 import com.totemsoft.page.model.entity.ExchangeRate;
+import com.totemsoft.page.model.entity.Key;
 import com.totemsoft.page.model.entity.SeriesData;
+import com.totemsoft.page.model.entity.Tag;
+import com.totemsoft.page.model.entity.TagType;
 import com.totemsoft.page.model.exchange.ExchangeRates;
 import com.totemsoft.page.repository.CurrencyRepository;
 import com.totemsoft.page.repository.ExchangeRateRepository;
 import com.totemsoft.page.repository.KeyRepository;
 import com.totemsoft.page.repository.SeriesDataRepository;
+import com.totemsoft.page.repository.TagRepository;
+import com.totemsoft.page.repository.TagTypeRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -52,6 +57,10 @@ public class TaskService {
     private final KeyRepository keyRepository;
 
     private final SeriesDataRepository seriesDataRepository;
+
+    private final TagRepository tagRepository;
+
+    private final TagTypeRepository tagTypeRepository;
 
     @Scheduled(cron = "@daily") // @midnight
     @Scheduled(initialDelay = 5_000) // one-time
@@ -85,22 +94,12 @@ public class TaskService {
             }
             // save rates to DB
             final var rates = saveExchangeRates(exchangeRates);
-            // TODO: save rates to SeriesData (save Key)
-            //keyRepository.save(key);
+            // create key/tag/tagTypes and seriesData
+            rates.forEach(this::saveSeriesDataKey);
             log.info("<<< exchangeRateTask executed at: {}", LocalTime.now());
         } catch (Throwable ignore) {
             log.warn("<<< exchangeRateTask failed:", ignore);
         }
-    }
-
-    private void saveCurrencies(Map<String, String> symbols) {
-        log.info(">>> saving {} symbols ...", symbols.size());
-        symbols.forEach((code, title) -> currencyRepository.save(
-            Currency.builder()
-                .code(code)
-                .title(title)
-                .build())
-        );
     }
 
     private List<ExchangeRate> saveExchangeRates(ExchangeRates exchangeRates) {
@@ -120,6 +119,60 @@ public class TaskService {
             result.add(exchangeRate);
         });
         return result;
+    }
+
+    private void saveCurrencies(Map<String, String> symbols) {
+        log.info(">>> saving {} symbols ...", symbols.size());
+        symbols.forEach((code, title) -> currencyRepository.save(
+            Currency.builder()
+                .code(code)
+                .title(title)
+                .build())
+        );
+    }
+
+    private SeriesData saveSeriesDataKey(ExchangeRate rate) {
+        final var rateName = rate.getName();
+        final var key = keyRepository.findByName(rateName)
+            .orElseGet(() -> keyRepository.save(Key.builder()
+                .name(rateName)
+                .title(rateName)
+                .tags(saveTags(rate))
+                .build()));
+        final var date = rate.getDate();
+        final long keyId = key.getId();
+        return seriesDataRepository.findByDateAndKeyId(date, keyId)
+            .orElseGet(() -> seriesDataRepository.save(SeriesData.builder()
+                .keyId(keyId)
+                .date(date)
+                .value(rate.getRate())
+                .currency(rate.getCode())
+                .baseCurrency(rate.getBaseCurrency())
+                .title(rateName)
+                .build()));
+    }
+
+    private List<Tag> saveTags(ExchangeRate rate) {
+        // column/row tagTypes
+        return List.of(
+            saveTag(ExchangeRate.CURRENCY_NAME, rate.getName()),
+            saveTag(ExchangeRate.CURRENCY_RATE, rate.getName()));
+    }
+
+    private Tag saveTag(String tagTypeName, String tagName) {
+        final var tagType = tagTypeRepository.findByName(tagTypeName)
+            .orElseGet(() -> tagTypeRepository.save(TagType.builder()
+                .name(tagTypeName)
+                .title(tagTypeName.toLowerCase().replace('_', ' '))
+                .build()));
+        final int tagTypeId = tagType.getId();
+        log.debug("tagType id: {}, name: {}", tagTypeId, tagTypeName);
+        return tagRepository.findByTagTypeIdAndName(tagTypeId, tagName)
+            .orElseGet(() -> tagRepository.save(Tag.builder()
+                .tagTypeId(tagTypeId)
+                .name(tagName)
+                .title(tagName)
+                .build()));
     }
 
     @Scheduled(cron = "@daily") // @midnight
@@ -151,6 +204,7 @@ public class TaskService {
             .date(date)
             .value(randomValue(1_000, 1_000_000))
             .currency(currency)
+            .baseCurrency(baseCurrency)
             .title(randomTitle(16, 32))
             .build());
     }

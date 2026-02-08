@@ -1,11 +1,15 @@
 package com.totemsoft.page.model.entity;
 
+import org.apache.commons.lang3.StringUtils;
+import org.hibernate.annotations.NaturalId;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
@@ -32,17 +36,30 @@ public class Tag implements Comparable<Tag> {
     @Column(name = "tag_id")
     private Long id;
 
+    @NotNull
+    @NaturalId
+    @Column(name = "tag_type_id")
+    private Integer tagTypeId;
+
     @ToString.Include
     @NotBlank
+    @NaturalId(mutable = true)
     @Column(name = "tag_name")
     private String name;
 
+    //@NotBlank
     @Column(name = "tag_title")
     private String title;
 
-    @NotNull
-    @Column(name = "tag_type_id")
-    private Integer tagTypeId;
+    @Transient
+    public String getKey() {
+        return name.replace('/', '_');
+    }
+
+    @Transient
+    public String getLabel() {
+        return StringUtils.isBlank(title) ? name : title;
+    }
 
     @Override
     public int compareTo(Tag t) {

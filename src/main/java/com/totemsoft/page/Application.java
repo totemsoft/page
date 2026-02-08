@@ -23,7 +23,7 @@ import lombok.extern.log4j.Log4j2;
 public class Application {
 
     public static void main(String[] args) {
-        copyDatabase();
+        //copyDatabase();
         final var ctx = SpringApplication.run(Application.class, args);
         cleanupDirectory(ctx.getEnvironment());
     }

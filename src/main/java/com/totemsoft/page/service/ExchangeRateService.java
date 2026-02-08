@@ -177,7 +177,6 @@ class ExchangeRateService {
                 .title(tagTypeName.toLowerCase().replace('_', ' '))
                 .build()));
         final int tagTypeId = tagType.getId();
-        log.debug("tagType id: {}, name: {}", tagTypeId, tagTypeName);
         return tagRepository.findByTagTypeIdAndName(tagTypeId, tagName)
             .orElseGet(() -> tagRepository.save(Tag.builder()
                 .tagTypeId(tagTypeId)

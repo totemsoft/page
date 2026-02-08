@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.core.env.Environment;
@@ -23,14 +24,16 @@ import lombok.extern.log4j.Log4j2;
 public class Application {
 
     public static void main(String[] args) {
-        //copyDatabase();
+        copyDatabase(System.getenv("DB_NAME_PREV"));
         final var ctx = SpringApplication.run(Application.class, args);
         cleanupDirectory(ctx.getEnvironment());
     }
 
-    private static void copyDatabase() {
+    private static void copyDatabase(String dbNamePrev) {
+        if (StringUtils.isBlank(dbNamePrev)) {
+            return;
+        }
         final var dbPath = System.getenv("DB_PATH");
-        final var dbNamePrev = System.getenv("DB_NAME_PREV");
         final var dbName = System.getenv("DB_NAME");
         final var dbSuffix = ".mv.db";
         if (dbPath == null || dbNamePrev == null || dbName == null) {

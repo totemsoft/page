@@ -50,8 +50,8 @@ export class AwsCdkStack extends cdk.Stack {
     const efsMountPath = '/mnt/efs';
     const accessPointPath = '/db';
     const dbPath =`${efsMountPath}${accessPointPath}`;
-    const dbName = 'pagedb_002';
-    const dbNamePrev = 'pagedb_001'; // to copy in Application#main
+    const dbName = 'pagedb_001';
+    const dbNamePrev = 'pagedb_004'; // to copy in Application#main
  
     const domainName = props.domainName;
 
@@ -198,7 +198,7 @@ export class AwsCdkStack extends cdk.Stack {
     const albFargateService = new ApplicationLoadBalancedFargateService(this, `${id}FargateService`, {
       cluster,
       taskDefinition: taskDef,
-      enableExecuteCommand: true, // Enable Execute Command on the Service/Task
+      //enableExecuteCommand: true, // Enable Execute Command on the Service/Task
       taskSubnets: vpcSubnets,
       desiredCount: 1,
       publicLoadBalancer: true,

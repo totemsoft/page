@@ -108,7 +108,7 @@ public class PageService {
                 tagTitles.put(tagTypeId, tagTitle);
             }
         });
-        log.trace("tagIds: {}, tagTitles: {}", tagIds, tagTitles);
+        log.debug("tagIds: {}, tagTitles: {}", tagIds, tagTitles);
         final var keys = new ArrayList<Key>();
         if (!tagIds.isEmpty()) {
             keys.addAll(keyTagRepository.findByTagIdIn(tagIds));

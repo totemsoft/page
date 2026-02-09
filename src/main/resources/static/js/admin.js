@@ -433,6 +433,14 @@ YAHOO.page.admin = {
                 const tagTypeId = YAHOO.page.getId(input.id);
                 YAHOO.page.admin.tagTypeMap.set(tagTypeId, oData[1]);
             });
+            ac.textboxChangeEvent.subscribe(function(type, args) {
+                const ac = args[0];
+                const input = ac.getInputEl();
+                const tagTypeId = YAHOO.page.getId(input.id);
+                if (!input.value) {
+                    YAHOO.page.admin.tagTypeMap.delete(tagTypeId);
+                }
+            });
             YAHOO.page.admin.autoCompletes.push(ac);
         });
         //

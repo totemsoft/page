@@ -33,27 +33,32 @@ class PageStructureController {
     private final PageService pageService;
 
     @PostMapping("/page")
-    PageResponse savePage(@RequestBody PageDto pageDto) {
+    PageResponse savePage(
+            @RequestBody PageDto pageDto) {
         return pageStructureService.savePage(pageDto);
     }
 
     @PostMapping("/page/tab")
-    void saveTab(@RequestBody TabDto tabDto) {
+    void saveTab(
+            @RequestBody TabDto tabDto) {
         pageStructureService.saveTab(tabDto);
     }
 
     @PostMapping("/page/section")
-    void saveSection(@RequestBody SectionDto sectionDto) {
+    void saveSection(
+            @RequestBody SectionDto sectionDto) {
         pageStructureService.saveSection(sectionDto);
     }
 
     @PostMapping("/page/subSection")
-    void saveSubSection(@RequestBody SubSectionDto subSectionDto) {
+    void saveSubSection(
+            @RequestBody SubSectionDto subSectionDto) {
         pageStructureService.saveSubSection(subSectionDto);
     }
 
     @PostMapping("/page/subSection/map")
-    void mapSubSection(@RequestBody SubSectionDto subSectionDto) {
+    void mapSubSection(
+            @RequestBody SubSectionDto subSectionDto) {
         pageStructureService.mapSubSection(subSectionDto);
     }
 
@@ -67,7 +72,8 @@ class PageStructureController {
     }
 
     @GetMapping("/page/key/{subSectionId}")
-    SearchResult<KeyDto> findKeys(@PathVariable(name = "subSectionId") long subSectionId) {
+    SearchResult<KeyDto> findKeys(
+            @PathVariable(name = "subSectionId") long subSectionId) {
         log.trace("#{} findKeys", subSectionId);
         return SearchResult.<KeyDto>builder()
             .data(pageService.findKeys(subSectionId))
@@ -75,8 +81,9 @@ class PageStructureController {
     }
 
     @PostMapping("/page/key")
-    SearchResult<KeyDto> findKeys(@RequestBody Map<Integer, Object> tagTypeMap) {
-        log.debug("trace: {}", tagTypeMap);
+    SearchResult<KeyDto> findKeys(
+            @RequestBody Map<Integer, Object> tagTypeMap) {
+        log.debug("findKeys: {}", tagTypeMap);
         return SearchResult.<KeyDto>builder()
             .data(pageService.findKeys(tagTypeMap))
             .build();

@@ -83,7 +83,7 @@ class PageStructureController {
     @PostMapping("/page/key")
     SearchResult<KeyDto> findKeys(
             @RequestBody Map<Integer, Object> tagTypeMap) {
-        log.debug("findKeys: {}", tagTypeMap);
+        log.trace("findKeys: {}", tagTypeMap);
         return SearchResult.<KeyDto>builder()
             .data(pageService.findKeys(tagTypeMap))
             .build();

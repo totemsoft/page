@@ -46,7 +46,7 @@ public class Application {
             final var result = Files.copy(source, target, StandardCopyOption.REPLACE_EXISTING);
             log.info("File copied: {} -> {} = {}", source, target, result);
         } catch (Exception e) {
-            log.warn("FAILED to copyDatabase: {}", e.getMessage());
+            log.error("FAILED to copyDatabase: [{}] {}", e.getClass(), e.getMessage());
         }
     }
 

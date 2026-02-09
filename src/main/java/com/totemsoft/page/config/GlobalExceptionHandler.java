@@ -1,5 +1,6 @@
 package com.totemsoft.page.config;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.jspecify.annotations.Nullable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -22,13 +23,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(Throwable.class)
     public final ResponseEntity<Object> defaultErrorHandler(Throwable ex, WebRequest request) {
         final HttpStatus status = HttpStatus.INTERNAL_SERVER_ERROR;
-        return errorAndLog(status, ex, "Unexpected Server Error");
+        return errorAndLogException(status, ex, "Unexpected Server Error");
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<Object> handle(EntityNotFoundException ex, WebRequest request) {
         final HttpStatus status = HttpStatus.NOT_FOUND;
-        return errorAndLog(status, ex, null);
+        return errorAndLogException(status, ex, null);
     }
 
     //@ExceptionHandler(HttpRequestMethodNotSupportedException.class)
@@ -39,16 +40,20 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         //return super.handleHttpRequestMethodNotSupported(ex, headers, status, request);
     }
 
-    private ResponseEntity<Object> error(HttpStatusCode status, Throwable ex, String message) {
-        final var error = new ErrorResponse(
-                status,
-                message == null ? ex.getMessage() : (message + ": " + ex.getMessage()));
-        return new ResponseEntity<>(error, status);
+    private ErrorResponse errorResponse(HttpStatusCode status, Throwable ex, String message) {
+        final var cause = ExceptionUtils.getRootCauseMessage(ex);
+        message = message == null ? cause : message + ": " + cause;
+        return new ErrorResponse(status, message);
     }
 
-    private ResponseEntity<Object> errorAndLog(HttpStatusCode status, Throwable ex, String message) {
+    private ResponseEntity<Object> errorAndLogException(HttpStatusCode status, Throwable ex, String message) {
         log.error(message, ex);
-        return error(status, ex, message);
+        return new ResponseEntity<>(errorResponse(status, ex, message), status);
+    }
+
+    private ResponseEntity<Object> error(HttpStatusCode status, Throwable ex, String message) {
+        log.error(message);
+        return new ResponseEntity<>(errorResponse(status, ex, message), status);
     }
 
 }

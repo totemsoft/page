@@ -339,13 +339,12 @@ YAHOO.page.admin = {
             const fnSubmitHandler = function() {
                 const elRowTagType = YUD.get('subSectionKeys.rowTagType');
                 const elColumnTagType = YUD.get('subSectionKeys.columnTagType');
-                const rs = YAHOO.page.admin.keysDataTable.getRecordSet();
                 const keyIds = new Set();
-                for (var r = 0; r < rs.getLength(); r++) {
-                    const row = rs.getRecord(r);
+                const rows = YAHOO.page.admin.keysDataTable.getRecordSet().getRecords();
+                rows.forEach(row => {
                     const data = row.getData();
                     keyIds.add(data.id);
-                }
+                });
                 const keys = Array.from(keyIds).map(keyId => ({id: keyId}));
                 YAHOO.page.sendPostRequest('/page/subSection/map', YAHOO.page.reloadWindowCallback, {
                     id: YUD.get('subSectionKeys.id').value,
@@ -454,9 +453,9 @@ YAHOO.page.admin = {
     initKeysDataTable: function(records) {
         if (!YAHOO.page.admin.keysDataTable) {
             const columnDefs = [
-                {key: 'id', label: 'ID', width: 20},
-                {key: 'name', label: 'Name', sortable: true, width: 50},
-                {key: 'title', label: 'Title', width: 100},
+                //{key: 'id', label: 'ID'},
+                {key: 'name', label: 'Name', sortable: true},
+                {key: 'title', label: 'Title'},
                 {key: 'tagSummary', label: 'Tag Summary', width: 200}
             ];
             const fields = columnDefs.map(columnDef => columnDef.key);

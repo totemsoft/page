@@ -27,6 +27,7 @@ import com.totemsoft.page.model.SubSectionDto;
 import com.totemsoft.page.model.TabDto;
 import com.totemsoft.page.model.TagDto;
 import com.totemsoft.page.model.TagTypeDto;
+import com.totemsoft.page.model.exchange.ApiException;
 
 import lombok.extern.log4j.Log4j2;
 
@@ -79,11 +80,11 @@ public class WebConfig implements WebMvcConfigurer {
             .defaultStatusHandler(
                 Predicate.not(HttpStatusCode::is2xxSuccessful),
                 (request, response) -> {
-                    // ApiError
+                    // see ApiError class
                     final var error = new String(response.getBody().readAllBytes());
                     log.error("API request failed. Response status: {}, body: {}", 
                         response.getStatusCode(), error);
-                    throw new RuntimeException(error);
+                    throw new ApiException(error);
                 }
             )
             .build();

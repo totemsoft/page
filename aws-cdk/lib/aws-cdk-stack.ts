@@ -51,7 +51,8 @@ export class AwsCdkStack extends cdk.Stack {
     const accessPointPath = '/db';
     const dbPath =`${efsMountPath}${accessPointPath}`;
     const dbName = 'pagedb_001';
-    const dbNamePrev = 'pagedb_004'; // to copy in Application#main
+    // OPTIONAL: to copy in Application#main (or skip copy if env var DB_NAME_PREV not set)
+    const dbNamePrev = 'pagedb_002';
  
     const domainName = props.domainName;
 

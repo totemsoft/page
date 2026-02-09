@@ -25,10 +25,6 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class TaskService {
 
-    /** default page currency */
-    @Value("${page.currency}")
-    private String currency;
-
     /** exchangeratesapi base currency */
     @Value("${page.exchangeratesapi.io.base-currency}")
     private String baseCurrency;
@@ -94,7 +90,7 @@ public class TaskService {
             .keyId(keyId)
             .date(date)
             .value(randomValue(1_000, 1_000_000))
-            .currency(currency)
+            .currency(baseCurrency)
             .baseCurrency(baseCurrency)
             .title(randomTitle(16, 32))
             .build());

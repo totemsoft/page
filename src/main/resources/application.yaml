@@ -2,7 +2,6 @@
 page:
   dbPath: ${DB_PATH:${java.io.tmpdir}/db}
   dbName: ${DB_NAME:pagedb}
-  currency: EUR
   exchangeratesapi.io:
     base-currency: EUR # AUD,USD - base_currency_access_restricted
     base-url: https://api.exchangeratesapi.io/v1

@@ -134,7 +134,7 @@ class ExchangeRateService {
                 .date(date)
                 .rate(rate)
                 .timestamp(timestamp)
-                .baseCurrency(baseCurrency)
+                .base(baseCurrency)
                 .build());
             result.add(exchangeRate);
         });
@@ -158,7 +158,7 @@ class ExchangeRateService {
                 .date(date)
                 .value(rate.getRate())
                 .currency(rate.getCode())
-                .baseCurrency(rate.getBaseCurrency())
+                .baseCurrency(rate.getBase())
                 .title(rateName)
                 .build()));
     }
@@ -166,8 +166,8 @@ class ExchangeRateService {
     private List<Tag> saveTags(ExchangeRate rate) {
         // column/row tagTypes
         return List.of(
-            saveTag(ExchangeRate.CURRENCY_NAME, rate.getName()),
-            saveTag(ExchangeRate.CURRENCY_RATE, rate.getName()));
+            saveTag(ExchangeRate.CURRENCY_BASE, rate.getBase()),
+            saveTag(ExchangeRate.CURRENCY_CODE, rate.getCode()));
     }
 
     private Tag saveTag(String tagTypeName, String tagName) {

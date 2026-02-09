@@ -30,10 +30,10 @@ import lombok.ToString;
 public class ExchangeRate {
 
     /** TagType name, eg for columns */
-    public static final String CURRENCY_NAME = "CURRENCY_NAME";
+    public static final String CURRENCY_BASE = "CURRENCY_BASE";
 
     /** TagType name, eg for rows */
-    public static final String CURRENCY_RATE = "CURRENCY_RATE";
+    public static final String CURRENCY_CODE = "CURRENCY_CODE";
 
     @EqualsAndHashCode.Include
     @ToString.Include
@@ -44,14 +44,14 @@ public class ExchangeRate {
     @EqualsAndHashCode.Include
     @ToString.Include
     @Id
-    @Column(name = "currency_code")
-    private String code;
+    @Column(name = "currency_base")
+    private String base;
 
     @EqualsAndHashCode.Include
     @ToString.Include
     @Id
-    @Column(name = "base_currency")
-    private String baseCurrency;
+    @Column(name = "currency_code")
+    private String code;
 
     @NotNull
     @Column(name = "currency_rate")
@@ -64,7 +64,7 @@ public class ExchangeRate {
     /** Combination of base currency and currency code, eg EUR/USD */
     @Transient
     public String getName() {
-        return baseCurrency + '/' + code;
+        return base + '/' + code;
     }
 
 }

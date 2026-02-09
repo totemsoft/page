@@ -58,13 +58,13 @@ public class SeriesData {
 
     @ToString.Include
     @NotBlank
-    @Column(name = "currency_code")
-    private String currency;
+    @Column(name = "currency_base")
+    private String baseCurrency;
 
     @ToString.Include
     @NotBlank
-    @Column(name = "base_currency")
-    private String baseCurrency;
+    @Column(name = "currency_code")
+    private String currency;
 
     @Column(name = "series_data_title")
     private String title;

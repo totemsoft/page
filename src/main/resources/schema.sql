@@ -10,13 +10,13 @@ create table if not exists currency (
 
 create table if not exists exchange_rate (
   currency_date date not null,
+  currency_base char(3) not null,
   currency_code char(3) not null,
-  base_currency char(3) not null,
   currency_rate numeric(38,2) not null,
   currency_timestamp timestamp not null,
   constraint exchange_rate_fk1 foreign key (currency_code) references currency (currency_code),
-  constraint exchange_rate_fk2 foreign key (base_currency) references currency (currency_code),
-  primary key (currency_date, currency_code, base_currency)
+  constraint exchange_rate_fk2 foreign key (currency_base) references currency (currency_code),
+  primary key (currency_date, currency_base, currency_code)
 );
 
 create table if not exists split_ratio (
@@ -97,12 +97,12 @@ create table if not exists series_data (
   series_data_date date not null,
   key_id bigint not null,
   series_data_value numeric(38,2) not null,
+  currency_base char(3) not null,
   currency_code char(3) not null,
-  base_currency char(3) not null,
   series_data_title varchar(255),
   constraint series_data_fk1 foreign key (key_id) references series_data_key (key_id),
-  constraint series_data_fk2 foreign key (currency_code) references currency (currency_code),
-  constraint series_data_fk3 foreign key (base_currency) references currency (currency_code),
+  constraint series_data_fk2 foreign key (currency_base) references currency (currency_code),
+  constraint series_data_fk3 foreign key (currency_code) references currency (currency_code),
   primary key (series_data_id)
 );
 create index if not exists series_data_idx1 on series_data (key_id);

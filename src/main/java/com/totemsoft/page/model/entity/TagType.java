@@ -35,7 +35,7 @@ public class TagType {
 
     @ToString.Include
     @NotBlank
-    @NaturalId
+    @NaturalId//(mutable = true)
     @Column(name = "tag_type_name")
     private String name;
 

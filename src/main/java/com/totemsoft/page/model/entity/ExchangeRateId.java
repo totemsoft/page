@@ -11,10 +11,10 @@ public class ExchangeRateId {
     @Column(name = "currency_date")
     private LocalDate date;
 
+    @Column(name = "currency_base")
+    private String base;
+
     @Column(name = "currency_code")
     private String code;
-
-    @Column(name = "base_currency")
-    private String baseCurrency;
 
 }

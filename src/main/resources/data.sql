@@ -1,6 +1,5 @@
 -- DML (data) script
 SET AUTOCOMMIT OFF;
-
 BEGIN TRANSACTION;
 
 INSERT INTO currency (currency_code, currency_title) SELECT * FROM (VALUES
@@ -41,9 +40,7 @@ INSERT INTO tag (tag_name, tag_title, tag_type_id) SELECT * FROM (VALUES
   ('TAG_07', 'Tag 07', 2), -- column
   ('TAG_08', 'Tag 08', 2), -- column
   ('TAG_09', 'Tag 09', 2), -- column
-  ('TAG_10', 'Tag 10', 2), -- column
-  ('TAG_11', 'Tag 11', 3),
-  ('TAG_12', 'Tag 12', 4)
+  ('TAG_10', 'Tag 10', 2)  -- column
 ) WHERE NOT EXISTS (SELECT 1 FROM tag);
 
 INSERT INTO page (page_name) SELECT * FROM (VALUES

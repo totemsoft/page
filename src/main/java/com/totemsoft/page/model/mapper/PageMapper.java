@@ -1,5 +1,6 @@
 package com.totemsoft.page.model.mapper;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.mapstruct.Mapper;
@@ -23,7 +24,7 @@ import com.totemsoft.page.model.entity.TagType;
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface PageMapper {
 
-    List<KeyDto> mapKeys(List<Key> keys);
+    List<KeyDto> mapKeys(Collection<Key> keys);
     List<Key> mapKeyDtos(List<KeyDto> keyDtos);
 
     PageDto map(Page page);

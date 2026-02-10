@@ -43,7 +43,9 @@ public class Application {
         try {
             final var source = Paths.get(dbPath + '/' + dbNamePrev + dbSuffix);
             final var target = Paths.get(dbPath + '/' + dbName + dbSuffix);
-            final var result = Files.copy(source, target, StandardCopyOption.REPLACE_EXISTING);
+            final var result = Files.copy(source, target,
+                StandardCopyOption.REPLACE_EXISTING,
+                StandardCopyOption.COPY_ATTRIBUTES);
             log.info("File copied: {} -> {} = {}", source, target, result);
         } catch (Exception e) {
             log.error("FAILED to copyDatabase: [{}] {}", e.getClass(), e.getMessage());

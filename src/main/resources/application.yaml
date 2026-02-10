@@ -40,6 +40,7 @@ spring:
     hibernate:
       ddl-auto: none # disable automatic DDL generation to avoid conflicts
     open-in-view: false
+    show-sql: false
     properties:
     - hibernate.connection.provider_disables_autocommit: true
   main:

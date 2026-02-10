@@ -1,6 +1,5 @@
 package com.totemsoft.page.service;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -15,10 +14,11 @@ import com.totemsoft.page.model.KeyDto;
 import com.totemsoft.page.model.PageDto;
 import com.totemsoft.page.model.TagDto;
 import com.totemsoft.page.model.TagTypeDto;
-import com.totemsoft.page.model.entity.Key;
 import com.totemsoft.page.model.entity.Page;
 import com.totemsoft.page.model.entity.SubSection;
 import com.totemsoft.page.model.mapper.PageMapper;
+import com.totemsoft.page.repository.KeyRepository;
+import com.totemsoft.page.repository.KeySpecification;
 import com.totemsoft.page.repository.KeyTagRepository;
 import com.totemsoft.page.repository.PageRepository;
 import com.totemsoft.page.repository.SubSectionRepository;
@@ -34,6 +34,8 @@ import lombok.extern.log4j.Log4j2;
 @RequiredArgsConstructor
 @Log4j2
 public class PageService {
+
+    private final KeyRepository keyRepository;
 
     private final KeyTagRepository keyTagRepository;
 
@@ -109,15 +111,7 @@ public class PageService {
             }
         });
         log.trace("tagIds: {}, tagTitles: {}", tagIds, tagTitles);
-        final var keys = new ArrayList<Key>();
-        if (!tagIds.isEmpty()) {
-            keys.addAll(keyTagRepository.findByTagIdIn(tagIds));
-        }
-        if (!tagTitles.isEmpty()) {
-            tagTitles.forEach((tagTypeId, tagTitle) -> keys.addAll(
-                keyTagRepository.findByTagTypeIdAndTagTitleContainingIgnoreCase(tagTypeId, '%' + tagTitle.trim() + '%')
-            ));
-        }
+        final var keys = keyRepository.findAll(new KeySpecification(tagIds, tagTitles));
         log.trace("keys: {}", keys);
         return pageMapper.mapKeys(keys);
     }

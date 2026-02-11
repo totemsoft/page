@@ -11,6 +11,8 @@ logging:
   level:
     com.totemsoft.page: DEBUG
     #org.springframework.boot.autoconfigure: DEBUG
+    org.apache.tomcat.util.http: ERROR
+    org.apache.catalina.connector.CoyoteAdapter: ERROR
 
 management:
   endpoints:

@@ -19,7 +19,6 @@ import com.totemsoft.page.model.entity.SubSection;
 import com.totemsoft.page.model.mapper.PageMapper;
 import com.totemsoft.page.repository.KeyRepository;
 import com.totemsoft.page.repository.KeySpecification;
-import com.totemsoft.page.repository.KeyTagRepository;
 import com.totemsoft.page.repository.PageRepository;
 import com.totemsoft.page.repository.SubSectionRepository;
 import com.totemsoft.page.repository.TagRepository;
@@ -36,8 +35,6 @@ import lombok.extern.log4j.Log4j2;
 public class PageService {
 
     private final KeyRepository keyRepository;
-
-    private final KeyTagRepository keyTagRepository;
 
     private final PageRepository pageRepository;
 
@@ -111,7 +108,9 @@ public class PageService {
             }
         });
         log.trace("tagIds: {}, tagTitles: {}", tagIds, tagTitles);
-        final var keys = keyRepository.findAll(new KeySpecification(tagIds, tagTitles));
+        //final var keys = keyRepository.findAll(new KeySpecification(tagIds, tagTitles));
+        final var keys = keyRepository.findAll(KeySpecification.findByTagIds(tagIds)
+            .and(KeySpecification.findByTagTypeIdAndTagTitles(tagTitles)));
         log.trace("keys: {}", keys);
         return pageMapper.mapKeys(keys);
     }

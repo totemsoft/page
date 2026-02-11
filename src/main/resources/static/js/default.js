@@ -380,6 +380,15 @@ YAHOO.page = {
             defaultSkin: 'sam'
         },
         onSuccess: function() {
+            YUE.onDOMReady(function() {
+                const win = window.parent ? window.parent : window;
+                const url = new URL(win.location.href);
+                const pageDate = url.searchParams.get('pageDate');
+                if (pageDate) {
+                    url.searchParams.delete('pageDate');
+                    history.replaceState(history.state, '', url.href);
+                }
+            });
             YUE.onContentReady('pageDiv', function() {
                 YAHOO.page.init(this);
             });

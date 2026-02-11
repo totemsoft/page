@@ -61,13 +61,6 @@ public class Application {
             cleanupDirectory(dbPath, Optional.ofNullable(dbName))
                 .forEach(d -> sb.append("\n\t" + d));
             log.info(sb.toString());
-            // TODO: remove after final cleanup
-            // /mnt/efs/db/db
-            sb.setLength(0);
-            cleanupDirectory(dbPath + "/db", Optional.of("xxx"))
-                .forEach(d -> sb.append("\n\t" + d));
-            log.info(sb.toString());
-            // TODO: remove after final cleanup
         } catch (Throwable e) {
             log.warn("FAILED to cleanupDirectory:", e);
         }

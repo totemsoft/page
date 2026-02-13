@@ -3,6 +3,7 @@ package com.totemsoft.page.model;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import com.totemsoft.page.model.ColumnDef.CellFormatterEnum;
 
@@ -39,7 +40,7 @@ public class SeriesDataDto {
         return baseCurrency.equals(currency);
     }
 
-    public static List<ColumnDef> columns() {
+    public static List<ColumnDef> columns(Optional<CellFormatterEnum> formatter) {
         return List.of(
             ColumnDef.builder()
                 .key("id")
@@ -58,7 +59,7 @@ public class SeriesDataDto {
             ColumnDef.builder()
                 .key("value")
                 .label("Value")
-                .formatter(CellFormatterEnum.CURRENCY.name().toLowerCase())
+                .formatter(formatter.orElse(CellFormatterEnum.NUMBER).name().toLowerCase())
                 .className(CssClasName.RIGHT)
                 .build(),
             ColumnDef.builder()

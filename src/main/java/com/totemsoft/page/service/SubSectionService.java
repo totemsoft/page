@@ -117,13 +117,15 @@ public class SubSectionService {
             exchangeRate = Optional.empty();
         }
         //
+        final var sameCurrency = data.stream().allMatch(SeriesData::sameCurrency);
+        final Optional<CellFormatterEnum> formatter = sameCurrency ? Optional.of(CellFormatterEnum.CURRENCY) : Optional.empty();
+        //
         final var rowTagTypeId = subSection.getRowTagTypeId();
         final var columnTagTypeId = subSection.getColumnTagTypeId();
         if (rowTagTypeId == null || columnTagTypeId == null) {
             log.trace("No RowTagType/ColumnTagType set for sub-section {}.", subSectionId);
             return SearchResult.<SeriesDataDto>builder()
-                .columns(skipColumns.orElse(false) ? null
-                    : SeriesDataDto.columns())
+                .columns(skipColumns.orElse(false) ? null : SeriesDataDto.columns(formatter))
                 .data(seriesDataMapper.map(data, exchangeRate))
                 .build();
         }
@@ -147,11 +149,8 @@ public class SubSectionService {
                 exchangeRate))
             .build())
         );
-        final var sameCurrency = data.stream().allMatch(SeriesData::sameCurrency);
-        final Optional<CellFormatterEnum> formatter = sameCurrency ? Optional.of(CellFormatterEnum.CURRENCY) : Optional.empty();
         return SearchResult.<Row>builder()
-            .columns(skipColumns.orElse(false) ? null
-                : Row.columns(columnTags, formatter))
+            .columns(skipColumns.orElse(false) ? null : Row.columns(columnTags, formatter))
             .data(result)
             .build();
     }

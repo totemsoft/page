@@ -17,6 +17,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.totemsoft.page.model.Cell;
 import com.totemsoft.page.model.ColumnDef;
+import com.totemsoft.page.model.CurrencyDto;
 import com.totemsoft.page.model.KeyDto;
 import com.totemsoft.page.model.PageDto;
 import com.totemsoft.page.model.PageResponse;
@@ -36,6 +37,7 @@ import lombok.extern.log4j.Log4j2;
 @RegisterReflectionForBinding({
     Cell.class,
     ColumnDef.class,
+    CurrencyDto.class,
     KeyDto.class,
     PageDto.class,
     PageResponse.class,

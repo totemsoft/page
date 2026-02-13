@@ -78,10 +78,10 @@ public class Application {
                         .toLocalDateTime();
                     try {
                         final var owner = Files.getOwner(p, LinkOption.NOFOLLOW_LINKS).getName();
-                        if (dbName.isPresent() && !fileName.startsWith(dbName.get() + ".")
-                                && !Files.deleteIfExists(p)) {
-                            log.warn("FAILED to delete: {}", p); // owner = root ?
-                        }
+//                        if (dbName.isPresent() && !fileName.startsWith(dbName.get() + ".")
+//                                && !Files.deleteIfExists(p)) {
+//                            log.warn("FAILED to delete: {}", p); // owner = root ?
+//                        }
                         return lastModified + "\t" + owner + "\t" + p.toString() + (!file.exists() ? " [*]" : "");
                     } catch (Exception ignore) {
                         return "WARN:\t" + p.toString() + ":\t" + ignore.getMessage();

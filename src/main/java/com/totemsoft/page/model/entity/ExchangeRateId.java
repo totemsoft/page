@@ -1,12 +1,21 @@
 package com.totemsoft.page.model.entity;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
 import jakarta.persistence.Column;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
-public class ExchangeRateId {
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class ExchangeRateId implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @Column(name = "currency_date")
     private LocalDate date;

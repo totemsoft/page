@@ -28,12 +28,13 @@ class SubSectionController {
         return subSectionService.find(subSectionId, rowTagTypeId, columnTagTypeId);
     }
 
-    @GetMapping("/subSection/{subSectionId}/{date}")
+    @GetMapping("/subSection/{subSectionId}/{date}/{currency}")
     SearchResult<?> subSectionData(
             @PathVariable long subSectionId,
             @PathVariable LocalDate date,
+            @PathVariable String currency,
             @RequestParam(name = "skipColumns") Optional<Boolean> skipColumns) {
-        return subSectionService.find(subSectionId, date, skipColumns);
+        return subSectionService.find(subSectionId, date, currency, skipColumns);
     }
 
 }

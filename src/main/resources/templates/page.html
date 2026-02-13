@@ -150,8 +150,18 @@
             <h2 th:id="|page.${page.id}|" th:text="${page.name}">TBD</h2>
         </div>
         <div class="yui-u">
-            <label for="pageDate" class="bold">Select a date:</label>
-            <input type="date" id="pageDate" th:value="${pageDate}" style="margin-block-start:2em;" />
+            <div class="yui-g" style="width: 100%;">
+                <div class="yui-u first">
+                    <label for="pageDate" class="bold">Select a date:</label>
+                    <input type="date" id="pageDate" th:value="${pageDate}" style="width: 100%;" />
+                </div>
+                <div class="yui-u">
+                    <label for="currency" class="bold">Select a currency:</label>
+                    <select th:id="pageCurrency" style="width: 100%;">
+                        <option th:each="item: ${currencies}" th:value="${item.code}" th:text="${item.title}"></option>
+                    </select>
+                </div>
+            </div>
         </div>
         <div class="yui-u" th:fragment="logout" sec:authorize="isAuthenticated()">
             <div class="yui-g" style="width: 100%;">

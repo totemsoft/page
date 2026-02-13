@@ -9,6 +9,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
@@ -18,10 +19,14 @@ import com.totemsoft.page.model.ColumnDef;
 import com.totemsoft.page.model.Row;
 import com.totemsoft.page.model.SearchResult;
 import com.totemsoft.page.model.SeriesDataDto;
+import com.totemsoft.page.model.ColumnDef.CellFormatterEnum;
+import com.totemsoft.page.model.entity.ExchangeRate;
+import com.totemsoft.page.model.entity.ExchangeRateId;
 import com.totemsoft.page.model.entity.SeriesData;
 import com.totemsoft.page.model.entity.SubSection;
 import com.totemsoft.page.model.entity.Tag;
 import com.totemsoft.page.model.mapper.SeriesDataMapper;
+import com.totemsoft.page.repository.ExchangeRateRepository;
 import com.totemsoft.page.repository.SeriesDataRepository;
 import com.totemsoft.page.repository.SubSectionRepository;
 
@@ -35,11 +40,17 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class SubSectionService {
 
+    /** exchangeratesapi base currency */
+    @Value("${page.exchangeratesapi.io.base-currency}")
+    private String baseCurrency;
+
+    private final ExchangeRateRepository exchangeRateRepository;
+
     private final SubSectionRepository subSectionRepository;
 
     private final SeriesDataRepository seriesDataRepository;
 
-    private final SeriesDataMapper mapper;
+    private final SeriesDataMapper seriesDataMapper;
 
     @Transactional
     public SearchResult<Row> find(long subSectionId,
@@ -52,7 +63,7 @@ public class SubSectionService {
         if (rowTagTypeId.isEmpty() || columnTagTypeId.isEmpty()) {
             log.trace("No RowTagType/ColumnTagType set for sub-section {}.", subSectionId);
             return SearchResult.<Row>builder()
-                .columns(Row.columns(Set.of()))
+                .columns(Row.columns(Set.of(), Optional.empty()))
                 .data(List.of())
                 .build();
         }
@@ -69,29 +80,51 @@ public class SubSectionService {
         log.trace("#{} columnTags: {}", subSectionId, columnTags);
         final var result = new ArrayList<Row>();
         rowTags.forEach(rowTag -> result.add(Row.builder()
-            .cells(filterRowCells(List.of(), rowTag, columnTags))
+            .cells(filterRowCells(
+                List.of(),
+                rowTag,
+                columnTags,
+                Optional.empty()))
             .build())
         );
         return SearchResult.<Row>builder()
-            .columns(Row.columns(columnTags))
+            .columns(Row.columns(columnTags, Optional.empty()))
             .data(result)
             .build();
     }
 
     @Transactional
-    public SearchResult<?> find(long subSectionId, LocalDate date, Optional<Boolean> skipColumns) {
-        log.trace("findRows({}, {}) ...", subSectionId, date);
+    public SearchResult<?> find(
+            long subSectionId,
+            LocalDate date,
+            String currency,
+            Optional<Boolean> skipColumns) {
+        log.trace("findRows({}, {}, {}, {}) ...", subSectionId, date, currency, skipColumns);
         final var subSection = subSectionRepository.findById(subSectionId)
             .orElseThrow(() -> new EntityNotFoundException(subSectionId, SubSection.class));
+        // in baseCurrency
         final var data = findSeriesData(subSection, date);
+        final Optional<ExchangeRate> exchangeRate;
+        // will be used to convert data value from base to other currency
+        if (!baseCurrency.equals(currency)) {
+            final var exchangeRateId = ExchangeRateId.builder()
+                .date(date)
+                .base(baseCurrency)
+                .code(currency)
+                .build();
+            exchangeRate = exchangeRateRepository.findById(exchangeRateId);
+        } else {
+            exchangeRate = Optional.empty();
+        }
         //
         final var rowTagTypeId = subSection.getRowTagTypeId();
         final var columnTagTypeId = subSection.getColumnTagTypeId();
         if (rowTagTypeId == null || columnTagTypeId == null) {
             log.trace("No RowTagType/ColumnTagType set for sub-section {}.", subSectionId);
             return SearchResult.<SeriesDataDto>builder()
-                .columns(skipColumns.orElse(false) ? null : SeriesDataDto.columns())
-                .data(mapper.map(data))
+                .columns(skipColumns.orElse(false) ? null
+                    : SeriesDataDto.columns())
+                .data(seriesDataMapper.map(data, exchangeRate))
                 .build();
         }
         // all keys from sub-section
@@ -109,11 +142,16 @@ public class SubSectionService {
         rowTags.forEach(rowTag -> result.add(Row.builder()
             .cells(filterRowCells(
                 data.stream().filter(d -> d.getKey().anyMatch(rowTag.getId())).toList(),
-                rowTag, columnTags))
+                rowTag,
+                columnTags,
+                exchangeRate))
             .build())
         );
+        final var sameCurrency = data.stream().allMatch(SeriesData::sameCurrency);
+        final Optional<CellFormatterEnum> formatter = sameCurrency ? Optional.of(CellFormatterEnum.CURRENCY) : Optional.empty();
         return SearchResult.<Row>builder()
-            .columns(skipColumns.orElse(false) ? null : Row.columns(columnTags))
+            .columns(skipColumns.orElse(false) ? null
+                : Row.columns(columnTags, formatter))
             .data(result)
             .build();
     }
@@ -128,7 +166,11 @@ public class SubSectionService {
         return seriesDataRepository.findByDateAndKeyIn(date, keys);
     }
 
-    private Map<String, Cell<?>> filterRowCells(List<SeriesData> data, Tag rowTag, Set<Tag> columnTags) {
+    private Map<String, Cell<?>> filterRowCells(
+            List<SeriesData> data,
+            Tag rowTag,
+            Set<Tag> columnTags,
+            Optional<ExchangeRate> exchangeRate) {
         final var cells = new HashMap<String, Cell<?>>(1 + columnTags.size());
         cells.put(ColumnDef.COLUMN_TAG, Cell.<String>builder()
             .id(rowTag.getId())
@@ -136,7 +178,7 @@ public class SubSectionService {
             .build());
         columnTags.forEach(columnTag -> data.stream()
             .filter(d -> d.getKey().anyMatch(columnTag.getId()))
-            .forEach(d -> cells.put(columnTag.getKey(), mapper.map(d)))
+            .forEach(d -> cells.put(columnTag.getKey(), seriesDataMapper.map(d, exchangeRate)))
         );
         return cells;
     }

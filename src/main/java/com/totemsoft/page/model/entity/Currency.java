@@ -1,6 +1,7 @@
 package com.totemsoft.page.model.entity;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -29,5 +30,9 @@ public class Currency {
 
     @Column(name = "currency_title")
     private String title;
+
+    @Convert(converter = org.hibernate.type.YesNoConverter.class)
+    @Column(name = "currency_base")
+    private Boolean base;
 
 }

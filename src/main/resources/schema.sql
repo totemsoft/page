@@ -5,6 +5,7 @@ use public;
 create table if not exists currency (
   currency_code char(3) not null,
   currency_title varchar(255) not null,
+  currency_base char(1),
   primary key (currency_code)
 );
 
@@ -123,3 +124,6 @@ create table if not exists sub_section_key (
   constraint key_sub_section_fk2 foreign key (key_id) references series_data_key (key_id),
   primary key (sub_section_id, key_id)
 );
+
+-- TODO: remove following lines later
+alter table currency add column if not exists currency_base char(1);

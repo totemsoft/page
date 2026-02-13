@@ -1,8 +1,5 @@
 package com.totemsoft.page.model;
 
-import java.util.List;
-
-import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -10,19 +7,14 @@ import lombok.ToString;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @ToString(onlyExplicitlyIncluded = true)
-public class TabDto {
+public class CurrencyDto {
 
     @EqualsAndHashCode.Include
     @ToString.Include
-    private Long id;
+    private String code;
 
-    @NotBlank
-    private String name;
+    private String title;
 
-    private int index;
-
-    private Long pageId;
-
-    private List<SectionDto> sections;
+    private Boolean base;
 
 }

@@ -11,7 +11,6 @@ import lombok.Data;
     key: 'date'
     label: 'Date'
     formatter: 'date'
-        currencyOptions: {}
         dateOptions: {format: '%d/%m/%Y', locale: 'en'}
     dropdownOptions: [{label: 'Alabama', value: 'AL'}]
     editor: 'dropdown'
@@ -41,6 +40,8 @@ public class ColumnDef {
         TAG;
     }
 
+    public static final String DATE_OPTIONS = "{\"format\": \"%d/%m/%Y\", \"locale\": \"en\"}";
+
     public static final String COLUMN_TAG = CellFormatterEnum.TAG.name();
 
     public enum CellEditorEnum {
@@ -58,8 +59,6 @@ public class ColumnDef {
     private String label;
 
     private String formatter;
-
-    private String currencyOptions;
 
     private String dateOptions;
 

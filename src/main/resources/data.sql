@@ -2,9 +2,12 @@
 SET AUTOCOMMIT OFF;
 BEGIN TRANSACTION;
 
-INSERT INTO currency (currency_code, currency_title) SELECT * FROM (VALUES
-  ('EUR', '')
+INSERT INTO currency (currency_code, currency_title, currency_base) SELECT * FROM (VALUES
+  ('EUR', 'Euro', 'Y')
 ) WHERE NOT EXISTS (SELECT 1 FROM currency);
+UPDATE currency SET currency_base = 'Y' WHERE currency_code IN (
+  'EUR','USD','GBP','DKK','AUD','JPY','CNY','RUB'
+);
 
 INSERT INTO split_ratio (split_ratio_name, split_ratio_title) SELECT * FROM (VALUES
   ('ONE', ''),

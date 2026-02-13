@@ -3,6 +3,7 @@ package com.totemsoft.page.model;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonValue;
@@ -23,7 +24,7 @@ public class Row {
     @JsonValue
     private Map<String, Cell<?>> cells;
 
-    public static List<ColumnDef> columns(Set<Tag> columnTags) {
+    public static List<ColumnDef> columns(Set<Tag> columnTags, Optional<CellFormatterEnum> formatter) {
         final var columnDefs = new ArrayList<ColumnDef>();
         columnDefs.add(ColumnDef.builder()
             .key(ColumnDef.COLUMN_TAG)
@@ -34,7 +35,7 @@ public class Row {
         columnTags.forEach(t -> columnDefs.add(ColumnDef.builder()
             .key(t.getKey())
             .label(t.getLabel())
-            .formatter(CellFormatterEnum.CURRENCY.name().toLowerCase())
+            .formatter(formatter.orElse(CellFormatterEnum.NUMBER).name().toLowerCase())
             .className(CssClasName.RIGHT)
             .build()));
         return columnDefs;

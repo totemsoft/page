@@ -9,6 +9,7 @@ const tabViewActiveTabCookie = 'YAHOO.page.tabView.activeIndex';
 YAHOO.namespace('page');
 
 YAHOO.page = {
+    locale: 'en-US',
     pageReadyEvent: new YAHOO.util.CustomEvent('pageReady'),
     pageMap: new Map(), // <Tab, [Section]>
     getId: function(s) {
@@ -35,22 +36,40 @@ YAHOO.page = {
             YUD.addClass(el, className);
         }
     },
+    updateNumberFormat: function() {
+        YAHOO.page.numberFormat = new Intl.NumberFormat(YAHOO.page.locale, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+    },
+    updateCurrencyFormat: function(currency) {
+        YAHOO.page.currencyFormat = new Intl.NumberFormat(YAHOO.page.locale, {
+            style: 'currency',
+            currency: currency,
+            currencyDisplay: 'symbol', // default
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+    },
     formatTag: function(el, oRecord, oColumn, oData, oDataTable) {
         //const oDT = oDataTable || this;
-        const value = (YL.isValue(oData)) ? oData : '';
+        const value = YL.isValue(oData) ? oData : '';
         el.innerHTML = YL.escapeHTML(value.toString());
         const className = oColumn.className || (oData ? oData.className : null);
         YAHOO.page.addClass(el.parentNode, className);
     },
     formatCurrency: function(el, oRecord, oColumn, oData, oDataTable) {
-        const oDT = oDataTable || this;
-        el.innerHTML = YAHOO.util.Number.format(oData, oColumn.currencyOptions || oDT.get('currencyOptions'));
+        //const oDT = oDataTable || this;
+        //const currencyOptions = oColumn.currencyOptions || oDT.get('currencyOptions');
+        //el.innerHTML = YAHOO.util.Number.format(oData, currencyOptions);
+        el.innerHTML = YL.isValue(oData) ? YAHOO.page.currencyFormat.format(oData) : '';
         const className = oColumn.className || (oData ? oData.className : null);
         YAHOO.page.addClass(el.parentNode, className);
     },
     formatNumber: function(el, oRecord, oColumn, oData, oDataTable) {
-        const oDT = oDataTable || this;
-        el.innerHTML = YAHOO.util.Number.format(oData, oColumn.numberOptions || oDT.get("numberOptions"));
+        //const oDT = oDataTable || this;
+        //el.innerHTML = YAHOO.util.Number.format(oData, oColumn.numberOptions || oDT.get("numberOptions"));
+        el.innerHTML = YL.isValue(oData) ? YAHOO.page.numberFormat.format(oData) : '';
         const className = oColumn.className || (oData ? oData.className : null);
         YAHOO.page.addClass(el.parentNode, className);
     },
@@ -215,6 +234,14 @@ YAHOO.page = {
             //YAHOO.page.reloadWindow(pageId, date);
             YAHOO.page.updateDataTables();
         });
+        //
+        YAHOO.page.updateNumberFormat();
+        YAHOO.page.updateCurrencyFormat(YUD.get('pageCurrency').value);
+        YUE.addListener('pageCurrency', 'change', function(e) {
+            const currency = YUE.getTarget(e).value;
+            YAHOO.page.updateCurrencyFormat(currency);
+            YAHOO.page.updateDataTables();
+        });
         // fire the custom event
         YAHOO.page.pageReadyEvent.fire({tabView: YAHOO.page.tabView});
     },
@@ -314,6 +341,8 @@ YAHOO.page = {
         const requestBuilder = function(oState, oDataTable) {
             const date = YUD.get('pageDate').value;
             let request = subSectionId + '/' + date;
+            const currency = YUD.get('pageCurrency').value;
+            request += '/' + currency;
             if (oState) {
                 request += '?skipColumns=true';
             }

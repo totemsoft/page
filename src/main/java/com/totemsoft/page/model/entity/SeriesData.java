@@ -73,4 +73,11 @@ public class SeriesData {
     @JoinColumn(name = "key_id", insertable = false, updatable = false)
     private Key key;
 
+    /**
+     * @return true if baseCurrency same as currency
+     */
+    public boolean sameCurrency() {
+        return baseCurrency.equals(currency);
+    }
+
 }

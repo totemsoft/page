@@ -33,12 +33,13 @@ class PageController {
             @RequestParam(name = "pageId") Long pageId,
             @RequestParam(name = "pageDate", required = false) Optional<LocalDate> pageDate,
             Model model) {
-        final var date = pageDate.orElse(LocalDate.now());
+        final var date = pageDate.orElse(LocalDate.now().minusDays(1));
         log.debug("Loading page {} for date {} ...", pageId, date);
         final var page = pageService.findPage(pageId);
         log.trace("Found page {}", page.getId());
         model.addAttribute("page", page);
         model.addAttribute("pageDate", date);
+        model.addAttribute("currencies", pageService.findBaseCurrencies());
         model.addAttribute("pages", pageService.findPages());
         model.addAttribute("splitRatios", SplitRatioEnum.values());
         model.addAttribute("tagTypes", pageService.findTagTypes());

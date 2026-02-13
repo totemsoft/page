@@ -8,10 +8,16 @@ import com.totemsoft.page.model.ColumnDef.CellFormatterEnum;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @Data
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@ToString(onlyExplicitlyIncluded = true)
 public class SeriesDataDto {
 
+    @EqualsAndHashCode.Include
+    @ToString.Include
     private Long id;
 
     //@JsonFormat(shape = JsonFormat.Shape.NUMBER)
@@ -19,8 +25,19 @@ public class SeriesDataDto {
 
     private BigDecimal value;
 
+    private String baseCurrency;
+
+    private String currency;
+
     @NotBlank
     private String title;
+
+    /**
+     * @return true if baseCurrency same as currency
+     */
+    public boolean sameCurrency() {
+        return baseCurrency.equals(currency);
+    }
 
     public static List<ColumnDef> columns() {
         return List.of(
@@ -36,13 +53,12 @@ public class SeriesDataDto {
                 .key("date")
                 .label("Date")
                 //.formatter(CellFormatterEnum.DATE.name().toLowerCase())
-                //.dateOptions("{format: '%d/%m/%Y', locale: 'en'}")
+                //.dateOptions(ColumnDef.DATE_OPTIONS)
                 .build(),
             ColumnDef.builder()
                 .key("value")
                 .label("Value")
                 .formatter(CellFormatterEnum.CURRENCY.name().toLowerCase())
-                //.currencyOptions("{}")
                 .className(CssClasName.RIGHT)
                 .build(),
             ColumnDef.builder()

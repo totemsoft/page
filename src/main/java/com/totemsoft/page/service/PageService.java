@@ -10,6 +10,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import com.totemsoft.page.config.SecurityConfig;
+import com.totemsoft.page.model.CurrencyDto;
 import com.totemsoft.page.model.KeyDto;
 import com.totemsoft.page.model.PageDto;
 import com.totemsoft.page.model.TagDto;
@@ -17,6 +18,7 @@ import com.totemsoft.page.model.TagTypeDto;
 import com.totemsoft.page.model.entity.Page;
 import com.totemsoft.page.model.entity.SubSection;
 import com.totemsoft.page.model.mapper.PageMapper;
+import com.totemsoft.page.repository.CurrencyRepository;
 import com.totemsoft.page.repository.KeyRepository;
 import com.totemsoft.page.repository.KeySpecification;
 import com.totemsoft.page.repository.PageRepository;
@@ -34,6 +36,8 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class PageService {
 
+    private final CurrencyRepository currencyRepository;
+
     private final KeyRepository keyRepository;
 
     private final PageRepository pageRepository;
@@ -45,6 +49,12 @@ public class PageService {
     private final TagTypeRepository tagTypeRepository;
 
     private final PageMapper pageMapper;
+
+    @Transactional
+    public List<CurrencyDto> findBaseCurrencies() {
+        final var currencies = currencyRepository.findByBaseTrue();
+        return pageMapper.map(currencies);
+    }
 
     @Transactional
     public PageDto findPage(long pageId) {

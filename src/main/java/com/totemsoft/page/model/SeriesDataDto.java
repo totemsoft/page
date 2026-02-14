@@ -47,14 +47,7 @@ public class SeriesDataDto {
                 .label("ID")
                 //.hidden(true) // TODO: fix dataTable.doBeforeLoadData insertColumn issue
                 .formatter(CellFormatterEnum.NUMBER.name().toLowerCase())
-                .className(CssClasName.RIGHT)
-                .width(50)
-                .build(),
-            ColumnDef.builder()
-                .key("date")
-                .label("Date")
-                //.formatter(CellFormatterEnum.DATE.name().toLowerCase())
-                //.dateOptions(ColumnDef.DATE_OPTIONS)
+                .className(CssClasName.WIDTH0)
                 .build(),
             ColumnDef.builder()
                 .key("value")

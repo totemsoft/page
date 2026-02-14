@@ -10,6 +10,7 @@ public final class CssClasName {
     public static final String NBSP = "&#160;";
 
     public static final String RIGHT = "right";
+    public static final String WIDTH0 = "width0";
 
     public static final String TAG = "page-tag";
 

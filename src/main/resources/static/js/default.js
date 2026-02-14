@@ -38,7 +38,7 @@ YAHOO.page = {
     },
     updateNumberFormat: function() {
         YAHOO.page.numberFormat = new Intl.NumberFormat(YAHOO.page.locale, {
-            minimumFractionDigits: 2,
+            minimumFractionDigits: 0,
             maximumFractionDigits: 2
         });
     },

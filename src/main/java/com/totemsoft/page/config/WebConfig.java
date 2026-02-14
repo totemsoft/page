@@ -15,6 +15,7 @@ import org.springframework.web.client.RestClient;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import com.totemsoft.page.exchangerates.v1.model.ApiException;
 import com.totemsoft.page.model.Cell;
 import com.totemsoft.page.model.ColumnDef;
 import com.totemsoft.page.model.CurrencyDto;
@@ -28,7 +29,6 @@ import com.totemsoft.page.model.SubSectionDto;
 import com.totemsoft.page.model.TabDto;
 import com.totemsoft.page.model.TagDto;
 import com.totemsoft.page.model.TagTypeDto;
-import com.totemsoft.page.model.exchange.ApiException;
 
 import lombok.extern.log4j.Log4j2;
 

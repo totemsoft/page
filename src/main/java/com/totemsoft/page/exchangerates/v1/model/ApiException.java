@@ -1,4 +1,4 @@
-package com.totemsoft.page.model.exchange;
+package com.totemsoft.page.exchangerates.v1.model;
 
 public class ApiException extends RuntimeException {
 

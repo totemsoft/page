@@ -12,6 +12,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import com.totemsoft.page.exchangerates.v1.api.ExchangeRatesApi;
 import com.totemsoft.page.model.entity.SeriesData;
 import com.totemsoft.page.repository.KeyRepository;
 import com.totemsoft.page.repository.SeriesDataRepository;
@@ -29,6 +30,8 @@ public class TaskService {
     @Value("${page.exchangeratesapi.io.base-currency}")
     private String baseCurrency;
 
+    private final ExchangeRatesApi exchangeRatesApi;
+
     private final ExchangeRateService exchangeRateService;
 
     private final KeyRepository keyRepository;
@@ -42,7 +45,7 @@ public class TaskService {
         try {
             // retrieve currencies via API (one page default currency EUR is loaded via data.sql)
             if (exchangeRateService.countCurrencies() < 2) {
-                final var symbols = exchangeRateService.symbols();
+                final var symbols = exchangeRatesApi.symbols();
                 exchangeRateService.saveCurrencies(symbols.getSymbols());
             }
             final var date = LocalDate.now().minusDays(1);
@@ -51,7 +54,7 @@ public class TaskService {
                 return;
             }
             // retrieve rates for currencies via API
-            final var exchangeRates = exchangeRateService.historicalRates(date, Optional.<String>empty());
+            final var exchangeRates = exchangeRatesApi.historicalRates(date, Optional.<String>empty());
             // save rates to DB
             final var rates = exchangeRateService.saveExchangeRates(exchangeRates);
             // create key/tag/tagTypes and seriesData

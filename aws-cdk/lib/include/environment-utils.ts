@@ -30,6 +30,13 @@ export class EnvironmentUtils {
       secretPartialArn: `${smPartialArn}:${exchangeRatesSecretName}`
     });
     containerDef.addSecret('EXCHANGERATESAPI_ACCESS_KEY', ecs.Secret.fromSecretsManager(exchangeRatesSecret, 'access_key'));
+
+    // https://marketstack.com/
+    const marketstackSecretName = `${stage}/${stack.stackName}/marketstack/credentials`;
+    const marketstackSecret = sm.Secret.fromSecretAttributes(stack, marketstackSecretName, {
+      secretPartialArn: `${smPartialArn}:${marketstackSecretName}`
+    });
+    containerDef.addSecret('MARKETSTACK_ACCESS_KEY', ecs.Secret.fromSecretsManager(marketstackSecret, 'access_key'));
   }
   private static _getValueFromSecret(secret: sm.ISecret, key: string): string {
     return secret.secretValueFromJson(key).unsafeUnwrap();

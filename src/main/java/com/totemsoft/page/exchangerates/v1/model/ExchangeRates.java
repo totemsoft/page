@@ -1,4 +1,4 @@
-package com.totemsoft.page.model.exchange;
+package com.totemsoft.page.exchangerates.v1.model;
 
 import java.io.Serializable;
 import java.math.BigDecimal;

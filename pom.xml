@@ -159,6 +159,33 @@
                         <skipNativeTests>true</skipNativeTests>
                     </configuration>
                 </plugin>
+                <plugin>
+                    <groupId>org.openapitools</groupId>
+                    <artifactId>openapi-generator-maven-plugin</artifactId>
+                    <version>7.19.0</version>
+                    <configuration>
+                        <generatorName>java</generatorName>
+                        <library>restclient</library>
+                        <configOptions>
+                            <sourceFolder>src/gen/java/main</sourceFolder>
+                            <generateApiDocumentation>false</generateApiDocumentation>
+                            <containerDefaultToNull>true</containerDefaultToNull>
+                            <skipDefaultInterface>true</skipDefaultInterface>
+                            <interfaceOnly>true</interfaceOnly>
+                            <documentationProvider>none</documentationProvider>
+                            <hideGenerationTimestamp>true</hideGenerationTimestamp>
+                            <useJakartaEe>true</useJakartaEe>
+                            <useOptional>true</useOptional>
+                            <useResponseEntity>false</useResponseEntity>
+                            <useSwaggerUI>false</useSwaggerUI>
+                            <useTags>false</useTags>
+                            <codegen.skip>true</codegen.skip>
+                        </configOptions>
+                        <typeMappings>
+                            <typeMapping>Double=java.math.BigDecimal</typeMapping>
+                        </typeMappings>
+                    </configuration>
+                </plugin>
             </plugins>
         </pluginManagement>
         <plugins>
@@ -192,6 +219,56 @@
                                     <goal>compile-no-fork</goal>
                                 </goals>
                                 <phase>package</phase>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>exchangerates-api</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.openapitools</groupId>
+                        <artifactId>openapi-generator-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>generate</goal>
+                                </goals>
+                                <configuration>
+                                    <inputSpec>${project.basedir}/src/main/resources/api/exchangeratesapi-api-endpoints-v1.yaml</inputSpec>
+                                    <packageName>com.totemsoft.page.exchangerates.v1</packageName>
+                                    <modelPackage>com.totemsoft.page.exchangerates.v1.model</modelPackage>
+                                    <apiPackage>com.totemsoft.page.exchangerates.v1.api</apiPackage>
+                                    <invokerPackage>com.totemsoft.page.exchangerates.v1.handler</invokerPackage>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>marketstack-api</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.openapitools</groupId>
+                        <artifactId>openapi-generator-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>generate</goal>
+                                </goals>
+                                <configuration>
+                                    <inputSpec>${project.basedir}/src/main/resources/api/marketstack-api-endpoints-v2.yaml</inputSpec>
+                                    <packageName>com.totemsoft.page.marketstack.v2</packageName>
+                                    <modelPackage>com.totemsoft.page.marketstack.v2.model</modelPackage>
+                                    <apiPackage>com.totemsoft.page.marketstack.v2.api</apiPackage>
+                                    <invokerPackage>com.totemsoft.page.marketstack.v2.handler</invokerPackage>
+                                </configuration>
                             </execution>
                         </executions>
                     </plugin>

@@ -15,6 +15,11 @@
     ps aux | grep java
     kill -9 PID
 
+# OpenAPI plugin to generate-sources
+    Available lifecycle phases are: pre-clean, clean, post-clean, validate, initialize, generate-sources, process-sources, generate-resources, process-resources, compile, process-classes, generate-test-sources, process-test-sources, generate-test-resources, process-test-resources, test-compile, process-test-classes, test, prepare-package, package, pre-integration-test, integration-test, post-integration-test, verify, install, deploy, pre-site, site, post-site, site-deploy.
+    ./mvnw -Pexchangerates-api generate-sources
+    ./mvnw -Pmarketstack-api generate-sources
+
 #Docker
 
 ## Option 1: Using a Multi-Stage Dockerfile
@@ -56,3 +61,8 @@
 # RestFul API
 * [Account Dashboard | exchangeratesapi API](https://manage.exchangeratesapi.io/dashboard)
 * [Real-Time, Intraday & Historical Market](https://marketstack.com/dashboard)
+
+# OpenAPI Generator
+* [openapi-generator-maven-plugin](https://github.com/OpenAPITools/openapi-generator/tree/master/modules/openapi-generator-maven-plugin)
+* [Documentation for the spring Generator](https://openapi-generator.tech/docs/generators/spring/)
+* [Documentation for the java Generator](https://openapi-generator.tech/docs/generators/java/)

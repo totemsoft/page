@@ -12,8 +12,8 @@ import org.springframework.javapoet.ClassName;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 
-import com.totemsoft.page.model.exchange.ExchangeRateSymbols;
-import com.totemsoft.page.model.exchange.ExchangeRates;
+import com.totemsoft.page.exchangerates.v1.model.ExchangeRateSymbols;
+import com.totemsoft.page.exchangerates.v1.model.ExchangeRates;
 
 public class CustomRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 

@@ -14,6 +14,9 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 
 import com.totemsoft.page.exchangerates.v1.model.ExchangeRateSymbols;
 import com.totemsoft.page.exchangerates.v1.model.ExchangeRates;
+import com.totemsoft.page.marketstack.v2.model.ExchangeDto;
+import com.totemsoft.page.marketstack.v2.model.ExchangesResponse;
+import com.totemsoft.page.marketstack.v2.model.PaginationDto;
 
 public class CustomRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
 
@@ -32,6 +35,9 @@ public class CustomRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
         hints.serialization()
             .registerType(ExchangeRates.class)
             .registerType(ExchangeRateSymbols.class)
+            .registerType(ExchangeDto.class)
+            .registerType(ExchangesResponse.class)
+            .registerType(PaginationDto.class)
         ;
         // Register for resources
         //hints.resources().registerPattern("*.properties");

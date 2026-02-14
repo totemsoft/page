@@ -13,6 +13,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.totemsoft.page.exchangerates.v1.api.ExchangeRatesApi;
+import com.totemsoft.page.marketstack.v2.api.MarketStackApi;
+import com.totemsoft.page.marketstack.v2.model.ExchangesResponse;
 import com.totemsoft.page.model.entity.SeriesData;
 import com.totemsoft.page.repository.KeyRepository;
 import com.totemsoft.page.repository.SeriesDataRepository;
@@ -32,7 +34,11 @@ public class TaskService {
 
     private final ExchangeRatesApi exchangeRatesApi;
 
+    private final MarketStackApi marketStackApi;
+
     private final ExchangeRateService exchangeRateService;
+
+    private final MarketStackService marketStackService;
 
     private final KeyRepository keyRepository;
 
@@ -67,6 +73,27 @@ public class TaskService {
 
     @Scheduled(cron = "@daily") // @midnight
     @Scheduled(initialDelay = 10_000) // one-time
+    public void marketStackTask() {
+        log.info(">>> marketStackTask started at: {}", LocalTime.now());
+        try {
+            // retrieve exchanges via API
+            final var total = marketStackService.countExchanges(); // total=2817
+            if (total < 2817) {
+                final var exchangesResponse = marketStackApi.exchanges(Optional.of(1000), Optional.of(total), Optional.empty());
+                log.debug(">>> marketStackTask exchanges found: {}", exchangesResponse.getPagination());
+                marketStackService.saveExchanges(exchangesResponse.getData());
+            } else {
+                log.debug("<<< marketStackTask exchanges already loaded");
+            }
+
+            log.info("<<< marketStackTask executed at: {}", LocalTime.now());
+        } catch (Throwable ignore) {
+            log.warn("<<< marketStackTask failed:", ignore);
+        }
+    }
+
+    @Scheduled(cron = "@daily") // @midnight
+    @Scheduled(initialDelay = 15_000) // one-time
     @Transactional
     void seriesDataTask() {
         log.info(">>> seriesDataTask started at: {}", LocalTime.now());

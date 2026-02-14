@@ -11,12 +11,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.totemsoft.page.exchangerates.v1.model.ExchangeRates;
-import com.totemsoft.page.model.entity.Currency;
-import com.totemsoft.page.model.entity.ExchangeRate;
 import com.totemsoft.page.model.entity.Key;
 import com.totemsoft.page.model.entity.SeriesData;
 import com.totemsoft.page.model.entity.Tag;
 import com.totemsoft.page.model.entity.TagType;
+import com.totemsoft.page.model.entity.exchangerates.Currency;
+import com.totemsoft.page.model.entity.exchangerates.ExchangeRate;
 import com.totemsoft.page.repository.CurrencyRepository;
 import com.totemsoft.page.repository.ExchangeRateRepository;
 import com.totemsoft.page.repository.KeyRepository;
@@ -50,8 +50,8 @@ class ExchangeRateService {
     private final TagTypeRepository tagTypeRepository;
 
     @Transactional
-    long countCurrencies() {
-        return currencyRepository.count();
+    int countCurrencies() {
+        return (int) currencyRepository.count();
     }
 
     @Transactional

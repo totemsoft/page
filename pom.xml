@@ -167,19 +167,21 @@
                         <generatorName>java</generatorName>
                         <library>restclient</library>
                         <configOptions>
-                            <sourceFolder>src/gen/java/main</sourceFolder>
-                            <generateApiDocumentation>false</generateApiDocumentation>
                             <containerDefaultToNull>true</containerDefaultToNull>
                             <skipDefaultInterface>true</skipDefaultInterface>
                             <interfaceOnly>true</interfaceOnly>
                             <documentationProvider>none</documentationProvider>
+                            <generateApiTests>false</generateApiTests>
+                            <generateModelTests>false</generateModelTests>
+                            <generateApiDocumentation>false</generateApiDocumentation>
+                            <generateModelDocumentation>false</generateModelDocumentation>
                             <hideGenerationTimestamp>true</hideGenerationTimestamp>
+                            <serializableModel>true</serializableModel>
                             <useJakartaEe>true</useJakartaEe>
                             <useOptional>true</useOptional>
                             <useResponseEntity>false</useResponseEntity>
                             <useSwaggerUI>false</useSwaggerUI>
                             <useTags>false</useTags>
-                            <codegen.skip>true</codegen.skip>
                         </configOptions>
                         <typeMappings>
                             <typeMapping>Double=java.math.BigDecimal</typeMapping>

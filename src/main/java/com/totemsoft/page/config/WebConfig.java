@@ -15,7 +15,6 @@ import org.springframework.web.client.RestClient;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import com.totemsoft.page.exchangerates.v1.model.ApiException;
 import com.totemsoft.page.model.Cell;
 import com.totemsoft.page.model.ColumnDef;
 import com.totemsoft.page.model.CurrencyDto;
@@ -29,6 +28,7 @@ import com.totemsoft.page.model.SubSectionDto;
 import com.totemsoft.page.model.TabDto;
 import com.totemsoft.page.model.TagDto;
 import com.totemsoft.page.model.TagTypeDto;
+import com.totemsoft.page.service.ApiException;
 
 import lombok.extern.log4j.Log4j2;
 
@@ -78,11 +78,32 @@ public class WebConfig implements WebMvcConfigurer {
             @Value("${page.exchangeratesapi.io.base-url}") String baseUrl) {
         return RestClient.builder()
             .baseUrl(baseUrl)
+            //.apiVersionInserter(ApiVersionInserter.usePathSegment(0))
             //.defaultApiVersion("v1")
             .defaultStatusHandler(
                 Predicate.not(HttpStatusCode::is2xxSuccessful),
                 (request, response) -> {
-                    // see ApiError class
+                    // @see com.totemsoft.page.exchangerates.v1.model.ApiError class
+                    final var error = new String(response.getBody().readAllBytes());
+                    log.error("API request failed. Response status: {}, body: {}", 
+                        response.getStatusCode(), error);
+                    throw new ApiException(error);
+                }
+            )
+            .build();
+    }
+
+    @Bean
+    RestClient marketStackApiRestClient(
+            @Value("${page.marketstack.com.base-url}") String baseUrl) {
+        return RestClient.builder()
+            .baseUrl(baseUrl)
+            //.apiVersionInserter(ApiVersionInserter.usePathSegment(0))
+            //.defaultApiVersion("v2")
+            .defaultStatusHandler(
+                Predicate.not(HttpStatusCode::is2xxSuccessful),
+                (request, response) -> {
+                    // @see com.totemsoft.page.marketstack.v2.model.ApiError class
                     final var error = new String(response.getBody().readAllBytes());
                     log.error("API request failed. Response status: {}, body: {}", 
                         response.getStatusCode(), error);

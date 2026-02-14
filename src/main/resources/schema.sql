@@ -20,6 +20,28 @@ create table if not exists exchange_rate (
   primary key (currency_date, currency_base, currency_code)
 );
 
+create table if not exists exchange (
+  exchange_mic varchar(64) not null,
+  exchange_name varchar(255) not null,
+  exchange_acronym varchar(255),
+  exchange_country varchar(255),
+  exchange_country_code varchar(255),
+  exchange_city varchar(255),
+  exchange_website varchar(255),
+  exchange_operating_mic varchar(255),
+  exchange_oprt_sgmt varchar(255),
+  exchange_legal_entity_name varchar(255),
+  exchange_exchange_lei varchar(255),
+  exchange_market_category_code varchar(255),
+  exchange_exchange_status varchar(255),
+  exchange_date_creation date,
+  exchange_date_last_update date,
+  exchange_date_last_validation date,
+  exchange_date_expiry date,
+  exchange_comments varchar(255),
+  primary key (exchange_mic)
+);
+
 create table if not exists split_ratio (
   split_ratio_name varchar(32) not null,
   split_ratio_title varchar(255) not null,

@@ -1,4 +1,4 @@
-package com.totemsoft.page.model.entity;
+package com.totemsoft.page.model.entity.exchangerates;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;

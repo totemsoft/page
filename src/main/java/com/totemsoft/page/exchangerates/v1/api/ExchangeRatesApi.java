@@ -29,6 +29,7 @@ public class ExchangeRatesApi {
     private final RestClient exchangeRatesApiRestClient;
 
     public ExchangeRateSymbols symbols() {
+        log.debug(">>> loading symbols");
         final var response = exchangeRatesApiRestClient.get()
             .uri(uriBuilder -> uriBuilder
                 .path("/symbols")

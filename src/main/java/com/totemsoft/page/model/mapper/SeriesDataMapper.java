@@ -11,8 +11,8 @@ import org.mapstruct.MappingConstants;
 
 import com.totemsoft.page.model.Cell;
 import com.totemsoft.page.model.SeriesDataDto;
-import com.totemsoft.page.model.entity.ExchangeRate;
 import com.totemsoft.page.model.entity.SeriesData;
+import com.totemsoft.page.model.entity.exchangerates.ExchangeRate;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface SeriesDataMapper {

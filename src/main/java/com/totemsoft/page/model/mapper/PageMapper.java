@@ -14,7 +14,6 @@ import com.totemsoft.page.model.SubSectionDto;
 import com.totemsoft.page.model.TabDto;
 import com.totemsoft.page.model.TagDto;
 import com.totemsoft.page.model.TagTypeDto;
-import com.totemsoft.page.model.entity.Currency;
 import com.totemsoft.page.model.entity.Key;
 import com.totemsoft.page.model.entity.Page;
 import com.totemsoft.page.model.entity.Section;
@@ -22,6 +21,7 @@ import com.totemsoft.page.model.entity.SubSection;
 import com.totemsoft.page.model.entity.Tab;
 import com.totemsoft.page.model.entity.Tag;
 import com.totemsoft.page.model.entity.TagType;
+import com.totemsoft.page.model.entity.exchangerates.Currency;
 
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface PageMapper {

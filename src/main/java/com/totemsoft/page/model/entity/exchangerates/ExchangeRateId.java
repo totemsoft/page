@@ -1,4 +1,4 @@
-package com.totemsoft.page.model.entity;
+package com.totemsoft.page.model.entity.exchangerates;
 
 import java.io.Serializable;
 import java.time.LocalDate;

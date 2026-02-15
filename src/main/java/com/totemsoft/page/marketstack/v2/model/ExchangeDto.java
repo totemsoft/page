@@ -46,4 +46,6 @@ public class ExchangeDto implements Serializable {
 
     private String comments;
 
+    private Boolean base;
+
 }

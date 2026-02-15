@@ -7,6 +7,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import com.totemsoft.page.config.SecurityConfig;
+import com.totemsoft.page.exchangerates.v1.model.CurrencyDto;
 import com.totemsoft.page.model.ColumnDef.DropdownOption;
 import com.totemsoft.page.model.KeyDto;
 import com.totemsoft.page.model.TagDto;
@@ -15,9 +16,11 @@ import com.totemsoft.page.model.entity.Key;
 import com.totemsoft.page.model.entity.KeyTag;
 import com.totemsoft.page.model.entity.Tag;
 import com.totemsoft.page.model.entity.TagType;
+import com.totemsoft.page.model.entity.exchangerates.Currency;
 import com.totemsoft.page.model.mapper.DropdownOptionMapper;
 import com.totemsoft.page.model.mapper.PageMapper;
 import com.totemsoft.page.model.mapper.SetupMapper;
+import com.totemsoft.page.repository.CurrencyRepository;
 import com.totemsoft.page.repository.KeyRepository;
 import com.totemsoft.page.repository.KeyTagRepository;
 import com.totemsoft.page.repository.TagRepository;
@@ -38,6 +41,8 @@ public class SetupService {
     private final PageMapper pageMapper;
 
     private final SetupMapper setupMapper;
+
+    private final CurrencyRepository currencyRepository;
 
     private final KeyRepository keyRepository;
 
@@ -133,6 +138,24 @@ public class SetupService {
                 .build()
             )
         );
+    }
+
+    @Transactional
+    public List<CurrencyDto> findCurrencies() {
+        final var currencies = currencyRepository.findAll(
+            Sort.by("base").descending().and(Sort.by("code")));
+        return pageMapper.map(currencies);
+    }
+
+    @Transactional
+    public String saveCurrency(CurrencyDto dto) {
+        log.trace("saving: {}", dto);
+        final var code = dto.getCode();
+        var entity = currencyRepository.findById(code)
+            .orElseThrow(() -> new EntityNotFoundException(code, Currency.class));
+        entity.setBase(dto.getBase());
+        entity = currencyRepository.save(entity);
+        return entity.getCode();
     }
 
 }

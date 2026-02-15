@@ -3,6 +3,7 @@ package com.totemsoft.page.model.entity.marketstack;
 import java.time.LocalDate;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
@@ -79,5 +80,9 @@ public class Exchange {
 
     @Column(name = "exchange_comments")
     private String comments;
+
+    @Convert(converter = org.hibernate.type.YesNoConverter.class)
+    @Column(name = "exchange_base")
+    private Boolean base;
 
 }

@@ -6,7 +6,7 @@ import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
 
-import com.totemsoft.page.model.CurrencyDto;
+import com.totemsoft.page.exchangerates.v1.model.CurrencyDto;
 import com.totemsoft.page.model.KeyDto;
 import com.totemsoft.page.model.PageDto;
 import com.totemsoft.page.model.SectionDto;

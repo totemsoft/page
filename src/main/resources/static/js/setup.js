@@ -437,5 +437,50 @@ YAHOO.page.setup = {
             dataTable.updateRow(row, tagDto); // clone {...tagDto}
         });
         editor.autoComplete = ac;
+    },
+    editCurrency: function() {
+        console.log('editCurrency:');
+        const entityName = 'currency';
+        if (!YAHOO.page.setup.currencyDialog) {
+            const w = YUD.getViewportWidth();
+            //const h = YUD.getViewportHeight();
+            YAHOO.page.setup.currencyDialog = YAHOO.page.openEditDialog(entityName + 'Dialog', {
+                fixedcenter: 'contained',
+                width: Math.floor(w / 3) + 'px',
+                //height: Math.floor(h / 2) + 'px',
+                buttons: [
+                    {text: 'Close', isDefault: true, handler: function() {
+                        this.cancel();
+                    }}
+                ]
+            });
+            const requestBuilder = function(oState, oDataTable) {
+                let request = '' + entityName;
+                return request;
+            };
+            const dataTable = YAHOO.page.setup.initDataTable(entityName, requestBuilder);
+            dataTable.subscribe('rowClickEvent', dataTable.onEventSelectRow);
+            //dataTable.subscribe('cellClickEvent', dataTable.onEventSelectCell);
+            dataTable.subscribe('checkboxClickEvent', function(oArgs) {
+                const elCheckbox = oArgs.target;
+                const base = elCheckbox.checked ? true : null;
+                const row = this.getRecord(elCheckbox);
+                row.setData('base', base);
+                const data = row.getData();
+                const currencyDto = {
+                    code: data.code, // PK
+                    base: data.base
+                };
+                const callback = YAHOO.page.setup.saveCallback;
+                callback.scope = YAHOO.page.setup.currencyDataTable;
+                callback.argument = data;
+                YAHOO.page.sendPostRequest('/setup/' + entityName, callback, currencyDto);
+            });
+            YAHOO.page.setup.currencyDataTable = dataTable;
+        } else {
+            YAHOO.page.setup.updateDataTable(YAHOO.page.setup.currencyDataTable);
+        }
+        YAHOO.page.setup.currencyDialog.bringToTop();
+        YAHOO.page.setup.currencyDialog.show();
     }
 };

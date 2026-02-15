@@ -15,9 +15,10 @@ import org.springframework.web.client.RestClient;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import com.totemsoft.page.exchangerates.v1.model.CurrencyDto;
+import com.totemsoft.page.marketstack.v2.model.ExchangeDto;
 import com.totemsoft.page.model.Cell;
 import com.totemsoft.page.model.ColumnDef;
-import com.totemsoft.page.model.CurrencyDto;
 import com.totemsoft.page.model.KeyDto;
 import com.totemsoft.page.model.PageDto;
 import com.totemsoft.page.model.PageResponse;
@@ -38,6 +39,7 @@ import lombok.extern.log4j.Log4j2;
     Cell.class,
     ColumnDef.class,
     CurrencyDto.class,
+    ExchangeDto.class,
     KeyDto.class,
     PageDto.class,
     PageResponse.class,
@@ -49,9 +51,6 @@ import lombok.extern.log4j.Log4j2;
     TabDto.class,
     TagDto.class,
     TagTypeDto.class
-    //ApplicationServletEnvironment.class,
-    //OAuth2AuthenticationToken.class,
-    //OAuth2AuthenticatedPrincipal.class
 })
 @ImportRuntimeHints(CustomRuntimeHintsRegistrar.class)
 @Log4j2

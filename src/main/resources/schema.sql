@@ -39,6 +39,7 @@ create table if not exists exchange (
   exchange_date_last_validation date,
   exchange_date_expiry date,
   exchange_comments varchar(255),
+  exchange_base char(1),
   primary key (exchange_mic)
 );
 
@@ -148,4 +149,5 @@ create table if not exists sub_section_key (
 );
 
 -- TODO: remove following lines later
-alter table currency add column if not exists currency_base char(1);
+-- alter table currency add column if not exists currency_base char(1);
+alter table exchange add column if not exists exchange_base char(1);

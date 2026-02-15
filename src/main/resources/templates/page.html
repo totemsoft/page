@@ -132,6 +132,27 @@
                         </div>
                     </div>
                 </li>
+                <li sec:authorize="hasRole('ROLE_SETUP')" class="yuimenuitem">
+                    <a class="yuimenuitemlabel" href="#marketData">
+                        Market Data
+                    </a>
+                    <div id="marketData" class="yuimenu">
+                        <div class="bd">
+                            <ul>
+                                <li class="yuimenuitem">
+                                    <a href="javascript:YAHOO.page.setup.editCurrency();" class="yuimenuitemlabel">
+                                        <em>Currency</em>
+                                    </a>
+                                </li>
+                                <li class="yuimenuitem">
+                                    <a href="javascript:YAHOO.page.setup.editExchange();" class="yuimenuitemlabel">
+                                        <em>Stock Exchange</em>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </li>
                 <li class="yuimenuitem float-right">
                     <form id="logoutForm" action="/logout" method="post">
                         <button id="logoutButton" type="submit" class="btn btn-info btn-sm">

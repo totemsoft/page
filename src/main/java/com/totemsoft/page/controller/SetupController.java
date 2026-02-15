@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.totemsoft.page.exchangerates.v1.model.CurrencyDto;
 import com.totemsoft.page.model.KeyDto;
 import com.totemsoft.page.model.SearchResult;
 import com.totemsoft.page.model.TagDto;
@@ -80,4 +81,18 @@ class SetupController {
             @RequestBody List<Long> tagIds) {
         setupService.saveKeyTags(keyId, tagIds);
     }
+
+    @GetMapping("/setup/currency")
+    SearchResult<CurrencyDto> findCurrencies() {
+        return SearchResult.<CurrencyDto>builder()
+            .columns(CurrencyDto.columns(true))
+            .data(setupService.findCurrencies())
+            .build();
+    }
+
+    @PostMapping("/setup/currency")
+    String saveCurrency(@RequestBody CurrencyDto currencyDto) {
+        return setupService.saveCurrency(currencyDto);
+    }
+
 }

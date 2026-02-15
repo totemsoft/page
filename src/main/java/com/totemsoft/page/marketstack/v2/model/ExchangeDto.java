@@ -8,14 +8,21 @@ import com.totemsoft.page.model.ColumnDef;
 import com.totemsoft.page.model.ColumnDef.CellFormatterEnum;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @Data
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@ToString(onlyExplicitlyIncluded = true)
 public class ExchangeDto implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @EqualsAndHashCode.Include
+    @ToString.Include
     private String mic;
 
+    @ToString.Include
     private String name;
 
     private String acronym;
@@ -24,6 +31,7 @@ public class ExchangeDto implements Serializable {
 
     private String countryCode;
 
+    @ToString.Include
     private String city;
 
     private String website;

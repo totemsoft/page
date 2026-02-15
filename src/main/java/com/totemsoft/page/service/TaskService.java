@@ -14,7 +14,6 @@ import org.springframework.stereotype.Component;
 
 import com.totemsoft.page.exchangerates.v1.api.ExchangeRatesApi;
 import com.totemsoft.page.marketstack.v2.api.MarketStackApi;
-import com.totemsoft.page.marketstack.v2.model.ExchangesResponse;
 import com.totemsoft.page.model.entity.SeriesData;
 import com.totemsoft.page.repository.KeyRepository;
 import com.totemsoft.page.repository.SeriesDataRepository;
@@ -65,7 +64,7 @@ public class TaskService {
             final var rates = exchangeRateService.saveExchangeRates(exchangeRates);
             // create key/tag/tagTypes and seriesData
             rates.forEach(exchangeRateService::saveSeriesDataKey);
-            log.info("<<< exchangeRateTask executed at: {}", LocalTime.now());
+            log.info("<<< exchangeRateTask completed at: {}", LocalTime.now());
         } catch (Throwable ignore) {
             log.warn("<<< exchangeRateTask failed:", ignore);
         }
@@ -77,19 +76,37 @@ public class TaskService {
         log.info(">>> marketStackTask started at: {}", LocalTime.now());
         try {
             // retrieve exchanges via API
-            final var total = marketStackService.countExchanges(); // total=2817
+            final var LIMIT = 1000;
+            final var total = marketStackService.countExchanges(); // pagination.total=2817
             if (total < 2817) {
-                final var exchangesResponse = marketStackApi.exchanges(Optional.of(1000), Optional.of(total), Optional.empty());
-                log.debug(">>> marketStackTask exchanges found: {}", exchangesResponse.getPagination());
-                marketStackService.saveExchanges(exchangesResponse.getData());
+                final var response = marketStackApi.exchanges(Optional.of(LIMIT), Optional.of(total), Optional.empty());
+                log.debug(">>> marketStackTask exchanges found: {}", response.getPagination());
+                marketStackService.saveExchanges(response.getData());
             } else {
                 log.debug("<<< marketStackTask exchanges already loaded");
             }
+            // save tickers for selected base exchanges
+            final var mics = marketStackService.findExchangeBaseMic();
+            log.debug(">>> saving exchangeTickers for: {}", mics);
+            mics.forEach(this::saveExchangeTicker);
 
-            log.info("<<< marketStackTask executed at: {}", LocalTime.now());
+            log.info("<<< marketStackTask completed at: {}", LocalTime.now());
         } catch (Throwable ignore) {
             log.warn("<<< marketStackTask failed:", ignore);
         }
+    }
+
+    private void saveExchangeTicker(String mic) {
+        final var LIMIT = 1000;
+        final var total = marketStackService.countExchangeTickers(mic);
+        // XNAS total=45173 (NASDAQ - ALL MARKETS)
+        if (total % LIMIT != 0) {
+            log.debug("<<< {} exchangeTickers already loaded for: {}", total, mic);
+            return;
+        }
+        final var response = marketStackApi.exchangeTickers(mic, Optional.of(LIMIT), Optional.of(total));
+        log.debug(">>> marketStackTask exchangeTickers found: {} {}", mic, response.getPagination());
+        marketStackService.saveExchangeTickers(mic, response.getData().getTickers());
     }
 
     @Scheduled(cron = "@daily") // @midnight
@@ -109,7 +126,7 @@ public class TaskService {
                 final var d = saveSeriesData(key.getId(), date);
                 log.trace("seriesData saved: {}", d);
             });
-            log.info("<<< seriesDataTask executed at: {}", LocalTime.now());
+            log.info("<<< seriesDataTask completed at: {}", LocalTime.now());
         } catch (Throwable ignore) {
             log.warn("<<< seriesDataTask failed:", ignore);
         }

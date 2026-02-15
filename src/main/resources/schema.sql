@@ -43,6 +43,16 @@ create table if not exists exchange (
   primary key (exchange_mic)
 );
 
+create table if not exists exchange_ticker (
+  exchange_mic varchar(64) not null,
+  ticker_symbol varchar(64) not null,
+  ticker_name varchar(255) not null,
+  ticker_has_intraday char(1),
+  ticker_has_eod char(1),
+  ticker_base char(1),
+  primary key (exchange_mic, ticker_symbol)
+);
+
 create table if not exists split_ratio (
   split_ratio_name varchar(32) not null,
   split_ratio_title varchar(255) not null,
@@ -150,4 +160,4 @@ create table if not exists sub_section_key (
 
 -- TODO: remove following lines later
 -- alter table currency add column if not exists currency_base char(1);
-alter table exchange add column if not exists exchange_base char(1);
+-- alter table exchange add column if not exists exchange_base char(1);

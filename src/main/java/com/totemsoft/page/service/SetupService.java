@@ -162,7 +162,7 @@ public class SetupService {
     public List<ExchangeDto> findExchanges() {
         final var exchanges = exchangeRepository.findAll(
             Sort.by("base").descending().and(Sort.by("city")).and(Sort.by("mic")));
-        return marketStackMapper.map(exchanges);
+        return marketStackMapper.mapExchange(exchanges);
     }
 
     @Transactional

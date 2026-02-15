@@ -15,7 +15,10 @@ import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import com.totemsoft.page.exchangerates.v1.model.ExchangeRateSymbols;
 import com.totemsoft.page.exchangerates.v1.model.ExchangeRates;
 import com.totemsoft.page.marketstack.v2.model.ExchangeDto;
-import com.totemsoft.page.marketstack.v2.model.ExchangesResponse;
+import com.totemsoft.page.marketstack.v2.model.ExchangeResponse;
+import com.totemsoft.page.marketstack.v2.model.ExchangeTickerData;
+import com.totemsoft.page.marketstack.v2.model.ExchangeTickerDto;
+import com.totemsoft.page.marketstack.v2.model.ExchangeTickerResponse;
 import com.totemsoft.page.marketstack.v2.model.PaginationDto;
 
 public class CustomRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
@@ -36,7 +39,10 @@ public class CustomRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
             .registerType(ExchangeRates.class)
             .registerType(ExchangeRateSymbols.class)
             .registerType(ExchangeDto.class)
-            .registerType(ExchangesResponse.class)
+            .registerType(ExchangeResponse.class)
+            .registerType(ExchangeTickerData.class)
+            .registerType(ExchangeTickerDto.class)
+            .registerType(ExchangeTickerResponse.class)
             .registerType(PaginationDto.class)
         ;
         // Register for resources

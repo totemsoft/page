@@ -21,7 +21,7 @@ create table if not exists exchange_rate (
 );
 
 create table if not exists exchange (
-  exchange_mic varchar(64) not null,
+  exchange_mic varchar(5) not null,
   exchange_name varchar(255) not null,
   exchange_acronym varchar(255),
   exchange_country varchar(255),
@@ -44,9 +44,9 @@ create table if not exists exchange (
 );
 
 create table if not exists exchange_ticker (
-  exchange_mic varchar(64) not null,
-  ticker_symbol varchar(64) not null,
-  ticker_name varchar(255) not null,
+  exchange_mic varchar(5) not null,
+  ticker_symbol varchar(32) not null,
+  ticker_name varchar(255),
   ticker_has_intraday char(1),
   ticker_has_eod char(1),
   ticker_base char(1),
@@ -161,3 +161,7 @@ create table if not exists sub_section_key (
 -- TODO: remove following lines later
 -- alter table currency add column if not exists currency_base char(1);
 -- alter table exchange add column if not exists exchange_base char(1);
+alter table exchange modify exchange_mic varchar(5) not null;
+-- alter table exchange_ticker modify exchange_mic varchar(5) not null;
+-- alter table exchange_ticker modify ticker_symbol varchar(32) not null;
+-- alter table exchange_ticker modify ticker_name varchar(255);

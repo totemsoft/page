@@ -2,6 +2,10 @@ package com.totemsoft.page.marketstack.v2.model;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.List;
+
+import com.totemsoft.page.model.ColumnDef;
+import com.totemsoft.page.model.ColumnDef.CellFormatterEnum;
 
 import lombok.Data;
 
@@ -47,5 +51,28 @@ public class ExchangeDto implements Serializable {
     private String comments;
 
     private Boolean base;
+
+    public static List<ColumnDef> columns(boolean editable) {
+        return List.of(
+            ColumnDef.builder()
+                .key("mic")
+                .label("MIC")
+                .width(100)
+                .build(),
+            ColumnDef.builder()
+                .key("name")
+                .label("Name")
+                .build(),
+            ColumnDef.builder()
+                .key("city")
+                .label("City")
+                .build(),
+            ColumnDef.builder()
+                .key("base")
+                .label("Base")
+                .formatter(editable ? CellFormatterEnum.CHECKBOX.name().toLowerCase() : null)
+                .build()
+            );
+    }
 
 }

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.totemsoft.page.config.SecurityConfig;
 import com.totemsoft.page.exchangerates.v1.model.CurrencyDto;
+import com.totemsoft.page.marketstack.v2.model.ExchangeDto;
 import com.totemsoft.page.model.ColumnDef.DropdownOption;
 import com.totemsoft.page.model.KeyDto;
 import com.totemsoft.page.model.TagDto;
@@ -17,10 +18,13 @@ import com.totemsoft.page.model.entity.KeyTag;
 import com.totemsoft.page.model.entity.Tag;
 import com.totemsoft.page.model.entity.TagType;
 import com.totemsoft.page.model.entity.exchangerates.Currency;
+import com.totemsoft.page.model.entity.marketstack.Exchange;
 import com.totemsoft.page.model.mapper.DropdownOptionMapper;
+import com.totemsoft.page.model.mapper.MarketStackMapper;
 import com.totemsoft.page.model.mapper.PageMapper;
 import com.totemsoft.page.model.mapper.SetupMapper;
 import com.totemsoft.page.repository.CurrencyRepository;
+import com.totemsoft.page.repository.ExchangeRepository;
 import com.totemsoft.page.repository.KeyRepository;
 import com.totemsoft.page.repository.KeyTagRepository;
 import com.totemsoft.page.repository.TagRepository;
@@ -37,19 +41,15 @@ import lombok.extern.log4j.Log4j2;
 public class SetupService {
 
     private final DropdownOptionMapper dropdownOptionMapper;
-
+    private final MarketStackMapper marketStackMapper;
     private final PageMapper pageMapper;
-
     private final SetupMapper setupMapper;
 
     private final CurrencyRepository currencyRepository;
-
+    private final ExchangeRepository exchangeRepository;
     private final KeyRepository keyRepository;
-
     private final KeyTagRepository keyTagRepository;
-
     private final TagRepository tagRepository;
-
     private final TagTypeRepository tagTypeRepository;
 
     @Transactional
@@ -156,6 +156,24 @@ public class SetupService {
         entity.setBase(dto.getBase());
         entity = currencyRepository.save(entity);
         return entity.getCode();
+    }
+
+    @Transactional
+    public List<ExchangeDto> findExchanges() {
+        final var exchanges = exchangeRepository.findAll(
+            Sort.by("base").descending().and(Sort.by("city")).and(Sort.by("mic")));
+        return marketStackMapper.map(exchanges);
+    }
+
+    @Transactional
+    public String saveExchange(ExchangeDto dto) {
+        log.trace("saving: {}", dto);
+        final var mic = dto.getMic();
+        var entity = exchangeRepository.findById(mic)
+            .orElseThrow(() -> new EntityNotFoundException(mic, Exchange.class));
+        entity.setBase(dto.getBase());
+        entity = exchangeRepository.save(entity);
+        return entity.getMic();
     }
 
 }

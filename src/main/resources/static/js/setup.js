@@ -471,7 +471,7 @@ YAHOO.page.setup = {
                     code: data.code, // PK
                     base: data.base
                 };
-                const callback = YAHOO.page.setup.saveCallback;
+                const callback = YAHOO.page.emptyCallback;
                 callback.scope = YAHOO.page.setup.currencyDataTable;
                 callback.argument = data;
                 YAHOO.page.sendPostRequest('/setup/' + entityName, callback, currencyDto);
@@ -482,5 +482,50 @@ YAHOO.page.setup = {
         }
         YAHOO.page.setup.currencyDialog.bringToTop();
         YAHOO.page.setup.currencyDialog.show();
+    },
+    editExchange: function() {
+        console.log('editExchange:');
+        const entityName = 'exchange';
+        if (!YAHOO.page.setup.exchangeDialog) {
+            const w = YUD.getViewportWidth();
+            //const h = YUD.getViewportHeight();
+            YAHOO.page.setup.exchangeDialog = YAHOO.page.openEditDialog(entityName + 'Dialog', {
+                fixedcenter: 'contained',
+                width: Math.floor(w / 2) + 'px',
+                //height: Math.floor(h / 2) + 'px',
+                buttons: [
+                    {text: 'Close', isDefault: true, handler: function() {
+                        this.cancel();
+                    }}
+                ]
+            });
+            const requestBuilder = function(oState, oDataTable) {
+                let request = '' + entityName;
+                return request;
+            };
+            const dataTable = YAHOO.page.setup.initDataTable(entityName, requestBuilder);
+            dataTable.subscribe('rowClickEvent', dataTable.onEventSelectRow);
+            //dataTable.subscribe('cellClickEvent', dataTable.onEventSelectCell);
+            dataTable.subscribe('checkboxClickEvent', function(oArgs) {
+                const elCheckbox = oArgs.target;
+                const base = elCheckbox.checked ? true : null;
+                const row = this.getRecord(elCheckbox);
+                row.setData('base', base);
+                const data = row.getData();
+                const exchangeDto = {
+                    mic: data.mic, // PK
+                    base: data.base
+                };
+                const callback = YAHOO.page.emptyCallback;
+                callback.scope = YAHOO.page.setup.exchangeDataTable;
+                callback.argument = data;
+                YAHOO.page.sendPostRequest('/setup/' + entityName, callback, exchangeDto);
+            });
+            YAHOO.page.setup.exchangeDataTable = dataTable;
+        } else {
+            YAHOO.page.setup.updateDataTable(YAHOO.page.setup.exchangeDataTable);
+        }
+        YAHOO.page.setup.exchangeDialog.bringToTop();
+        YAHOO.page.setup.exchangeDialog.show();
     }
 };

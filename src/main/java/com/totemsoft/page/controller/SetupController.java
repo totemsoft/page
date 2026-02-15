@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.totemsoft.page.exchangerates.v1.model.CurrencyDto;
+import com.totemsoft.page.marketstack.v2.model.ExchangeDto;
 import com.totemsoft.page.model.KeyDto;
 import com.totemsoft.page.model.SearchResult;
 import com.totemsoft.page.model.TagDto;
@@ -93,6 +94,19 @@ class SetupController {
     @PostMapping("/setup/currency")
     String saveCurrency(@RequestBody CurrencyDto currencyDto) {
         return setupService.saveCurrency(currencyDto);
+    }
+
+    @GetMapping("/setup/exchange")
+    SearchResult<ExchangeDto> findExchanges() {
+        return SearchResult.<ExchangeDto>builder()
+            .columns(ExchangeDto.columns(true))
+            .data(setupService.findExchanges())
+            .build();
+    }
+
+    @PostMapping("/setup/exchange")
+    String saveExchange(@RequestBody ExchangeDto exchangeDto) {
+        return setupService.saveExchange(exchangeDto);
     }
 
 }

@@ -1,5 +1,8 @@
 package com.totemsoft.page.model.mapper;
 
+import java.util.Collection;
+import java.util.List;
+
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
 
@@ -9,7 +12,7 @@ import com.totemsoft.page.model.entity.marketstack.Exchange;
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface MarketStackMapper {
 
-    //List<ExchangeDto> map(Collection<Exchange> exchanges);
+    List<ExchangeDto> map(Collection<Exchange> exchanges);
     Exchange map(ExchangeDto exchange);
 
 }

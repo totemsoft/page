@@ -72,12 +72,17 @@ class ExchangeRateService {
 
     @Transactional
     List<ExchangeRate> saveExchangeRates(ExchangeRates exchangeRates) {
+        final var base = exchangeRates.getBase();
         final var rates = exchangeRates.getRates();
-        log.info(">>> saving {} exchangeRates ...", rates.size());
+        log.info(">>> saving {} exchangeRates for {} [{}] ...", rates.size(), base, baseCurrency);
         final var timestamp = Timestamp.from(Instant.ofEpochMilli(exchangeRates.getTimestamp()));
         final var date = exchangeRates.getDate();
         final var result = new ArrayList<ExchangeRate>(rates.size());
         rates.forEach((code, rate) -> {
+            if (rate == null || rate.signum() == 0) {
+                log.warn("Zero rate for {}: {}", code, rate);
+                //return value;
+            }
             final var exchangeRate = exchangeRateRepository.save(ExchangeRate.builder()
                 .code(code)
                 .date(date)

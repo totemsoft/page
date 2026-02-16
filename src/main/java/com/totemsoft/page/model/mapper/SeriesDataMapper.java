@@ -14,19 +14,22 @@ import com.totemsoft.page.model.SeriesDataDto;
 import com.totemsoft.page.model.entity.SeriesData;
 import com.totemsoft.page.model.entity.exchangerates.ExchangeRate;
 
+import lombok.extern.log4j.Log4j2;
+
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
-public interface SeriesDataMapper {
+@Log4j2
+public abstract class SeriesDataMapper {
 
-    List<SeriesDataDto> mapSeriesData(Collection<SeriesData> data);
-    Cell<BigDecimal> mapSeriesData(SeriesData data);
+    public abstract List<SeriesDataDto> mapSeriesData(Collection<SeriesData> data);
+    public abstract Cell<BigDecimal> mapSeriesData(SeriesData data);
 
-    default Cell<BigDecimal> mapSeriesData(SeriesData sd, Optional<ExchangeRate> exchangeRate) {
+    public Cell<BigDecimal> mapSeriesData(SeriesData sd, Optional<ExchangeRate> exchangeRate) {
         final var cell = this.mapSeriesData(sd);
         exchangeRate.ifPresent(er -> cell.setValue(convert(sd, er)));
         return cell;
     }
 
-    default List<SeriesDataDto> mapSeriesData(Collection<SeriesData> data, Optional<ExchangeRate> exchangeRate) {
+    public List<SeriesDataDto> mapSeriesData(Collection<SeriesData> data, Optional<ExchangeRate> exchangeRate) {
         final var result = this.mapSeriesData(data);
         exchangeRate.ifPresent(er -> result.forEach(sd -> sd.setValue(convert(sd, er))));
         return result;
@@ -34,19 +37,31 @@ public interface SeriesDataMapper {
 
     private BigDecimal convert(SeriesData sd, ExchangeRate exchangeRate) {
         // TODO: SeriesData baseCurrency/currency VS ExchangeRate base/code
+        final var value = sd.getValue();
+        final var rate = exchangeRate.getRate();
+        if (rate == null || rate.signum() == 0) {
+            log.warn("Zero rate: {}", exchangeRate);
+            //return value;
+        }
         if (sd.sameCurrency()) {
-            return multiply(sd.getValue(), exchangeRate.getRate());
+            return multiply(value, rate);
         } else {
-            return divide(sd.getValue(), exchangeRate.getRate());
+            return divide(value, rate);
         }
     }
 
     private BigDecimal convert(SeriesDataDto sd, ExchangeRate exchangeRate) {
         // TODO: SeriesData baseCurrency/currency VS ExchangeRate base/code
+        final var value = sd.getValue();
+        final var rate = exchangeRate.getRate();
+        if (rate == null || rate.signum() == 0) {
+            log.warn("Zero rate: {}", exchangeRate);
+            //return value;
+        }
         if (sd.sameCurrency()) {
-            return multiply(sd.getValue(), exchangeRate.getRate());
+            return multiply(value, rate);
         } else {
-            return divide(sd.getValue(), exchangeRate.getRate());
+            return divide(value, rate);
         }
     }
 

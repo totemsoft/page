@@ -53,6 +53,7 @@ public class ExchangeRate {
     @Column(name = "currency_code")
     private String code;
 
+    @ToString.Include
     @NotNull
     @Column(name = "currency_rate")
     private BigDecimal rate;

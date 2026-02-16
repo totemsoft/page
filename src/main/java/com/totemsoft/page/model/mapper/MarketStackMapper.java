@@ -20,7 +20,6 @@ public interface MarketStackMapper {
 
     List<ExchangeTickerDto> mapExchangeTicker(Collection<ExchangeTicker> tickers);
     @Mapping(target = "mic", source = "mic")
-    //@Mapping(target = "base", expression = "java(null)")
     ExchangeTicker mapExchangeTicker(String mic, ExchangeTickerDto ticker);
 
 }

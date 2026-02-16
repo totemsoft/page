@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 
 import com.totemsoft.page.marketstack.v2.model.ExchangeDto;
@@ -18,6 +19,8 @@ public interface MarketStackMapper {
     Exchange mapExchange(ExchangeDto exchange);
 
     List<ExchangeTickerDto> mapExchangeTicker(Collection<ExchangeTicker> tickers);
+    @Mapping(target = "mic", source = "mic")
+    //@Mapping(target = "base", expression = "java(null)")
     ExchangeTicker mapExchangeTicker(String mic, ExchangeTickerDto ticker);
 
 }

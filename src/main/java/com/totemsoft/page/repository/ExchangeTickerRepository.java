@@ -2,6 +2,7 @@ package com.totemsoft.page.repository;
 
 import java.util.List;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -12,6 +13,8 @@ import com.totemsoft.page.model.entity.marketstack.ExchangeTickerId;
 public interface ExchangeTickerRepository extends JpaRepository<ExchangeTicker, ExchangeTickerId> {
 
     long countByMic(String mic);
+
+    List<ExchangeTicker> findByMic(String mic, Sort sort);
 
     List<ExchangeTicker> findByBaseTrue();
 

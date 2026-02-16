@@ -40,6 +40,7 @@ class PageController {
         model.addAttribute("page", page);
         model.addAttribute("pageDate", date);
         model.addAttribute("currencies", pageService.findBaseCurrencies());
+        model.addAttribute("exchanges", pageService.findBaseExchanges());
         model.addAttribute("pages", pageService.findPages());
         model.addAttribute("splitRatios", SplitRatioEnum.values());
         model.addAttribute("tagTypes", pageService.findTagTypes());

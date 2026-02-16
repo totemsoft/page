@@ -126,7 +126,7 @@ public class SubSectionService {
             log.trace("No RowTagType/ColumnTagType set for sub-section {}.", subSectionId);
             return SearchResult.<SeriesDataDto>builder()
                 .columns(skipColumns.orElse(false) ? null : SeriesDataDto.columns(formatter))
-                .data(seriesDataMapper.map(data, exchangeRate))
+                .data(seriesDataMapper.mapSeriesData(data, exchangeRate))
                 .build();
         }
         // all keys from sub-section
@@ -177,7 +177,7 @@ public class SubSectionService {
             .build());
         columnTags.forEach(columnTag -> data.stream()
             .filter(d -> d.getKey().anyMatch(columnTag.getId()))
-            .forEach(d -> cells.put(columnTag.getKey(), seriesDataMapper.map(d, exchangeRate)))
+            .forEach(d -> cells.put(columnTag.getKey(), seriesDataMapper.mapSeriesData(d, exchangeRate)))
         );
         return cells;
     }

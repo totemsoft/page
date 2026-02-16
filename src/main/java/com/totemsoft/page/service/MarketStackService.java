@@ -36,7 +36,7 @@ public class MarketStackService {
 
     @Transactional
     void saveExchanges(List<ExchangeDto> exchanges) {
-        exchanges.forEach(exchange -> exchangeRepository.save(marketStackMapper.map(exchange)));
+        exchanges.forEach(exchange -> exchangeRepository.save(marketStackMapper.mapExchange(exchange)));
     }
 
     @Transactional
@@ -46,7 +46,7 @@ public class MarketStackService {
 
     @Transactional
     void saveExchangeTickers(String mic, List<ExchangeTickerDto> tickers) {
-        tickers.forEach(ticker -> exchangeTickerRepository.save(marketStackMapper.map(mic, ticker)));
+        tickers.forEach(ticker -> exchangeTickerRepository.save(marketStackMapper.mapExchangeTicker(mic, ticker)));
     }
 
 }

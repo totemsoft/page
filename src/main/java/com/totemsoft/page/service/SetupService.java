@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.totemsoft.page.config.SecurityConfig;
 import com.totemsoft.page.exchangerates.v1.model.CurrencyDto;
 import com.totemsoft.page.marketstack.v2.model.ExchangeDto;
+import com.totemsoft.page.marketstack.v2.model.ExchangeTickerDto;
 import com.totemsoft.page.model.ColumnDef.DropdownOption;
 import com.totemsoft.page.model.KeyDto;
 import com.totemsoft.page.model.TagDto;
@@ -19,12 +20,15 @@ import com.totemsoft.page.model.entity.Tag;
 import com.totemsoft.page.model.entity.TagType;
 import com.totemsoft.page.model.entity.exchangerates.Currency;
 import com.totemsoft.page.model.entity.marketstack.Exchange;
+import com.totemsoft.page.model.entity.marketstack.ExchangeTicker;
+import com.totemsoft.page.model.entity.marketstack.ExchangeTickerId;
 import com.totemsoft.page.model.mapper.DropdownOptionMapper;
 import com.totemsoft.page.model.mapper.MarketStackMapper;
 import com.totemsoft.page.model.mapper.PageMapper;
 import com.totemsoft.page.model.mapper.SetupMapper;
 import com.totemsoft.page.repository.CurrencyRepository;
 import com.totemsoft.page.repository.ExchangeRepository;
+import com.totemsoft.page.repository.ExchangeTickerRepository;
 import com.totemsoft.page.repository.KeyRepository;
 import com.totemsoft.page.repository.KeyTagRepository;
 import com.totemsoft.page.repository.TagRepository;
@@ -47,6 +51,7 @@ public class SetupService {
 
     private final CurrencyRepository currencyRepository;
     private final ExchangeRepository exchangeRepository;
+    private final ExchangeTickerRepository exchangeTickerRepository;
     private final KeyRepository keyRepository;
     private final KeyTagRepository keyTagRepository;
     private final TagRepository tagRepository;
@@ -58,7 +63,7 @@ public class SetupService {
         final var id = dto.getId();
         Tag entity;
         if (id == null) {
-            entity = pageMapper.map(dto);
+            entity = pageMapper.mapTag(dto);
         } else {
             entity = tagRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(id, Tag.class));
@@ -75,7 +80,7 @@ public class SetupService {
         final var id = dto.getId();
         TagType entity;
         if (id == null) {
-            entity = pageMapper.map(dto);
+            entity = pageMapper.mapTagType(dto);
         } else {
             entity = tagTypeRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(id, TagType.class));
@@ -89,26 +94,26 @@ public class SetupService {
     @Transactional
     public List<TagTypeDto> findTagTypes() {
         final var tagTypes = tagTypeRepository.findAll(Sort.by("title"));
-        return pageMapper.mapTagTypes(tagTypes);
+        return pageMapper.mapTagType(tagTypes);
     }
 
     @Transactional
     public List<DropdownOption> tagTypeDropdownOptions() {
         final var tagTypes = tagTypeRepository.findAll(Sort.by("title"));
-        return dropdownOptionMapper.map(tagTypes);
+        return dropdownOptionMapper.mapTagType(tagTypes);
     }
 
     @Transactional
     public List<TagDto> findTagsByKey(long keyId) {
         final var key = keyRepository.findById(keyId)
             .orElseThrow(() -> new EntityNotFoundException(keyId, Key.class));
-        return setupMapper.map(key).getTags();
+        return setupMapper.mapKey(key).getTags();
     }
 
     @Transactional
     public List<KeyDto> findKeys() {
         final var keys = keyRepository.findAll(Sort.by("title"));
-        return setupMapper.map(keys);
+        return setupMapper.mapKey(keys);
     }
 
     @Transactional
@@ -117,7 +122,7 @@ public class SetupService {
         final var id = dto.getId();
         Key entity;
         if (id == null) {
-            entity = setupMapper.map(dto);
+            entity = setupMapper.mapKey(dto);
         } else {
             entity = keyRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(id, Key.class));
@@ -144,7 +149,7 @@ public class SetupService {
     public List<CurrencyDto> findCurrencies() {
         final var currencies = currencyRepository.findAll(
             Sort.by("base").descending().and(Sort.by("code")));
-        return pageMapper.map(currencies);
+        return pageMapper.mapCurrency(currencies);
     }
 
     @Transactional
@@ -174,6 +179,24 @@ public class SetupService {
         entity.setBase(dto.getBase());
         entity = exchangeRepository.save(entity);
         return entity.getMic();
+    }
+
+    @Transactional
+    public List<ExchangeTickerDto> findExchangeTickers(String mic) {
+        final var exchangeTickers = exchangeTickerRepository.findByMic(mic,
+            Sort.by("base").descending().and(Sort.by("symbol")));
+        return marketStackMapper.mapExchangeTicker(exchangeTickers);
+    }
+
+    @Transactional
+    public void saveExchangeTicker(ExchangeTickerDto dto) {
+        log.trace("saving: {}", dto);
+        final var mic = dto.getMic();
+        final var symbol = dto.getSymbol();
+        var entity = exchangeTickerRepository.findById(new ExchangeTickerId(mic, symbol))
+            .orElseThrow(() -> new EntityNotFoundException(mic, ExchangeTicker.class));
+        entity.setBase(dto.getBase());
+        entity = exchangeTickerRepository.save(entity);
     }
 
 }

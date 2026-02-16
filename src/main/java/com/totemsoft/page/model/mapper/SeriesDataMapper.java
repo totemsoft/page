@@ -1,8 +1,8 @@
 package com.totemsoft.page.model.mapper;
 
 import java.math.BigDecimal;
-import java.math.MathContext;
 import java.math.RoundingMode;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,23 +17,23 @@ import com.totemsoft.page.model.entity.exchangerates.ExchangeRate;
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface SeriesDataMapper {
 
-    List<SeriesDataDto> map(List<SeriesData> data);
+    List<SeriesDataDto> mapSeriesData(Collection<SeriesData> data);
+    Cell<BigDecimal> mapSeriesData(SeriesData data);
 
-    Cell<BigDecimal> map(SeriesData data);
-
-    default Cell<BigDecimal> map(SeriesData sd, Optional<ExchangeRate> exchangeRate) {
-        final var cell = this.map(sd);
+    default Cell<BigDecimal> mapSeriesData(SeriesData sd, Optional<ExchangeRate> exchangeRate) {
+        final var cell = this.mapSeriesData(sd);
         exchangeRate.ifPresent(er -> cell.setValue(convert(sd, er)));
         return cell;
     }
 
-    default List<SeriesDataDto> map(List<SeriesData> data, Optional<ExchangeRate> exchangeRate) {
-        final var result = this.map(data);
+    default List<SeriesDataDto> mapSeriesData(Collection<SeriesData> data, Optional<ExchangeRate> exchangeRate) {
+        final var result = this.mapSeriesData(data);
         exchangeRate.ifPresent(er -> result.forEach(sd -> sd.setValue(convert(sd, er))));
         return result;
     }
 
     private BigDecimal convert(SeriesData sd, ExchangeRate exchangeRate) {
+        // TODO: SeriesData baseCurrency/currency VS ExchangeRate base/code
         if (sd.sameCurrency()) {
             return multiply(sd.getValue(), exchangeRate.getRate());
         } else {
@@ -42,6 +42,7 @@ public interface SeriesDataMapper {
     }
 
     private BigDecimal convert(SeriesDataDto sd, ExchangeRate exchangeRate) {
+        // TODO: SeriesData baseCurrency/currency VS ExchangeRate base/code
         if (sd.sameCurrency()) {
             return multiply(sd.getValue(), exchangeRate.getRate());
         } else {

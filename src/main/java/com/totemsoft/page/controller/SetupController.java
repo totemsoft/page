@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.totemsoft.page.exchangerates.v1.model.CurrencyDto;
 import com.totemsoft.page.marketstack.v2.model.ExchangeDto;
+import com.totemsoft.page.marketstack.v2.model.ExchangeTickerDto;
 import com.totemsoft.page.model.KeyDto;
 import com.totemsoft.page.model.SearchResult;
 import com.totemsoft.page.model.TagDto;
@@ -107,6 +108,20 @@ class SetupController {
     @PostMapping("/setup/exchange")
     String saveExchange(@RequestBody ExchangeDto exchangeDto) {
         return setupService.saveExchange(exchangeDto);
+    }
+
+    @GetMapping("/setup/exchangeTicker")
+    SearchResult<ExchangeTickerDto> findExchangeTickers(
+            @RequestParam(name = "mic") Optional<String> mic) {
+        return SearchResult.<ExchangeTickerDto>builder()
+            .columns(ExchangeTickerDto.columns(true))
+            .data(mic.isEmpty() ? List.of() : setupService.findExchangeTickers(mic.get()))
+            .build();
+    }
+
+    @PostMapping("/setup/exchangeTicker")
+    void saveExchangeTicker(@RequestBody ExchangeTickerDto exchangeTickerDto) {
+        setupService.saveExchangeTicker(exchangeTickerDto);
     }
 
 }

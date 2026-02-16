@@ -527,5 +527,60 @@ YAHOO.page.setup = {
         }
         YAHOO.page.setup.exchangeDialog.bringToTop();
         YAHOO.page.setup.exchangeDialog.show();
+    },
+    editExchangeTicker: function() {
+        console.log('editExchangeTicker:');
+        const entityName = 'exchangeTicker';
+        if (!YAHOO.page.setup.exchangeTickerDialog) {
+            const w = YUD.getViewportWidth();
+            //const h = YUD.getViewportHeight();
+            YAHOO.page.setup.exchangeTickerDialog = YAHOO.page.openEditDialog(entityName + 'Dialog', {
+                fixedcenter: 'contained',
+                width: Math.floor(w / 2) + 'px',
+                //height: Math.floor(h / 2) + 'px',
+                buttons: [
+                    {text: 'Close', isDefault: true, handler: function() {
+                        this.cancel();
+                    }}
+                ]
+            });
+            const requestBuilder = function(oState, oDataTable) {
+                let request = '' + entityName + '?1=1';
+                const elExchange = YUD.get(entityName + '.exchange');
+                if (elExchange.value) {
+                    request += '&mic=' + elExchange.value;
+                }
+                return request;
+            };
+            const dataTable = YAHOO.page.setup.initDataTable(entityName, requestBuilder);
+            dataTable.subscribe('rowClickEvent', dataTable.onEventSelectRow);
+            //dataTable.subscribe('cellClickEvent', dataTable.onEventSelectCell);
+            dataTable.subscribe('checkboxClickEvent', function(oArgs) {
+                const elCheckbox = oArgs.target;
+                const base = elCheckbox.checked ? true : null;
+                const row = this.getRecord(elCheckbox);
+                row.setData('base', base);
+                const data = row.getData();
+                const exchangeTickerDto = {
+                    mic: data.mic, // PK
+                    symbol: data.symbol, // PK
+                    base: data.base
+                };
+                const callback = YAHOO.page.emptyCallback;
+                callback.scope = YAHOO.page.setup.exchangeTickerDataTable;
+                callback.argument = data;
+                YAHOO.page.sendPostRequest('/setup/' + entityName, callback, exchangeTickerDto);
+            });
+            YAHOO.page.setup.exchangeTickerDataTable = dataTable;
+            //
+            const elExchange = YUD.get(entityName + '.exchange');
+            YUE.addListener(elExchange, 'change', function(ev) {
+                YAHOO.page.setup.updateDataTable(YAHOO.page.setup.exchangeTickerDataTable);
+            });
+        } else {
+            YAHOO.page.setup.updateDataTable(YAHOO.page.setup.exchangeTickerDataTable);
+        }
+        YAHOO.page.setup.exchangeTickerDialog.bringToTop();
+        YAHOO.page.setup.exchangeTickerDialog.show();
     }
 };

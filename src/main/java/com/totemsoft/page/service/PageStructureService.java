@@ -14,6 +14,7 @@ import com.totemsoft.page.model.entity.Section;
 import com.totemsoft.page.model.entity.SubSection;
 import com.totemsoft.page.model.entity.Tab;
 import com.totemsoft.page.model.mapper.PageMapper;
+import com.totemsoft.page.model.mapper.SetupMapper;
 import com.totemsoft.page.repository.PageRepository;
 import com.totemsoft.page.repository.SectionRepository;
 import com.totemsoft.page.repository.SubSectionRepository;
@@ -30,6 +31,7 @@ import lombok.extern.log4j.Log4j2;
 public class PageStructureService {
 
     private final PageMapper pageMapper;
+    private final SetupMapper setupMapper;
 
     private final PageRepository pageRepository;
     private final SectionRepository sectionRepository;
@@ -70,7 +72,7 @@ public class PageStructureService {
         final var tabId = tabDto.getId();
         final Tab tab;
         if (tabId == null) {
-            tab = pageMapper.map(tabDto);
+            tab = pageMapper.mapTab(tabDto);
         } else {
             tab = tabRepository.findById(tabId)
                 .orElseThrow(() -> new EntityNotFoundException(tabId, Tab.class));
@@ -87,7 +89,7 @@ public class PageStructureService {
         final var sectionId = sectionDto.getId();
         final Section section;
         if (sectionId == null) {
-            section = pageMapper.map(sectionDto);
+            section = pageMapper.mapSection(sectionDto);
         } else {
             section = sectionRepository.findById(sectionId)
                 .orElseThrow(() -> new EntityNotFoundException(sectionId, Section.class));
@@ -105,7 +107,7 @@ public class PageStructureService {
         final var subSectionId = subSectionDto.getId();
         final SubSection subSection;
         if (subSectionId == null) {
-            subSection = pageMapper.map(subSectionDto);
+            subSection = pageMapper.mapSubSection(subSectionDto);
         } else {
             subSection = subSectionRepository.findById(subSectionId)
                 .orElseThrow(() -> new EntityNotFoundException(subSectionId, SubSection.class));
@@ -124,7 +126,7 @@ public class PageStructureService {
                 .orElseThrow(() -> new EntityNotFoundException(subSectionDto.getId(), SubSection.class));
         subSection.setRowTagTypeId(subSectionDto.getRowTagTypeId());
         subSection.setColumnTagTypeId(subSectionDto.getColumnTagTypeId());
-        subSection.setKeys(pageMapper.mapKeyDtos(subSectionDto.getKeys()));
+        subSection.setKeys(setupMapper.mapKeyDto(subSectionDto.getKeys()));
         subSectionRepository.save(subSection);
     }
 

@@ -11,14 +11,18 @@ import org.springframework.stereotype.Service;
 
 import com.totemsoft.page.config.SecurityConfig;
 import com.totemsoft.page.exchangerates.v1.model.CurrencyDto;
+import com.totemsoft.page.marketstack.v2.model.ExchangeDto;
 import com.totemsoft.page.model.KeyDto;
 import com.totemsoft.page.model.PageDto;
 import com.totemsoft.page.model.TagDto;
 import com.totemsoft.page.model.TagTypeDto;
 import com.totemsoft.page.model.entity.Page;
 import com.totemsoft.page.model.entity.SubSection;
+import com.totemsoft.page.model.mapper.MarketStackMapper;
 import com.totemsoft.page.model.mapper.PageMapper;
+import com.totemsoft.page.model.mapper.SetupMapper;
 import com.totemsoft.page.repository.CurrencyRepository;
+import com.totemsoft.page.repository.ExchangeRepository;
 import com.totemsoft.page.repository.KeyRepository;
 import com.totemsoft.page.repository.KeySpecification;
 import com.totemsoft.page.repository.PageRepository;
@@ -37,23 +41,27 @@ import lombok.extern.log4j.Log4j2;
 public class PageService {
 
     private final CurrencyRepository currencyRepository;
-
+    private final ExchangeRepository exchangeRepository;
     private final KeyRepository keyRepository;
-
     private final PageRepository pageRepository;
-
     private final SubSectionRepository subSectionRepository;
-
     private final TagRepository tagRepository;
-
     private final TagTypeRepository tagTypeRepository;
 
+    private final MarketStackMapper marketStackMapper;
     private final PageMapper pageMapper;
+    private final SetupMapper setupMapper;
 
     @Transactional
     public List<CurrencyDto> findBaseCurrencies() {
         final var currencies = currencyRepository.findByBaseTrue();
-        return pageMapper.map(currencies);
+        return pageMapper.mapCurrency(currencies);
+    }
+
+    @Transactional
+    public List<ExchangeDto> findBaseExchanges() {
+        final var exchanges = exchangeRepository.findByBaseTrue();
+        return marketStackMapper.mapExchange(exchanges);
     }
 
     @Transactional
@@ -81,19 +89,19 @@ public class PageService {
     @Transactional
     public List<TagTypeDto> findTagTypes() {
         final var tagTypes = tagTypeRepository.findAll(Sort.by("title"));
-        return pageMapper.mapTagTypes(tagTypes);
+        return pageMapper.mapTagType(tagTypes);
     }
 
     @Transactional
     public List<TagDto> findTags(int tagTypeId) {
         final var tags = tagRepository.findByTagTypeId(tagTypeId);
-        return pageMapper.mapTags(tags);
+        return pageMapper.mapTag(tags);
     }
 
     @Transactional
     public List<TagDto> findTags(int tagTypeId, String name) {
         final var tags = tagRepository.findByTagTypeIdAndNameContainingIgnoreCase(tagTypeId, name);
-        return pageMapper.mapTags(tags);
+        return pageMapper.mapTag(tags);
     }
 
     @Transactional
@@ -103,7 +111,7 @@ public class PageService {
         // all keys from sub-section
         final var keys = subSection.getKeys();
         log.trace("keys: {}", keys);
-        return pageMapper.mapKeys(keys);
+        return setupMapper.mapKey(keys);
     }
 
     @Transactional
@@ -122,7 +130,7 @@ public class PageService {
         final var keys = keyRepository.findAll(KeySpecification.findByTagIds(tagIds)
             .and(KeySpecification.findByTagTypeIdAndTagTitles(tagTitles)));
         log.trace("keys: {}", keys);
-        return pageMapper.mapKeys(keys);
+        return setupMapper.mapKey(keys);
     }
 
 }

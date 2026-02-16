@@ -78,6 +78,28 @@
                 </div>
             </div>
         </div>
+        <div id="exchangeTickerDialog">
+            <div class="hd">Edit Stock Exchange Ticker</div>
+            <div class="bd">
+                <div class="table-container">
+                    <div>
+                        <div class="right">Stock Exchange:</div>
+                        <div>
+                            <select id="exchangeTicker.exchange">
+                                <option value="" th:text="#{option.null}"></option>
+                                <option th:each="item: ${exchanges}" th:value="${item.mic}" th:text="${item.name}"></option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div id="exchangeTicker">
+                    <div class="hd"></div>
+                    <div class="bd" id="bd.exchangeTicker">
+                        <div id="data.exchangeTicker"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </body>
 </html>

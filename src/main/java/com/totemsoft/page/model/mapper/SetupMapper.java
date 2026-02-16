@@ -1,5 +1,6 @@
 package com.totemsoft.page.model.mapper;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.mapstruct.Mapper;
@@ -11,8 +12,9 @@ import com.totemsoft.page.model.entity.Key;
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface SetupMapper {
 
-    Key map(KeyDto keyDto);
-    KeyDto map(Key key);
-    List<KeyDto> map(List<Key> keys);
+    Key mapKey(KeyDto keyDto);
+    KeyDto mapKey(Key key);
+    List<KeyDto> mapKey(Collection<Key> keys);
+    List<Key> mapKeyDto(Collection<KeyDto> keyDtos);
 
 }

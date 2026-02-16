@@ -1,5 +1,6 @@
 package com.totemsoft.page.model.mapper;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.mapstruct.Mapper;
@@ -14,7 +15,7 @@ public interface DropdownOptionMapper {
 
     @Mapping(target = "value", source = "id")
     @Mapping(target = "label", source = "name")
-    DropdownOption map(TagType tagType);
-    List<DropdownOption> map(List<TagType> tagTypes);
+    DropdownOption mapTagType(TagType tagType);
+    List<DropdownOption> mapTagType(Collection<TagType> tagTypes);
 
 }

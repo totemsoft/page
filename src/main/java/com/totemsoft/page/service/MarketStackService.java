@@ -41,7 +41,7 @@ public class MarketStackService {
 
     @Transactional
     int countExchangeTickers(String mic) {
-        return (int) exchangeTickerRepository.countByMic(mic);
+        return exchangeTickerRepository.countByMic(mic);
     }
 
     @Transactional

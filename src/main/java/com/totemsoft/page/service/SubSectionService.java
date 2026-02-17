@@ -16,7 +16,9 @@ import org.springframework.stereotype.Service;
 import com.totemsoft.page.config.SecurityConfig;
 import com.totemsoft.page.model.Cell;
 import com.totemsoft.page.model.ColumnDef;
+import com.totemsoft.page.model.KeyDto;
 import com.totemsoft.page.model.Row;
+import com.totemsoft.page.model.SearchData;
 import com.totemsoft.page.model.SearchResult;
 import com.totemsoft.page.model.SeriesDataDto;
 import com.totemsoft.page.model.ColumnDef.CellFormatterEnum;
@@ -64,7 +66,9 @@ public class SubSectionService {
             log.trace("No RowTagType/ColumnTagType set for sub-section {}.", subSectionId);
             return SearchResult.<Row>builder()
                 .columns(Row.columns(Set.of(), Optional.empty()))
-                .data(List.of())
+                .data(SearchData.<Row>builder()
+                    .records(List.of())
+                    .build())
                 .build();
         }
         // all keys from sub-section
@@ -89,7 +93,9 @@ public class SubSectionService {
         );
         return SearchResult.<Row>builder()
             .columns(Row.columns(columnTags, Optional.empty()))
-            .data(result)
+            .data(SearchData.<Row>builder()
+                .records(result)
+                .build())
             .build();
     }
 
@@ -126,7 +132,9 @@ public class SubSectionService {
             log.trace("No RowTagType/ColumnTagType set for sub-section {}.", subSectionId);
             return SearchResult.<SeriesDataDto>builder()
                 .columns(skipColumns.orElse(false) ? null : SeriesDataDto.columns(formatter))
-                .data(seriesDataMapper.mapSeriesData(data, exchangeRate))
+                .data(SearchData.<SeriesDataDto>builder()
+                    .records(seriesDataMapper.mapSeriesData(data, exchangeRate))
+                    .build())
                 .build();
         }
         // all keys from sub-section
@@ -151,7 +159,9 @@ public class SubSectionService {
         );
         return SearchResult.<Row>builder()
             .columns(skipColumns.orElse(false) ? null : Row.columns(columnTags, formatter))
-            .data(result)
+            .data(SearchData.<Row>builder()
+                .records(result)
+                .build())
             .build();
     }
 

@@ -161,7 +161,7 @@ create table if not exists sub_section_key (
 -- TODO: remove following lines later
 -- alter table currency add column if not exists currency_base char(1);
 -- alter table exchange add column if not exists exchange_base char(1);
-alter table exchange modify exchange_mic varchar(5) not null;
+-- alter table exchange modify exchange_mic varchar(5) not null;
 -- alter table exchange_ticker modify exchange_mic varchar(5) not null;
 -- alter table exchange_ticker modify ticker_symbol varchar(32) not null;
 -- alter table exchange_ticker modify ticker_name varchar(255);

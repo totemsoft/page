@@ -66,11 +66,11 @@ public abstract class SeriesDataMapper {
     }
 
     private BigDecimal divide(BigDecimal value, BigDecimal rate) {
-        return value.divide(rate, value.scale(), RoundingMode.HALF_UP);
+        return value.divide(rate, value.scale() + rate.scale(), RoundingMode.HALF_UP);
     }
 
     private BigDecimal multiply(BigDecimal value, BigDecimal rate) {
-        return value.multiply(rate).setScale(value.scale(), RoundingMode.HALF_UP);
+        return value.multiply(rate).setScale(value.scale() + rate.scale(), RoundingMode.HALF_UP);
     }
 
 }

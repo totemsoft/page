@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -14,6 +15,7 @@ import com.totemsoft.page.exchangerates.v1.model.CurrencyDto;
 import com.totemsoft.page.marketstack.v2.model.ExchangeDto;
 import com.totemsoft.page.model.KeyDto;
 import com.totemsoft.page.model.PageDto;
+import com.totemsoft.page.model.SearchData;
 import com.totemsoft.page.model.TagDto;
 import com.totemsoft.page.model.TagTypeDto;
 import com.totemsoft.page.model.entity.Page;
@@ -93,29 +95,34 @@ public class PageService {
     }
 
     @Transactional
-    public List<TagDto> findTags(int tagTypeId) {
-        final var tags = tagRepository.findByTagTypeId(tagTypeId);
-        return pageMapper.mapTag(tags);
+    public SearchData<TagDto> findTags(Optional<Integer> tagTypeId) {
+        return SearchData.<TagDto>builder()
+            .records(tagTypeId.isEmpty() ? List.of() : pageMapper.mapTag(tagRepository.findByTagTypeId(tagTypeId.get())))
+            .build();
     }
 
     @Transactional
-    public List<TagDto> findTags(int tagTypeId, String name) {
+    public SearchData<TagDto> findTags(int tagTypeId, String name) {
         final var tags = tagRepository.findByTagTypeIdAndNameContainingIgnoreCase(tagTypeId, name);
-        return pageMapper.mapTag(tags);
+        return SearchData.<TagDto>builder()
+            .records(pageMapper.mapTag(tags))
+            .build();
     }
 
     @Transactional
-    public List<KeyDto> findKeys(long subSectionId) {
+    public SearchData<KeyDto> findKeys(long subSectionId) {
         final var subSection = subSectionRepository.findById(subSectionId)
             .orElseThrow(() -> new EntityNotFoundException(subSectionId, SubSection.class));
         // all keys from sub-section
         final var keys = subSection.getKeys();
         log.trace("keys: {}", keys);
-        return setupMapper.mapKey(keys);
+        return SearchData.<KeyDto>builder()
+            .records(setupMapper.mapKey(keys))
+            .build();
     }
 
     @Transactional
-    public List<KeyDto> findKeys(Map<Integer, Object> tagTypeMap) {
+    public SearchData<KeyDto> findKeys(Map<Integer, Object> tagTypeMap) {
         final var tagIds = new HashSet<Long>();
         final var tagTitles = new HashMap<Integer, String>();
         tagTypeMap.forEach((tagTypeId, value) -> {
@@ -130,7 +137,9 @@ public class PageService {
         final var keys = keyRepository.findAll(KeySpecification.findByTagIds(tagIds)
             .and(KeySpecification.findByTagTypeIdAndTagTitles(tagTitles)));
         log.trace("keys: {}", keys);
-        return setupMapper.mapKey(keys);
+        return SearchData.<KeyDto>builder()
+            .records(setupMapper.mapKey(keys))
+            .build();
     }
 
 }

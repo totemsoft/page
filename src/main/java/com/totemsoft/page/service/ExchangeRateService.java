@@ -120,11 +120,11 @@ class ExchangeRateService {
     private List<Tag> saveTags(ExchangeRate rate) {
         // column/row tagTypes
         return List.of(
-            saveTag(ExchangeRate.CURRENCY_BASE, rate.getBase()),
-            saveTag(ExchangeRate.CURRENCY_CODE, rate.getCode()));
+            saveTag(ExchangeRate.CURRENCY_BASE, rate.getBase(), rate.getName()),
+            saveTag(ExchangeRate.CURRENCY_CODE, rate.getCode(), rate.getName()));
     }
 
-    private Tag saveTag(String tagTypeName, String tagName) {
+    private Tag saveTag(String tagTypeName, String tagName, String tagTitle) {
         final var tagType = tagTypeRepository.findByName(tagTypeName)
             .orElseGet(() -> tagTypeRepository.save(TagType.builder()
                 .name(tagTypeName)
@@ -135,7 +135,7 @@ class ExchangeRateService {
             .orElseGet(() -> tagRepository.save(Tag.builder()
                 .tagTypeId(tagTypeId)
                 .name(tagName)
-                .title(tagName)
+                .title(tagTitle)
                 .build()));
     }
 

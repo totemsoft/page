@@ -1,7 +1,9 @@
 package com.totemsoft.page.service;
 
 import java.util.List;
+import java.util.Optional;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -12,6 +14,8 @@ import com.totemsoft.page.marketstack.v2.model.ExchangeDto;
 import com.totemsoft.page.marketstack.v2.model.ExchangeTickerDto;
 import com.totemsoft.page.model.ColumnDef.DropdownOption;
 import com.totemsoft.page.model.KeyDto;
+import com.totemsoft.page.model.Pagination;
+import com.totemsoft.page.model.SearchData;
 import com.totemsoft.page.model.TagDto;
 import com.totemsoft.page.model.TagTypeDto;
 import com.totemsoft.page.model.entity.Key;
@@ -92,9 +96,11 @@ public class SetupService {
     }
 
     @Transactional
-    public List<TagTypeDto> findTagTypes() {
+    public SearchData<TagTypeDto> findTagTypes() {
         final var tagTypes = tagTypeRepository.findAll(Sort.by("title"));
-        return pageMapper.mapTagType(tagTypes);
+        return SearchData.<TagTypeDto>builder()
+            .records(pageMapper.mapTagType(tagTypes))
+            .build();
     }
 
     @Transactional
@@ -104,16 +110,20 @@ public class SetupService {
     }
 
     @Transactional
-    public List<TagDto> findTagsByKey(long keyId) {
+    public SearchData<TagDto> findTagsByKey(long keyId) {
         final var key = keyRepository.findById(keyId)
             .orElseThrow(() -> new EntityNotFoundException(keyId, Key.class));
-        return setupMapper.mapKey(key).getTags();
+        return SearchData.<TagDto>builder()
+            .records(setupMapper.mapKey(key).getTags())
+            .build();
     }
 
     @Transactional
-    public List<KeyDto> findKeys() {
+    public SearchData<KeyDto> findKeys() {
         final var keys = keyRepository.findAll(Sort.by("title"));
-        return setupMapper.mapKey(keys);
+        return SearchData.<KeyDto>builder()
+            .records(setupMapper.mapKey(keys))
+            .build();
     }
 
     @Transactional
@@ -146,10 +156,12 @@ public class SetupService {
     }
 
     @Transactional
-    public List<CurrencyDto> findCurrencies() {
+    public SearchData<CurrencyDto> findCurrencies() {
         final var currencies = currencyRepository.findAll(
             Sort.by("base").descending().and(Sort.by("code")));
-        return pageMapper.mapCurrency(currencies);
+        return SearchData.<CurrencyDto>builder()
+            .records(pageMapper.mapCurrency(currencies))
+            .build();
     }
 
     @Transactional
@@ -164,10 +176,12 @@ public class SetupService {
     }
 
     @Transactional
-    public List<ExchangeDto> findExchanges() {
+    public SearchData<ExchangeDto> findExchanges() {
         final var exchanges = exchangeRepository.findAll(
             Sort.by("base").descending().and(Sort.by("city")).and(Sort.by("mic")));
-        return marketStackMapper.mapExchange(exchanges);
+        return SearchData.<ExchangeDto>builder()
+            .records(marketStackMapper.mapExchange(exchanges))
+            .build();
     }
 
     @Transactional
@@ -182,10 +196,28 @@ public class SetupService {
     }
 
     @Transactional
-    public List<ExchangeTickerDto> findExchangeTickers(String mic) {
-        final var exchangeTickers = exchangeTickerRepository.findByMic(mic,
-            Sort.by("base").descending().and(Sort.by("symbol")));
-        return marketStackMapper.mapExchangeTicker(exchangeTickers);
+    public SearchData<ExchangeTickerDto> findExchangeTickers(
+            Optional<String> mic,
+            Pagination pagination) {
+        final Integer total;
+        if (mic.isPresent()) {
+            total = exchangeTickerRepository.countByMic(mic.get());
+        } else {
+            total = pagination.getTotal();
+        }
+        final var sort = Sort.by("base").descending().and(Sort.by("symbol"));
+        return SearchData.<ExchangeTickerDto>builder()
+            .records(mic.isEmpty() ? List.of() : marketStackMapper.mapExchangeTicker(
+                exchangeTickerRepository.findByMic(mic.get(),
+                    PageRequest.of(
+                        pagination.getOffset() / pagination.getLimit(),
+                        pagination.getLimit(),
+                        sort))
+            ))
+            .offset(pagination.getOffset())
+            .limit(pagination.getLimit())
+            .total(total)
+            .build();
     }
 
     @Transactional

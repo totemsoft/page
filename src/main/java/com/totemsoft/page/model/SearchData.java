@@ -1,6 +1,8 @@
-package com.totemsoft.page.marketstack.v2.model;
+package com.totemsoft.page.model;
 
-import java.io.Serializable;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,9 +13,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PaginationDto implements Serializable {
+public class SearchData<T> {
 
-    private static final long serialVersionUID = 1L;
+    @JsonProperty("records")
+    private List<T> records;
 
     private Integer page;
 
@@ -23,6 +26,8 @@ public class PaginationDto implements Serializable {
 
     private Integer total;
 
-    private Integer count;
+    private String sort;
+
+    private String dir;
 
 }

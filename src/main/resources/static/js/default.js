@@ -351,7 +351,7 @@ YAHOO.page = {
         const initialRequest = requestBuilder(null, null);
         const dataTableConfig = {
             caption: caption,
-            //dynamicData: true,
+            dynamicData: false,
             initialLoad: true,
             initialRequest: initialRequest,
             generateRequest: requestBuilder,

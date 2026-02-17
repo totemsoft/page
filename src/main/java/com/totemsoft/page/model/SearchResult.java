@@ -2,7 +2,7 @@ package com.totemsoft.page.model;
 
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,10 +15,33 @@ import lombok.NoArgsConstructor;
 @Builder
 public class SearchResult<T> {
 
-    @JsonProperty("columns")
     private List<ColumnDef> columns;
 
-    @JsonProperty("records")
-    private List<T> data;
+    @JsonIgnore
+    private SearchData<T> data;
+
+    public List<T> getRecords() {
+        return data.getRecords();
+    }
+
+    public Integer getLimit() {
+        return data.getLimit();
+    }
+
+    public Integer getOffset() {
+        return data.getOffset();
+    }
+
+    public Integer getTotal() {
+        return data.getTotal();
+    }
+
+    public String getSort() {
+        return data.getSort();
+    }
+
+    public String getDir() {
+        return data.getDir();
+    }
 
 }

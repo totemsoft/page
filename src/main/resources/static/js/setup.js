@@ -1,26 +1,34 @@
 YAHOO.namespace('page.setup');
 
 YAHOO.page.setup = {
-    initDataTable: function(entityName, requestBuilder, saveEvent) {
+    initDataTable: function(entityName, oConfig) {
         const oLiveData = '/setup/';
         const dataSource = new YAHOO.util.XHRDataSource(oLiveData, {
             connXhrMode: 'queueRequests',
             maxCacheEntries: 0,
             responseType: YAHOO.util.XHRDataSource.TYPE_JSON,
+            //parseJSONArgs: ,
             responseSchema: {
                 resultsList: 'records',
-                metaFields: {columns:'columns'}
+                // Access to values in the server response
+                metaFields: {
+                    columns: 'columns',
+                    totalRecords: 'total',
+                    startIndex: 'offset'
+                }
             }
         });
         const elContainer = YUD.get(entityName);
         const r = YUD.getRegion(elContainer);
         const h = YUD.getViewportHeight();
-        const initialRequest = requestBuilder(null, null);
         const dataTableConfig = {
             //caption: caption,
+            dynamicData: !!oConfig.dynamicData,
+            //sortedBy : {key: 'mic', dir: YAHOO.widget.DataTable.CLASS_ASC},
+            paginator: oConfig.paginator !== undefined ? oConfig.paginator : null,
             initialLoad: true,
-            initialRequest: initialRequest,
-            generateRequest: requestBuilder,
+            initialRequest: oConfig.requestBuilder(),
+            generateRequest: oConfig.requestBuilder,
             width: (r.width - 2) + 'px',
             height: h / 3 * 2 + 'px'
         };
@@ -49,8 +57,8 @@ YAHOO.page.setup = {
                         const column = this.insertColumn(columnDef, index);
                         if (column.editor) {
                             editable = true;
-                            if (saveEvent !== undefined) {
-                                column.editor.subscribe('saveEvent', saveEvent);
+                            if (oConfig.saveEvent !== undefined) {
+                                column.editor.subscribe('saveEvent', oConfig.saveEvent);
                             }
                         }
                     }
@@ -63,7 +71,11 @@ YAHOO.page.setup = {
                 }
                 //this.undisable();
             }
-            return true;
+            if (oPayload.pagination) {
+                oPayload.totalRecords = oResponse.meta.totalRecords;
+                oPayload.pagination.recordOffset = oResponse.meta.startIndex;
+            }
+            return oPayload;
         };
         return dataTable;
     },
@@ -143,7 +155,11 @@ YAHOO.page.setup = {
                     YAHOO.page.sendPostRequest('/setup/' + entityName, callback, tagTypeDto);
                 }
             };
-            const dataTable = YAHOO.page.setup.initDataTable(entityName, requestBuilder, saveEvent);
+            const dataTableConfig = {
+                requestBuilder: requestBuilder,
+                saveEvent: saveEvent
+            }
+            const dataTable = YAHOO.page.setup.initDataTable(entityName, dataTableConfig);
             dataTable.subscribe('rowClickEvent', dataTable.onEventSelectRow);
             dataTable.subscribe('cellClickEvent', dataTable.onEventSelectCell);
             YAHOO.page.setup.tagTypesDataTable = dataTable;
@@ -197,7 +213,11 @@ YAHOO.page.setup = {
                     YAHOO.page.sendPostRequest('/setup/' + entityName, callback, tagDto);
                 }
             };
-            const dataTable = YAHOO.page.setup.initDataTable(entityName, requestBuilder, saveEvent);
+            const dataTableConfig = {
+                requestBuilder: requestBuilder,
+                saveEvent: saveEvent
+            }
+            const dataTable = YAHOO.page.setup.initDataTable(entityName, dataTableConfig);
             dataTable.subscribe('rowClickEvent', dataTable.onEventSelectRow);
             dataTable.subscribe('cellClickEvent', dataTable.onEventSelectCell);
             YAHOO.page.setup.tagsDataTable = dataTable;
@@ -258,7 +278,11 @@ YAHOO.page.setup = {
                     YAHOO.page.sendPostRequest('/setup/' + entityName, callback, keyDto);
                 }
             };
-            const dataTable = YAHOO.page.setup.initDataTable(entityName, requestBuilder, saveEvent);
+            const dataTableConfig = {
+                requestBuilder: requestBuilder,
+                saveEvent: saveEvent
+            }
+            const dataTable = YAHOO.page.setup.initDataTable(entityName, dataTableConfig);
             dataTable.subscribe('rowClickEvent', dataTable.onEventSelectRow);
             dataTable.subscribe('cellClickEvent', dataTable.onEventSelectCell);
             // 3. fired when the DataTable's DOM is rendered or dirty (or postRenderEvent)
@@ -360,7 +384,10 @@ YAHOO.page.setup = {
                 request += '/' + (oDataTable ? oDataTable.keyId : keyId);
                 return request;
             };
-            const dataTable = YAHOO.page.setup.initDataTable(entityName, requestBuilder);
+            const dataTableConfig = {
+                requestBuilder: requestBuilder
+            }
+            const dataTable = YAHOO.page.setup.initDataTable(entityName, dataTableConfig);
             dataTable.subscribe('dropdownChangeEvent', function(oArgs) {
                 const elDropdown = oArgs.target;
                 const oRecord = this.getRecord(elDropdown);
@@ -458,7 +485,10 @@ YAHOO.page.setup = {
                 let request = '' + entityName;
                 return request;
             };
-            const dataTable = YAHOO.page.setup.initDataTable(entityName, requestBuilder);
+            const dataTableConfig = {
+                requestBuilder: requestBuilder
+            }
+            const dataTable = YAHOO.page.setup.initDataTable(entityName, dataTableConfig);
             dataTable.subscribe('rowClickEvent', dataTable.onEventSelectRow);
             //dataTable.subscribe('cellClickEvent', dataTable.onEventSelectCell);
             dataTable.subscribe('checkboxClickEvent', function(oArgs) {
@@ -503,7 +533,10 @@ YAHOO.page.setup = {
                 let request = '' + entityName;
                 return request;
             };
-            const dataTable = YAHOO.page.setup.initDataTable(entityName, requestBuilder);
+            const dataTableConfig = {
+                requestBuilder: requestBuilder
+            }
+            const dataTable = YAHOO.page.setup.initDataTable(entityName, dataTableConfig);
             dataTable.subscribe('rowClickEvent', dataTable.onEventSelectRow);
             //dataTable.subscribe('cellClickEvent', dataTable.onEventSelectCell);
             dataTable.subscribe('checkboxClickEvent', function(oArgs) {
@@ -545,14 +578,32 @@ YAHOO.page.setup = {
                 ]
             });
             const requestBuilder = function(oState, oDataTable) {
+                oState = oState || { pagination: null, sortedBy: null };
                 let request = '' + entityName + '?1=1';
-                const elExchange = YUD.get(entityName + '.exchange');
-                if (elExchange.value) {
-                    request += '&mic=' + elExchange.value;
+                const mic = YUD.get(entityName + '.exchange').value;
+                if (mic) {
+                    request += '&mic=' + mic;
+                    const page = oState.pagination ? oState.pagination.page : 1;
+                    request += '&page=' + (page - 1);
+                    const offset = oState.pagination ? oState.pagination.recordOffset : 0;
+                    request += '&offset=' + offset;
+                    const limit = oState.pagination ? oState.pagination.rowsPerPage : 100;
+                    request += '&limit=' + limit;
+                    const total = oState.pagination ? oState.pagination.totalRecords : null;
+                    request += '&total=' + total;
+                    //const sort = oState.sortedBy ? oState.sortedBy.key : 'id'; 
+                    //request += '&sort=' + sort;
+                    //const dir = oState.sortedBy && oState.sortedBy.dir === YAHOO.widget.DataTable.CLASS_DESC ? 'desc' : 'asc'; 
+                    //request += '&dir=' + dir;
                 }
                 return request;
             };
-            const dataTable = YAHOO.page.setup.initDataTable(entityName, requestBuilder);
+            const dataTableConfig = {
+                requestBuilder: requestBuilder,
+                dynamicData: true, // Enables dynamic server-driven data
+                paginator: new YAHOO.widget.Paginator({ rowsPerPage: 100 }) // Enables pagination
+            }
+            const dataTable = YAHOO.page.setup.initDataTable(entityName, dataTableConfig);
             dataTable.subscribe('rowClickEvent', dataTable.onEventSelectRow);
             //dataTable.subscribe('cellClickEvent', dataTable.onEventSelectCell);
             dataTable.subscribe('checkboxClickEvent', function(oArgs) {

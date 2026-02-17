@@ -14,6 +14,7 @@ import com.totemsoft.page.exchangerates.v1.model.CurrencyDto;
 import com.totemsoft.page.marketstack.v2.model.ExchangeDto;
 import com.totemsoft.page.marketstack.v2.model.ExchangeTickerDto;
 import com.totemsoft.page.model.KeyDto;
+import com.totemsoft.page.model.Pagination;
 import com.totemsoft.page.model.SearchResult;
 import com.totemsoft.page.model.TagDto;
 import com.totemsoft.page.model.TagTypeDto;
@@ -21,9 +22,11 @@ import com.totemsoft.page.service.PageService;
 import com.totemsoft.page.service.SetupService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
 @RestController
 @RequiredArgsConstructor
+@Log4j2
 class SetupController {
 
     private final PageService pageService;
@@ -48,7 +51,7 @@ class SetupController {
             @RequestParam(name = "tagTypeId") Optional<Integer> tagTypeId) {
         return SearchResult.<TagDto>builder()
             .columns(TagDto.columns(true))
-            .data(tagTypeId.isEmpty() ? List.of() : pageService.findTags(tagTypeId.get()))
+            .data(pageService.findTags(tagTypeId))
             .build();
     }
 
@@ -112,10 +115,12 @@ class SetupController {
 
     @GetMapping("/setup/exchangeTicker")
     SearchResult<ExchangeTickerDto> findExchangeTickers(
-            @RequestParam(name = "mic") Optional<String> mic) {
+            @RequestParam(name = "mic") Optional<String> mic,
+            Pagination pagination) {
+        log.debug("findExchangeTickers for {}: {}", mic, pagination);
         return SearchResult.<ExchangeTickerDto>builder()
             .columns(ExchangeTickerDto.columns(true))
-            .data(mic.isEmpty() ? List.of() : setupService.findExchangeTickers(mic.get()))
+            .data(setupService.findExchangeTickers(mic, pagination))
             .build();
     }
 

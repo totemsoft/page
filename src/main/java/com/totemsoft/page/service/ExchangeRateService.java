@@ -57,12 +57,42 @@ class ExchangeRateService {
     @Transactional
     void saveCurrencies(Map<String, String> symbols) {
         log.info(">>> saving {} symbols ...", symbols.size());
-        symbols.forEach((code, title) -> currencyRepository.save(
-            Currency.builder()
-                .code(code)
-                .title(title)
-                .build())
+        symbols.forEach((code, title) -> currencyRepository.save(Currency.builder()
+            .code(code)
+            .title(title)
+            .build())
         );
+    }
+
+    // column/row tagTypes
+    @Transactional
+    void saveCurrencyTags() {
+        // columns
+        currencyRepository.findAll().forEach(currency ->
+            saveTag(ExchangeRate.CURRENCY_CODE, currency.getCode(), currency.getTitle()));
+        // row
+        final var currency = currencyRepository.findById(baseCurrency)
+            .orElseThrow(() -> new EntityNotFoundException(baseCurrency, Currency.class));
+        currency.setBase(true);
+        currencyRepository.save(currency);
+        saveTag(ExchangeRate.CURRENCY_BASE, currency.getCode(), currency.getTitle());
+    }
+
+    private void saveTag(String tagTypeName, String tagName, String tagTitle) {
+        final var tagType = tagTypeRepository.findByName(tagTypeName)
+            .orElseGet(() -> tagTypeRepository.save(TagType.builder()
+                .name(tagTypeName)
+                .title(tagTypeName.toLowerCase().replace('_', ' '))
+                .build()));
+        final int tagTypeId = tagType.getId();
+        final var tag = tagRepository.findByTagTypeIdAndName(tagTypeId, tagName)
+            .orElseGet(() -> tagRepository.save(Tag.builder()
+                .tagTypeId(tagTypeId)
+                .name(tagName)
+                .title(tagTitle)
+                .build()));
+        tag.setTitle(tagTitle);
+        tagRepository.save(tag);
     }
 
     @Transactional
@@ -102,7 +132,7 @@ class ExchangeRateService {
             .orElseGet(() -> keyRepository.save(Key.builder()
                 .name(rateName)
                 .title(rateName)
-                .tags(saveTags(rate))
+                .tags(findTags(rate))
                 .build()));
         final var date = rate.getDate();
         final long keyId = key.getId();
@@ -117,26 +147,19 @@ class ExchangeRateService {
                 .build()));
     }
 
-    private List<Tag> saveTags(ExchangeRate rate) {
-        // column/row tagTypes
+    // column/row tagTypes
+    private List<Tag> findTags(ExchangeRate rate) {
         return List.of(
-            saveTag(ExchangeRate.CURRENCY_BASE, rate.getBase(), rate.getName()),
-            saveTag(ExchangeRate.CURRENCY_CODE, rate.getCode(), rate.getName()));
+            findTag(ExchangeRate.CURRENCY_BASE, rate.getBase()),
+            findTag(ExchangeRate.CURRENCY_CODE, rate.getCode()));
     }
 
-    private Tag saveTag(String tagTypeName, String tagName, String tagTitle) {
+    private Tag findTag(String tagTypeName, String tagName) {
         final var tagType = tagTypeRepository.findByName(tagTypeName)
-            .orElseGet(() -> tagTypeRepository.save(TagType.builder()
-                .name(tagTypeName)
-                .title(tagTypeName.toLowerCase().replace('_', ' '))
-                .build()));
+            .orElseThrow(() -> new EntityNotFoundException(tagTypeName, TagType.class));
         final int tagTypeId = tagType.getId();
         return tagRepository.findByTagTypeIdAndName(tagTypeId, tagName)
-            .orElseGet(() -> tagRepository.save(Tag.builder()
-                .tagTypeId(tagTypeId)
-                .name(tagName)
-                .title(tagTitle)
-                .build()));
+            .orElseThrow(() -> new EntityNotFoundException(tagTypeId + ':' + tagName, Tag.class));
     }
 
 }

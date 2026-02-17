@@ -52,7 +52,10 @@ public class TaskService {
             if (exchangeRateService.countCurrencies() < 2) {
                 final var symbols = exchangeRatesApi.symbols();
                 exchangeRateService.saveCurrencies(symbols.getSymbols());
+                exchangeRateService.saveCurrencyTags();
             }
+            exchangeRateService.saveCurrencyTags();
+            //
             final var date = LocalDate.now().minusDays(1);
             if (exchangeRateService.existsByDateExchangeRate(date)) {
                 log.info("<<< exchangeRates already loaded for: {}", date);

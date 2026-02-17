@@ -22,7 +22,9 @@ import com.totemsoft.page.model.ColumnDef;
 import com.totemsoft.page.model.KeyDto;
 import com.totemsoft.page.model.PageDto;
 import com.totemsoft.page.model.PageResponse;
+import com.totemsoft.page.model.Pagination;
 import com.totemsoft.page.model.Row;
+import com.totemsoft.page.model.SearchData;
 import com.totemsoft.page.model.SectionDto;
 import com.totemsoft.page.model.SeriesDataDto;
 import com.totemsoft.page.model.SubSectionDto;
@@ -43,7 +45,9 @@ import lombok.extern.log4j.Log4j2;
     KeyDto.class,
     PageDto.class,
     PageResponse.class,
+    Pagination.class,
     Row.class,
+    SearchData.class,
     SearchResult.class,
     SectionDto.class,
     SeriesDataDto.class,

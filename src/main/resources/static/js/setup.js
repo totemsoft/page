@@ -598,10 +598,17 @@ YAHOO.page.setup = {
                 }
                 return request;
             };
+            const rowsPerPage = 100;
+            const template = '{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}';
             const dataTableConfig = {
                 requestBuilder: requestBuilder,
                 dynamicData: true, // Enables dynamic server-driven data
-                paginator: new YAHOO.widget.Paginator({ rowsPerPage: 100 }) // Enables pagination
+                paginator: new YAHOO.widget.Paginator({
+                    containers: ['paginator.hd.' + entityName],
+                    template: '<label>Page size: {RowsPerPageDropdown}</label> ' + template + ' {CurrentPageReport}',
+                    rowsPerPage: rowsPerPage,
+                    rowsPerPageOptions: [rowsPerPage, rowsPerPage * 2, rowsPerPage * 5, rowsPerPage * 10],
+                })
             }
             const dataTable = YAHOO.page.setup.initDataTable(entityName, dataTableConfig);
             dataTable.subscribe('rowClickEvent', dataTable.onEventSelectRow);

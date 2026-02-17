@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.totemsoft.page.model.ColumnDef;
 import com.totemsoft.page.model.ColumnDef.CellFormatterEnum;
+import com.totemsoft.page.model.CssClasName;
 
 import lombok.Data;
 
@@ -34,12 +35,13 @@ public class ExchangeTickerDto implements Serializable {
             ColumnDef.builder()
                 .key("mic")
                 .label("MIC")
-                .width(50)
+                //.width(50)
+                .className(CssClasName.WIDTH0)
                 .build(),
             ColumnDef.builder()
                 .key("symbol")
                 .label("Symbol")
-                .width(100)
+                .width(120)
                 .build(),
             ColumnDef.builder()
                 .key("name")

@@ -78,21 +78,19 @@ class ExchangeRateService {
         saveTag(ExchangeRate.CURRENCY_BASE, currency.getCode(), currency.getTitle());
     }
 
-    private void saveTag(String tagTypeName, String tagName, String tagTitle) {
+    private Tag saveTag(String tagTypeName, String tagName, String tagTitle) {
         final var tagType = tagTypeRepository.findByName(tagTypeName)
             .orElseGet(() -> tagTypeRepository.save(TagType.builder()
                 .name(tagTypeName)
                 .title(tagTypeName.toLowerCase().replace('_', ' '))
                 .build()));
         final int tagTypeId = tagType.getId();
-        final var tag = tagRepository.findByTagTypeIdAndName(tagTypeId, tagName)
+        return tagRepository.findByTagTypeIdAndName(tagTypeId, tagName)
             .orElseGet(() -> tagRepository.save(Tag.builder()
                 .tagTypeId(tagTypeId)
                 .name(tagName)
                 .title(tagTitle)
                 .build()));
-        tag.setTitle(tagTitle);
-        tagRepository.save(tag);
     }
 
     @Transactional

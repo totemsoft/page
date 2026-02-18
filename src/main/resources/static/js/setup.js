@@ -1,6 +1,24 @@
 YAHOO.namespace('page.setup');
 
 YAHOO.page.setup = {
+    paginatorDefaultTemplate: '{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}',
+    paginationRequestBuilder: function(oState) {
+        oState = oState || { pagination: null, sortedBy: null };
+        let request = '';
+        const page = oState.pagination ? oState.pagination.page : 1; // 1 based
+        request += 'page=' + (page - 1); // 0 based
+        const offset = oState.pagination ? oState.pagination.recordOffset : 0;
+        request += '&offset=' + offset;
+        const limit = oState.pagination ? oState.pagination.rowsPerPage : 100;
+        request += '&limit=' + limit;
+        const total = oState.pagination ? oState.pagination.totalRecords : '';
+        request += '&total=' + total;
+        //const sort = oState.sortedBy ? oState.sortedBy.key : 'id'; 
+        //request += '&sort=' + sort;
+        //const dir = oState.sortedBy && oState.sortedBy.dir === YAHOO.widget.DataTable.CLASS_DESC ? 'desc' : 'asc'; 
+        //request += '&dir=' + dir;
+        return request;
+    },
     initDataTable: function(entityName, oConfig) {
         const oLiveData = '/setup/';
         const dataSource = new YAHOO.util.XHRDataSource(oLiveData, {
@@ -530,30 +548,17 @@ YAHOO.page.setup = {
                 ]
             });
             const requestBuilder = function(oState, oDataTable) {
-                oState = oState || { pagination: null, sortedBy: null };
-                let request = '' + entityName;
-                const page = oState.pagination ? oState.pagination.page : 1; // 1 based
-                request += '?page=' + (page - 1); // 0 based
-                const offset = oState.pagination ? oState.pagination.recordOffset : 0;
-                request += '&offset=' + offset;
-                const limit = oState.pagination ? oState.pagination.rowsPerPage : 100;
-                request += '&limit=' + limit;
-                const total = oState.pagination ? oState.pagination.totalRecords : '';
-                request += '&total=' + total;
-                //const sort = oState.sortedBy ? oState.sortedBy.key : 'id'; 
-                //request += '&sort=' + sort;
-                //const dir = oState.sortedBy && oState.sortedBy.dir === YAHOO.widget.DataTable.CLASS_DESC ? 'desc' : 'asc'; 
-                //request += '&dir=' + dir;
+                let request = entityName;
+                request += '?' + YAHOO.page.setup.paginationRequestBuilder(oState);
                 return request;
             };
             const rowsPerPage = 100;
-            const template = '{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}';
             const dataTableConfig = {
                 requestBuilder: requestBuilder,
                 dynamicData: true, // Enables dynamic server-driven data
                 paginator: new YAHOO.widget.Paginator({
                     containers: ['paginator.hd.' + entityName],
-                    template: '<label>Page size: {RowsPerPageDropdown}</label> ' + template + ' {CurrentPageReport}',
+                    template: '<label>Page size: {RowsPerPageDropdown}</label> ' + YAHOO.page.setup.paginatorDefaultTemplate + ' {CurrentPageReport}',
                     rowsPerPage: rowsPerPage,
                     rowsPerPageOptions: [rowsPerPage, rowsPerPage * 2, rowsPerPage * 5, rowsPerPage * 10],
                 })
@@ -600,34 +605,21 @@ YAHOO.page.setup = {
                 ]
             });
             const requestBuilder = function(oState, oDataTable) {
-                oState = oState || { pagination: null, sortedBy: null };
-                let request = '' + entityName;
+                let request = entityName;
                 const mic = YUD.get(entityName + '.exchange').value;
                 if (mic) {
                     request += '?mic=' + mic;
-                    const page = oState.pagination ? oState.pagination.page : 1; // 1 based
-                    request += '&page=' + (page - 1); // 0 based
-                    const offset = oState.pagination ? oState.pagination.recordOffset : 0;
-                    request += '&offset=' + offset;
-                    const limit = oState.pagination ? oState.pagination.rowsPerPage : 100;
-                    request += '&limit=' + limit;
-                    const total = oState.pagination ? oState.pagination.totalRecords : '';
-                    request += '&total=' + total;
-                    //const sort = oState.sortedBy ? oState.sortedBy.key : 'id'; 
-                    //request += '&sort=' + sort;
-                    //const dir = oState.sortedBy && oState.sortedBy.dir === YAHOO.widget.DataTable.CLASS_DESC ? 'desc' : 'asc'; 
-                    //request += '&dir=' + dir;
+                    request += '&' + YAHOO.page.setup.paginationRequestBuilder(oState);
                 }
                 return request;
             };
             const rowsPerPage = 100;
-            const template = '{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}';
             const dataTableConfig = {
                 requestBuilder: requestBuilder,
                 dynamicData: true, // Enables dynamic server-driven data
                 paginator: new YAHOO.widget.Paginator({
                     containers: ['paginator.hd.' + entityName],
-                    template: '<label>Page size: {RowsPerPageDropdown}</label> ' + template + ' {CurrentPageReport}',
+                    template: '<label>Page size: {RowsPerPageDropdown}</label> ' + YAHOO.page.setup.paginatorDefaultTemplate + ' {CurrentPageReport}',
                     rowsPerPage: rowsPerPage,
                     rowsPerPageOptions: [rowsPerPage, rowsPerPage * 2, rowsPerPage * 5, rowsPerPage * 10],
                 })

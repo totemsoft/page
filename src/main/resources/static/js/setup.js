@@ -153,7 +153,7 @@ YAHOO.page.setup = {
                 ]
             });
             const requestBuilder = function(oState, oDataTable) {
-                let request = '' + entityName;
+                let request = entityName;
                 return request;
             };
             const saveEvent = function(oArgs) {
@@ -205,10 +205,10 @@ YAHOO.page.setup = {
                 ]
             });
             const requestBuilder = function(oState, oDataTable) {
-                let request = '' + entityName + '?1=1';
+                let request = entityName;
                 const elTagType = YUD.get(entityName + '.tagType');
                 if (elTagType.value) {
-                    request += '&tagTypeId=' + elTagType.value;
+                    request += '?tagTypeId=' + elTagType.value;
                 }
                 return request;
             };
@@ -276,7 +276,7 @@ YAHOO.page.setup = {
                 ]
             });
             const requestBuilder = function(oState, oDataTable) {
-                let request = '' + entityName;
+                let request = entityName;
                 return request;
             };
             const saveEvent = function(oArgs) {
@@ -398,7 +398,7 @@ YAHOO.page.setup = {
             });
             //
             const requestBuilder = function(oState, oDataTable) {
-                let request = '' + entityName;
+                let request = entityName;
                 request += '/' + (oDataTable ? oDataTable.keyId : keyId);
                 return request;
             };
@@ -500,7 +500,7 @@ YAHOO.page.setup = {
                 ]
             });
             const requestBuilder = function(oState, oDataTable) {
-                let request = '' + entityName;
+                let request = entityName;
                 return request;
             };
             const dataTableConfig = {

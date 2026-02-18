@@ -530,11 +530,33 @@ YAHOO.page.setup = {
                 ]
             });
             const requestBuilder = function(oState, oDataTable) {
+                oState = oState || { pagination: null, sortedBy: null };
                 let request = '' + entityName;
+                const page = oState.pagination ? oState.pagination.page : 1; // 1 based
+                request += '?page=' + (page - 1); // 0 based
+                const offset = oState.pagination ? oState.pagination.recordOffset : 0;
+                request += '&offset=' + offset;
+                const limit = oState.pagination ? oState.pagination.rowsPerPage : 100;
+                request += '&limit=' + limit;
+                const total = oState.pagination ? oState.pagination.totalRecords : '';
+                request += '&total=' + total;
+                //const sort = oState.sortedBy ? oState.sortedBy.key : 'id'; 
+                //request += '&sort=' + sort;
+                //const dir = oState.sortedBy && oState.sortedBy.dir === YAHOO.widget.DataTable.CLASS_DESC ? 'desc' : 'asc'; 
+                //request += '&dir=' + dir;
                 return request;
             };
+            const rowsPerPage = 100;
+            const template = '{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}';
             const dataTableConfig = {
-                requestBuilder: requestBuilder
+                requestBuilder: requestBuilder,
+                dynamicData: true, // Enables dynamic server-driven data
+                paginator: new YAHOO.widget.Paginator({
+                    containers: ['paginator.hd.' + entityName],
+                    template: '<label>Page size: {RowsPerPageDropdown}</label> ' + template + ' {CurrentPageReport}',
+                    rowsPerPage: rowsPerPage,
+                    rowsPerPageOptions: [rowsPerPage, rowsPerPage * 2, rowsPerPage * 5, rowsPerPage * 10],
+                })
             }
             const dataTable = YAHOO.page.setup.initDataTable(entityName, dataTableConfig);
             dataTable.subscribe('rowClickEvent', dataTable.onEventSelectRow);
@@ -579,17 +601,17 @@ YAHOO.page.setup = {
             });
             const requestBuilder = function(oState, oDataTable) {
                 oState = oState || { pagination: null, sortedBy: null };
-                let request = '' + entityName + '?1=1';
+                let request = '' + entityName;
                 const mic = YUD.get(entityName + '.exchange').value;
                 if (mic) {
-                    request += '&mic=' + mic;
-                    const page = oState.pagination ? oState.pagination.page : 1;
-                    request += '&page=' + (page - 1);
+                    request += '?mic=' + mic;
+                    const page = oState.pagination ? oState.pagination.page : 1; // 1 based
+                    request += '&page=' + (page - 1); // 0 based
                     const offset = oState.pagination ? oState.pagination.recordOffset : 0;
                     request += '&offset=' + offset;
                     const limit = oState.pagination ? oState.pagination.rowsPerPage : 100;
                     request += '&limit=' + limit;
-                    const total = oState.pagination ? oState.pagination.totalRecords : null;
+                    const total = oState.pagination ? oState.pagination.totalRecords : '';
                     request += '&total=' + total;
                     //const sort = oState.sortedBy ? oState.sortedBy.key : 'id'; 
                     //request += '&sort=' + sort;

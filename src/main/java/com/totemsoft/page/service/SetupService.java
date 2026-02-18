@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -176,11 +177,27 @@ public class SetupService {
     }
 
     @Transactional
-    public SearchData<ExchangeDto> findExchanges() {
-        final var exchanges = exchangeRepository.findAll(
-            Sort.by("base").descending().and(Sort.by("city")).and(Sort.by("mic")));
+    public SearchData<ExchangeDto> findExchanges(
+            Pagination pagination) {
+        final Integer total;
+        if (pagination.getTotal() == null) {
+            total = (int) exchangeRepository.count();
+        } else {
+            total = pagination.getTotal();
+        }
+        final var sort = Sort.by("base").descending().and(Sort.by("city")).and(Sort.by("mic"));
         return SearchData.<ExchangeDto>builder()
-            .records(marketStackMapper.mapExchange(exchanges))
+            .records(marketStackMapper.mapExchange(
+                exchangeRepository.findAll(PageRequest.of(
+                    //pagination.getOffset() / pagination.getLimit(),
+                    pagination.getPage(),
+                    pagination.getLimit(),
+                    sort))
+                .getContent()
+            ))
+            .offset(pagination.getOffset())
+            .limit(pagination.getLimit())
+            .total(total)
             .build();
     }
 
@@ -210,7 +227,8 @@ public class SetupService {
             .records(mic.isEmpty() ? List.of() : marketStackMapper.mapExchangeTicker(
                 exchangeTickerRepository.findByMic(mic.get(),
                     PageRequest.of(
-                        pagination.getOffset() / pagination.getLimit(),
+                        //pagination.getOffset() / pagination.getLimit(),
+                        pagination.getPage(),
                         pagination.getLimit(),
                         sort))
             ))

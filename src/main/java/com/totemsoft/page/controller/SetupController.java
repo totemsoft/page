@@ -101,10 +101,12 @@ class SetupController {
     }
 
     @GetMapping("/setup/exchange")
-    SearchResult<ExchangeDto> findExchanges() {
+    SearchResult<ExchangeDto> findExchanges(
+            Pagination pagination) {
+        log.trace("findExchanges: {}", pagination);
         return SearchResult.<ExchangeDto>builder()
             .columns(ExchangeDto.columns(true))
-            .data(setupService.findExchanges())
+            .data(setupService.findExchanges(pagination))
             .build();
     }
 
@@ -117,7 +119,7 @@ class SetupController {
     SearchResult<ExchangeTickerDto> findExchangeTickers(
             @RequestParam(name = "mic") Optional<String> mic,
             Pagination pagination) {
-        log.debug("findExchangeTickers for {}: {}", mic, pagination);
+        log.trace("findExchangeTickers for {}: {}", mic, pagination);
         return SearchResult.<ExchangeTickerDto>builder()
             .columns(ExchangeTickerDto.columns(true))
             .data(setupService.findExchangeTickers(mic, pagination))

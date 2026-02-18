@@ -54,7 +54,6 @@ public class TaskService {
                 exchangeRateService.saveCurrencies(symbols.getSymbols());
                 exchangeRateService.saveCurrencyTags();
             }
-            exchangeRateService.saveCurrencyTags();
             //
             final var date = LocalDate.now().minusDays(1);
             if (exchangeRateService.existsByDateExchangeRate(date)) {

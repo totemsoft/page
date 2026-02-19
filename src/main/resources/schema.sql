@@ -53,6 +53,29 @@ create table if not exists exchange_ticker (
   primary key (exchange_mic, ticker_symbol)
 );
 
+create table if not exists eod_bar (
+  exchange_mic varchar(5) not null,
+  ticker_symbol varchar(32) not null,
+  bar_date datetime not null,
+  bar_name varchar(255),
+  bar_exchange_code varchar(255),
+  bar_asset_type varchar(255),
+  bar_price_currency varchar(255),
+  bar_open numeric(38,2),
+  bar_high numeric(38,2),
+  bar_low numeric(38,2),
+  bar_close numeric(38,2),
+  bar_volume numeric(38,2),
+  bar_adj_high numeric(38,2),
+  bar_adj_low numeric(38,2),
+  bar_adj_close numeric(38,2),
+  bar_adj_open numeric(38,2),
+  bar_adj_volume numeric(38,2),
+  bar_split_factor numeric(38,2),
+  bar_dividend numeric(38,2),
+  primary key (exchange_mic, ticker_symbol, bar_date)
+);
+
 create table if not exists split_ratio (
   split_ratio_name varchar(32) not null,
   split_ratio_title varchar(255) not null,

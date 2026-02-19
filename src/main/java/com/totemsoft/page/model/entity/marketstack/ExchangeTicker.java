@@ -24,6 +24,9 @@ import lombok.ToString;
 @IdClass(ExchangeTickerId.class)
 public class ExchangeTicker {
 
+    /** TagType name, eg for columns */
+    public static final String EXCHANGE_TICKER = "EXCHANGE_TICKER";
+
     @EqualsAndHashCode.Include
     @ToString.Include
     @Id

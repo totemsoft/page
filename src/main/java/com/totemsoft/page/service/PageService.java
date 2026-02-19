@@ -1,5 +1,6 @@
 package com.totemsoft.page.service;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -53,6 +54,10 @@ public class PageService {
     private final MarketStackMapper marketStackMapper;
     private final PageMapper pageMapper;
     private final SetupMapper setupMapper;
+
+    public LocalDate latestDate() {
+        return LocalDate.now().minusDays(1);
+    }
 
     @Transactional
     public List<CurrencyDto> findBaseCurrencies() {

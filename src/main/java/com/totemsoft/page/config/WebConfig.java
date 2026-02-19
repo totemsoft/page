@@ -16,7 +16,10 @@ import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.totemsoft.page.exchangerates.v1.model.CurrencyDto;
+import com.totemsoft.page.marketstack.v2.model.EODBarDto;
 import com.totemsoft.page.marketstack.v2.model.ExchangeDto;
+import com.totemsoft.page.marketstack.v2.model.ExchangeMicEod;
+import com.totemsoft.page.marketstack.v2.model.ExchangeMicEodData;
 import com.totemsoft.page.model.Cell;
 import com.totemsoft.page.model.ColumnDef;
 import com.totemsoft.page.model.KeyDto;
@@ -41,7 +44,10 @@ import lombok.extern.log4j.Log4j2;
     Cell.class,
     ColumnDef.class,
     CurrencyDto.class,
-    ExchangeDto.class,
+    EODBarDto.class,
+    //ExchangeDto.class,
+    ExchangeMicEod.class,
+    ExchangeMicEodData.class,
     KeyDto.class,
     PageDto.class,
     PageResponse.class,

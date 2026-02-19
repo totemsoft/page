@@ -1,5 +1,7 @@
 package com.totemsoft.page.model.entity.marketstack;
 
+import java.io.Serializable;
+
 import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,7 +12,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ExchangeTickerId {
+public class ExchangeTickerId implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     @Column(name = "exchange_mic")
     private String mic;

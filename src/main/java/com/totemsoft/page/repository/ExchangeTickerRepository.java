@@ -16,6 +16,6 @@ public interface ExchangeTickerRepository extends JpaRepository<ExchangeTicker, 
 
     List<ExchangeTicker> findByMic(String mic, Pageable pageable);
 
-    List<ExchangeTicker> findByBaseTrue();
+    List<ExchangeTicker> findByMicAndBaseTrue(String mic);
 
 }

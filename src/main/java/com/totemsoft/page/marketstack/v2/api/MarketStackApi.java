@@ -1,5 +1,7 @@
 package com.totemsoft.page.marketstack.v2.api;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -8,8 +10,9 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
 
-import com.totemsoft.page.marketstack.v2.model.ExchangeTickerResponse;
+import com.totemsoft.page.marketstack.v2.model.ExchangeMicEod;
 import com.totemsoft.page.marketstack.v2.model.ExchangeResponse;
+import com.totemsoft.page.marketstack.v2.model.ExchangeTickerResponse;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -52,7 +55,7 @@ public class MarketStackApi {
 
     /**
      * Specific Stock Exchange Tickers
-     * @param mic - Exchange MIC identifier (e.g., XNAS).
+     * @param mic - Exchange MIC identifier (e.g. XNAS).
      * @param limit - Pagination limit (results per page). Default 100, maximum 1000.
      * @param offset - Pagination offset (number of results to skip). Default 0.
      * @return Returns tickers listed on a specific exchange.
@@ -72,6 +75,36 @@ public class MarketStackApi {
             .accept(MediaType.APPLICATION_JSON)
             .retrieve()
             .toEntity(ExchangeTickerResponse.class);
+        return response.getBody();
+    }
+
+    /**
+     * EOD Data for a Specific Stock Exchange on a Specific Date
+     * @param mic - Exchange MIC identifier (e.g. XNAS).
+     * @param date - Specific date for EOD data. Format YYYY-MM-DD.
+     * @param symbols - One or more comma-separated ticker symbols (e.g., AAPL,MSFT).
+     * @param limit - Pagination limit (results per page). Default 100, maximum 1000.
+     * @param offset - Pagination offset (number of results to skip). Default 0.
+     * @return Returns EOD data for the given date for all symbols on a specific exchange.
+     */
+    public ExchangeMicEod exchangeMicEodDate(
+            String mic,
+            LocalDate date,
+            List<String> symbols,
+            Optional<Integer> limit,
+            Optional<Integer> offset) {
+        log.debug(">>> loading exchangeMicEodDate for: {}, {}, {}, {}, {}", mic, date, symbols, limit, offset);
+        final var response = marketStackApiRestClient.get()
+            .uri(uriBuilder -> uriBuilder
+                .path("/exchanges/{mic}/eod/{date}")
+                .queryParam("access_key", accessKey)
+                .queryParam("symbols", String.join(",", symbols))
+                .queryParam("limit", limit.orElse(100))
+                .queryParam("offset", offset.orElse(0))
+                .build(Map.of("mic", mic, "date", date)))
+            .accept(MediaType.APPLICATION_JSON)
+            .retrieve()
+            .toEntity(ExchangeMicEod.class);
         return response.getBody();
     }
 

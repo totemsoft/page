@@ -11,18 +11,12 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.totemsoft.page.exchangerates.v1.model.ExchangeRates;
-import com.totemsoft.page.model.entity.Key;
 import com.totemsoft.page.model.entity.SeriesData;
-import com.totemsoft.page.model.entity.Tag;
-import com.totemsoft.page.model.entity.TagType;
 import com.totemsoft.page.model.entity.exchangerates.Currency;
 import com.totemsoft.page.model.entity.exchangerates.ExchangeRate;
 import com.totemsoft.page.repository.CurrencyRepository;
 import com.totemsoft.page.repository.ExchangeRateRepository;
-import com.totemsoft.page.repository.KeyRepository;
 import com.totemsoft.page.repository.SeriesDataRepository;
-import com.totemsoft.page.repository.TagRepository;
-import com.totemsoft.page.repository.TagTypeRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -31,30 +25,23 @@ import lombok.extern.log4j.Log4j2;
 @Service
 @RequiredArgsConstructor
 @Log4j2
+@Transactional
 class ExchangeRateService {
 
     /** exchangeratesapi base currency */
     @Value("${page.exchangeratesapi.io.base-currency}")
     private String baseCurrency;
 
+    private final KeyTaggingService keyTaggingService;
+
     private final CurrencyRepository currencyRepository;
-
     private final ExchangeRateRepository exchangeRateRepository;
-
-    private final KeyRepository keyRepository;
-
     private final SeriesDataRepository seriesDataRepository;
 
-    private final TagRepository tagRepository;
-
-    private final TagTypeRepository tagTypeRepository;
-
-    @Transactional
     int countCurrencies() {
         return (int) currencyRepository.count();
     }
 
-    @Transactional
     void saveCurrencies(Map<String, String> symbols) {
         log.info(">>> saving {} symbols ...", symbols.size());
         symbols.forEach((code, title) -> currencyRepository.save(Currency.builder()
@@ -64,41 +51,10 @@ class ExchangeRateService {
         );
     }
 
-    // column/row tagTypes
-    @Transactional
-    void saveCurrencyTags() {
-        // columns
-        currencyRepository.findAll().forEach(currency ->
-            saveTag(ExchangeRate.CURRENCY_CODE, currency.getCode(), currency.getTitle()));
-        // row
-        final var currency = currencyRepository.findById(baseCurrency)
-            .orElseThrow(() -> new EntityNotFoundException(baseCurrency, Currency.class));
-        currency.setBase(true);
-        currencyRepository.save(currency);
-        saveTag(ExchangeRate.CURRENCY_BASE, currency.getCode(), currency.getTitle());
-    }
-
-    private Tag saveTag(String tagTypeName, String tagName, String tagTitle) {
-        final var tagType = tagTypeRepository.findByName(tagTypeName)
-            .orElseGet(() -> tagTypeRepository.save(TagType.builder()
-                .name(tagTypeName)
-                .title(tagTypeName.toLowerCase().replace('_', ' '))
-                .build()));
-        final int tagTypeId = tagType.getId();
-        return tagRepository.findByTagTypeIdAndName(tagTypeId, tagName)
-            .orElseGet(() -> tagRepository.save(Tag.builder()
-                .tagTypeId(tagTypeId)
-                .name(tagName)
-                .title(tagTitle)
-                .build()));
-    }
-
-    @Transactional
     boolean existsByDateExchangeRate(LocalDate date) {
         return exchangeRateRepository.existsByDate(date);
     }
 
-    @Transactional
     List<ExchangeRate> saveExchangeRates(ExchangeRates exchangeRates) {
         final var base = exchangeRates.getBase();
         final var rates = exchangeRates.getRates();
@@ -116,22 +72,15 @@ class ExchangeRateService {
                 .date(date)
                 .rate(rate)
                 .timestamp(timestamp)
-                .base(baseCurrency)
+                .base(base) // baseCurrency
                 .build());
             result.add(exchangeRate);
         });
         return result;
     }
 
-    @Transactional
     SeriesData saveSeriesDataKey(ExchangeRate rate) {
-        final var rateName = rate.getName();
-        final var key = keyRepository.findByName(rateName)
-            .orElseGet(() -> keyRepository.save(Key.builder()
-                .name(rateName)
-                .title(rateName)
-                .tags(findTags(rate))
-                .build()));
+        final var key = keyTaggingService.saveKey(rate);
         final var date = rate.getDate();
         final long keyId = key.getId();
         return seriesDataRepository.findByDateAndKeyId(date, keyId)
@@ -141,23 +90,8 @@ class ExchangeRateService {
                 .value(rate.getRate())
                 .currency(rate.getCode())
                 .baseCurrency(rate.getBase())
-                .title(rateName)
+                .title(rate.getName())
                 .build()));
-    }
-
-    // column/row tagTypes
-    private List<Tag> findTags(ExchangeRate rate) {
-        return List.of(
-            findTag(ExchangeRate.CURRENCY_BASE, rate.getBase()),
-            findTag(ExchangeRate.CURRENCY_CODE, rate.getCode()));
-    }
-
-    private Tag findTag(String tagTypeName, String tagName) {
-        final var tagType = tagTypeRepository.findByName(tagTypeName)
-            .orElseThrow(() -> new EntityNotFoundException(tagTypeName, TagType.class));
-        final int tagTypeId = tagType.getId();
-        return tagRepository.findByTagTypeIdAndName(tagTypeId, tagName)
-            .orElseThrow(() -> new EntityNotFoundException(tagTypeId + ':' + tagName, Tag.class));
     }
 
 }

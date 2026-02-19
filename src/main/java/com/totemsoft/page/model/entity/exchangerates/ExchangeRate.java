@@ -29,12 +29,6 @@ import lombok.ToString;
 @IdClass(ExchangeRateId.class)
 public class ExchangeRate {
 
-    /** TagType name, eg for columns */
-    public static final String CURRENCY_BASE = "CURRENCY_BASE";
-
-    /** TagType name, eg for rows */
-    public static final String CURRENCY_CODE = "CURRENCY_CODE";
-
     @EqualsAndHashCode.Include
     @ToString.Include
     @Id

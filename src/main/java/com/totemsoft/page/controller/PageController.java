@@ -33,7 +33,7 @@ class PageController {
             @RequestParam(name = "pageId") Long pageId,
             @RequestParam(name = "pageDate", required = false) Optional<LocalDate> pageDate,
             Model model) {
-        final var date = pageDate.orElse(LocalDate.now().minusDays(1));
+        final var date = pageDate.orElse(pageService.latestDate());
         log.debug("Loading page {} for date {} ...", pageId, date);
         final var page = pageService.findPage(pageId);
         log.trace("Found page {}", page.getId());

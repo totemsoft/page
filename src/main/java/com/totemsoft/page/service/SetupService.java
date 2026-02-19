@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -48,6 +47,8 @@ import lombok.extern.log4j.Log4j2;
 @RequiredArgsConstructor
 @Log4j2
 public class SetupService {
+
+    private final KeyTaggingService keyTaggingService;
 
     private final DropdownOptionMapper dropdownOptionMapper;
     private final MarketStackMapper marketStackMapper;
@@ -189,7 +190,6 @@ public class SetupService {
         return SearchData.<ExchangeDto>builder()
             .records(marketStackMapper.mapExchange(
                 exchangeRepository.findAll(PageRequest.of(
-                    //pagination.getOffset() / pagination.getLimit(),
                     pagination.getPage(),
                     pagination.getLimit(),
                     sort))
@@ -209,6 +209,7 @@ public class SetupService {
             .orElseThrow(() -> new EntityNotFoundException(mic, Exchange.class));
         entity.setBase(dto.getBase());
         entity = exchangeRepository.save(entity);
+        keyTaggingService.saveTag(entity);
         return entity.getMic();
     }
 
@@ -227,7 +228,6 @@ public class SetupService {
             .records(mic.isEmpty() ? List.of() : marketStackMapper.mapExchangeTicker(
                 exchangeTickerRepository.findByMic(mic.get(),
                     PageRequest.of(
-                        //pagination.getOffset() / pagination.getLimit(),
                         pagination.getPage(),
                         pagination.getLimit(),
                         sort))
@@ -247,6 +247,7 @@ public class SetupService {
             .orElseThrow(() -> new EntityNotFoundException(mic, ExchangeTicker.class));
         entity.setBase(dto.getBase());
         entity = exchangeTickerRepository.save(entity);
+        keyTaggingService.saveTag(entity);
     }
 
 }

@@ -24,6 +24,9 @@ import lombok.ToString;
 @Table(name = "exchange")
 public class Exchange {
 
+    /** TagType name, eg for columns */
+    public static final String EXCHANGE = "EXCHANGE";
+
     @EqualsAndHashCode.Include
     @ToString.Include
     @Id

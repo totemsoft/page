@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.Optional;
 
 import org.apache.commons.lang3.RandomStringUtils;
@@ -15,6 +16,8 @@ import org.springframework.stereotype.Component;
 import com.totemsoft.page.exchangerates.v1.api.ExchangeRatesApi;
 import com.totemsoft.page.marketstack.v2.api.MarketStackApi;
 import com.totemsoft.page.model.entity.SeriesData;
+import com.totemsoft.page.model.entity.marketstack.ExchangeTicker;
+import com.totemsoft.page.repository.EODBarRepository;
 import com.totemsoft.page.repository.KeyRepository;
 import com.totemsoft.page.repository.SeriesDataRepository;
 
@@ -25,23 +28,28 @@ import lombok.extern.log4j.Log4j2;
 @Component
 @RequiredArgsConstructor
 @Log4j2
-public class TaskService {
+class TaskService {
+
+    private static final int LIMIT = 1000;
 
     /** exchangeratesapi base currency */
     @Value("${page.exchangeratesapi.io.base-currency}")
     private String baseCurrency;
 
     private final ExchangeRatesApi exchangeRatesApi;
-
     private final MarketStackApi marketStackApi;
 
     private final ExchangeRateService exchangeRateService;
-
+    private final KeyTaggingService keyTaggingService;
     private final MarketStackService marketStackService;
 
+    private final EODBarRepository eodBarRepository;
     private final KeyRepository keyRepository;
-
     private final SeriesDataRepository seriesDataRepository;
+
+    public LocalDate latestDate() {
+        return LocalDate.now().minusDays(1);
+    }
 
     @Scheduled(cron = "@daily") // @midnight
     @Scheduled(initialDelay = 5_000) // one-time
@@ -52,10 +60,10 @@ public class TaskService {
             if (exchangeRateService.countCurrencies() < 2) {
                 final var symbols = exchangeRatesApi.symbols();
                 exchangeRateService.saveCurrencies(symbols.getSymbols());
-                exchangeRateService.saveCurrencyTags();
+                keyTaggingService.saveCurrencyTags();
             }
             //
-            final var date = LocalDate.now().minusDays(1);
+            final var date = this.latestDate();
             if (exchangeRateService.existsByDateExchangeRate(date)) {
                 log.info("<<< exchangeRates already loaded for: {}", date);
                 return;
@@ -78,11 +86,10 @@ public class TaskService {
         log.info(">>> marketStackTask started at: {}", LocalTime.now());
         try {
             // retrieve exchanges via API
-            final var LIMIT = 1000;
             final var total = marketStackService.countExchanges(); // pagination.total=2817
             if (total < 2817) {
                 final var response = marketStackApi.exchanges(Optional.of(LIMIT), Optional.of(total), Optional.empty());
-                log.debug(">>> marketStackTask exchanges found: {}", response.getPagination());
+                log.debug(">>> exchanges found: {}", response.getPagination());
                 marketStackService.saveExchanges(response.getData());
             } else {
                 log.debug("<<< marketStackTask exchanges already loaded");
@@ -90,25 +97,52 @@ public class TaskService {
             // save tickers for selected base exchanges
             final var mics = marketStackService.findExchangeBaseMic();
             log.debug(">>> saving exchangeTickers for: {}", mics);
-            mics.forEach(this::saveExchangeTicker);
-
+            mics.forEach(this::saveExchangeTickers);
+            // save eodBars for selected base tickers
+            mics.forEach(this::saveExchangeTickersEOD);
+            //
             log.info("<<< marketStackTask completed at: {}", LocalTime.now());
         } catch (Throwable ignore) {
             log.warn("<<< marketStackTask failed:", ignore);
         }
     }
 
-    private void saveExchangeTicker(String mic) {
-        final var LIMIT = 1000;
+    private void saveExchangeTickers(String mic) {
         final var total = marketStackService.countExchangeTickers(mic);
         // XNAS total=45173 (NASDAQ - ALL MARKETS)
         if (total % LIMIT != 0) {
             log.debug("<<< {} exchangeTickers already loaded for: {}", total, mic);
             return;
         }
-        final var response = marketStackApi.exchangeTickers(mic, Optional.of(LIMIT), Optional.of(total));
-        log.debug(">>> marketStackTask exchangeTickers found: {} {}", mic, response.getPagination());
-        marketStackService.saveExchangeTickers(mic, response.getData().getTickers());
+        try {
+            final var response = marketStackApi.exchangeTickers(mic,
+                Optional.of(LIMIT), Optional.of(total));
+            log.debug(">>> exchangeTickers found: {} {}", mic, response.getPagination());
+            marketStackService.saveExchangeTickers(mic, response.getData().getTickers());
+        } catch (Exception ignore) {
+            // will be logged in RestClient.defaultStatusHandler
+        }
+    }
+
+    private void saveExchangeTickersEOD(String mic) {
+        final var date = this.latestDate();
+        final var instant = date.atStartOfDay(ZoneId.systemDefault()).toInstant();
+        final var total = 0; // marketStackService.countExchangeTickersEOD(mic, instant);
+        if (eodBarRepository.existsByExchangeAndDateAfter(mic, instant)) {
+            log.info("<<< eodBar(s) already loaded for: {}, {}", mic, date);
+            return;
+        }
+        final var tickers = marketStackService.findExchangeTickersBase(mic);
+        if (tickers.isEmpty()) {
+            log.info("<<< no tickers found for: {}", mic);
+            return;
+        }
+        final var symbols = tickers.stream().map(ExchangeTicker::getSymbol).toList();
+        final var response = marketStackApi.exchangeMicEodDate(mic, date, symbols,
+            Optional.of(LIMIT), Optional.of(total));
+        log.debug(">>> eodBars found: {}, {}, {}, {}", mic, date, symbols, response.getPagination());
+        marketStackService.saveExchangeTickersEOD(response.getData().getEod());
+        marketStackService.saveExchangeTickersEODTags(mic, instant);
     }
 
     @Scheduled(cron = "@daily") // @midnight
@@ -117,7 +151,7 @@ public class TaskService {
     void seriesDataTask() {
         log.info(">>> seriesDataTask started at: {}", LocalTime.now());
         try {
-            final var date = LocalDate.now();
+            final var date = this.latestDate();
             if (seriesDataRepository.existsByDate(date)) {
                 log.info("<<< seriesData already loaded for: {}", date);
                 return;

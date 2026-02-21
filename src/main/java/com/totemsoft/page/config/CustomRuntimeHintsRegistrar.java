@@ -12,9 +12,14 @@ import org.springframework.javapoet.ClassName;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 
+import com.totemsoft.page.exchangerates.v1.model.CurrencyDto;
 import com.totemsoft.page.exchangerates.v1.model.ExchangeRateSymbols;
 import com.totemsoft.page.exchangerates.v1.model.ExchangeRates;
+import com.totemsoft.page.marketstack.v2.model.EODBarDto;
+import com.totemsoft.page.marketstack.v2.model.EODResponse;
 import com.totemsoft.page.marketstack.v2.model.ExchangeDto;
+import com.totemsoft.page.marketstack.v2.model.ExchangeMicEod;
+import com.totemsoft.page.marketstack.v2.model.ExchangeMicEodData;
 import com.totemsoft.page.marketstack.v2.model.ExchangeResponse;
 import com.totemsoft.page.marketstack.v2.model.ExchangeTickerData;
 import com.totemsoft.page.marketstack.v2.model.ExchangeTickerDto;
@@ -36,9 +41,16 @@ public class CustomRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
         ;
         // Register for serialization
         hints.serialization()
+            // exchangerates api
+            .registerType(CurrencyDto.class)
             .registerType(ExchangeRates.class)
             .registerType(ExchangeRateSymbols.class)
+            // marketstack api
+            .registerType(EODBarDto.class)
+            .registerType(EODResponse.class)
             .registerType(ExchangeDto.class)
+            .registerType(ExchangeMicEod.class)
+            .registerType(ExchangeMicEodData.class)
             .registerType(ExchangeResponse.class)
             .registerType(ExchangeTickerData.class)
             .registerType(ExchangeTickerDto.class)

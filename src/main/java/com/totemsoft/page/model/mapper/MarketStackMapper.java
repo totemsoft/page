@@ -24,6 +24,6 @@ public interface MarketStackMapper {
     @Mapping(target = "mic", source = "mic")
     ExchangeTicker mapExchangeTicker(String mic, ExchangeTickerDto ticker);
 
-    EODBar mapEODBarDto(EODBarDto dto);
+    EODBar mapEODBar(EODBarDto dto);
 
 }

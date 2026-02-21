@@ -58,7 +58,7 @@ public class ExchangeRate {
 
     /** Combination of base currency and currency code, eg EUR/USD */
     @Transient
-    public String getName() {
+    public String getKeyName() {
         return base + '/' + code;
     }
 

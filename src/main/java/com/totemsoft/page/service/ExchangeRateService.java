@@ -11,12 +11,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.totemsoft.page.exchangerates.v1.model.ExchangeRates;
-import com.totemsoft.page.model.entity.SeriesData;
 import com.totemsoft.page.model.entity.exchangerates.Currency;
 import com.totemsoft.page.model.entity.exchangerates.ExchangeRate;
 import com.totemsoft.page.repository.CurrencyRepository;
 import com.totemsoft.page.repository.ExchangeRateRepository;
-import com.totemsoft.page.repository.SeriesDataRepository;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -32,11 +30,8 @@ class ExchangeRateService {
     @Value("${page.exchangeratesapi.io.base-currency}")
     private String baseCurrency;
 
-    private final KeyTaggingService keyTaggingService;
-
     private final CurrencyRepository currencyRepository;
     private final ExchangeRateRepository exchangeRateRepository;
-    private final SeriesDataRepository seriesDataRepository;
 
     int countCurrencies() {
         return (int) currencyRepository.count();
@@ -77,21 +72,6 @@ class ExchangeRateService {
             result.add(exchangeRate);
         });
         return result;
-    }
-
-    SeriesData saveSeriesDataKey(ExchangeRate rate) {
-        final var key = keyTaggingService.saveKey(rate);
-        final var date = rate.getDate();
-        final long keyId = key.getId();
-        return seriesDataRepository.findByDateAndKeyId(date, keyId)
-            .orElseGet(() -> seriesDataRepository.save(SeriesData.builder()
-                .keyId(keyId)
-                .date(date)
-                .value(rate.getRate())
-                .currency(rate.getCode())
-                .baseCurrency(rate.getBase())
-                .title(rate.getName())
-                .build()));
     }
 
 }

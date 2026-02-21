@@ -39,7 +39,7 @@ YAHOO.page = {
     updateNumberFormat: function() {
         YAHOO.page.numberFormat = new Intl.NumberFormat(YAHOO.page.locale, {
             minimumFractionDigits: 0,
-            maximumFractionDigits: 2
+            maximumFractionDigits: 4
         });
     },
     updateCurrencyFormat: function(currency) {

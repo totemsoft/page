@@ -10,6 +10,7 @@ import java.util.Optional;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -47,13 +48,13 @@ class TaskService {
     private final KeyRepository keyRepository;
     private final SeriesDataRepository seriesDataRepository;
 
-    public LocalDate latestDate() {
+    LocalDate latestDate() {
         return LocalDate.now().minusDays(1);
     }
 
     @Scheduled(cron = "@daily") // @midnight
     @Scheduled(initialDelay = 5_000) // one-time
-    public void exchangeRateTask() {
+    void exchangeRateTask() {
         log.info(">>> exchangeRateTask started at: {}", LocalTime.now());
         try {
             // retrieve currencies via API (one page default currency EUR is loaded via data.sql)
@@ -73,7 +74,7 @@ class TaskService {
             // save rates to DB
             final var rates = exchangeRateService.saveExchangeRates(exchangeRates);
             // create key/tag/tagTypes and seriesData
-            rates.forEach(exchangeRateService::saveSeriesDataKey);
+            keyTaggingService.saveSeriesDataKeys(rates);
             log.info("<<< exchangeRateTask completed at: {}", LocalTime.now());
         } catch (Throwable ignore) {
             log.warn("<<< exchangeRateTask failed:", ignore);
@@ -82,13 +83,14 @@ class TaskService {
 
     @Scheduled(cron = "@daily") // @midnight
     @Scheduled(initialDelay = 10_000) // one-time
-    public void marketStackTask() {
+    void marketStackTask() {
         log.info(">>> marketStackTask started at: {}", LocalTime.now());
         try {
             // retrieve exchanges via API
             final var total = marketStackService.countExchanges(); // pagination.total=2817
             if (total < 2817) {
-                final var response = marketStackApi.exchanges(Optional.of(LIMIT), Optional.of(total), Optional.empty());
+                final var response = marketStackApi.exchanges(
+                    Optional.of(LIMIT), Optional.of(total), Optional.empty());
                 log.debug(">>> exchanges found: {}", response.getPagination());
                 marketStackService.saveExchanges(response.getData());
             } else {
@@ -109,7 +111,7 @@ class TaskService {
 
     private void saveExchangeTickers(String mic) {
         final var total = marketStackService.countExchangeTickers(mic);
-        // XNAS total=45173 (NASDAQ - ALL MARKETS)
+        // XNAS total=45204 (NASDAQ - ALL MARKETS)
         if (total % LIMIT != 0) {
             log.debug("<<< {} exchangeTickers already loaded for: {}", total, mic);
             return;
@@ -119,7 +121,7 @@ class TaskService {
                 Optional.of(LIMIT), Optional.of(total));
             log.debug(">>> exchangeTickers found: {} {}", mic, response.getPagination());
             marketStackService.saveExchangeTickers(mic, response.getData().getTickers());
-        } catch (Exception ignore) {
+        } catch (ApiException ignore) {
             // will be logged in RestClient.defaultStatusHandler
         }
     }
@@ -138,10 +140,10 @@ class TaskService {
             return;
         }
         final var symbols = tickers.stream().map(ExchangeTicker::getSymbol).toList();
-        final var response = marketStackApi.exchangeMicEodDate(mic, date, symbols,
-            Optional.of(LIMIT), Optional.of(total));
+        final var response = marketStackApi.eodDate(date, Optional.of(mic), symbols,
+            Optional.of(LIMIT), Optional.of(total), Optional.empty());
         log.debug(">>> eodBars found: {}, {}, {}, {}", mic, date, symbols, response.getPagination());
-        marketStackService.saveExchangeTickersEOD(response.getData().getEod());
+        marketStackService.saveExchangeTickersEOD(response.getData());
         marketStackService.saveExchangeTickersEODTags(mic, instant);
     }
 
@@ -152,12 +154,12 @@ class TaskService {
         log.info(">>> seriesDataTask started at: {}", LocalTime.now());
         try {
             final var date = this.latestDate();
-            if (seriesDataRepository.existsByDate(date)) {
+            final var pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
+            final var keys = keyRepository.findAll(pageable).getContent();
+            if (!seriesDataRepository.findByDateAndKeyIn(date, keys).isEmpty()) {
                 log.info("<<< seriesData already loaded for: {}", date);
                 return;
             }
-            final var pageable = PageRequest.of(0, 10);
-            final var keys = keyRepository.findAll(pageable).getContent();
             keys.forEach(key -> {
                 final var d = saveSeriesData(key.getId(), date);
                 log.trace("seriesData saved: {}", d);

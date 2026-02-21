@@ -8,6 +8,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.IdClass;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -113,5 +114,11 @@ public class EODBar {
     /** Dividend amount per share for the date. */
     @Column(name = "bar_dividend")
     private BigDecimal dividend;
+
+    /** Combination of exchange and symbol, eg XNAS/AAPL */
+    @Transient
+    public String getKeyName() {
+        return exchange + '/' + symbol;
+    }
 
 }

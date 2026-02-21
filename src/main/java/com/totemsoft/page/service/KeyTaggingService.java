@@ -1,19 +1,25 @@
 package com.totemsoft.page.service;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.totemsoft.page.model.entity.Key;
+import com.totemsoft.page.model.entity.SeriesData;
 import com.totemsoft.page.model.entity.Tag;
 import com.totemsoft.page.model.entity.TagType;
 import com.totemsoft.page.model.entity.exchangerates.Currency;
 import com.totemsoft.page.model.entity.exchangerates.ExchangeRate;
+import com.totemsoft.page.model.entity.marketstack.EODBar;
 import com.totemsoft.page.model.entity.marketstack.Exchange;
 import com.totemsoft.page.model.entity.marketstack.ExchangeTicker;
 import com.totemsoft.page.repository.CurrencyRepository;
 import com.totemsoft.page.repository.KeyRepository;
+import com.totemsoft.page.repository.SeriesDataRepository;
 import com.totemsoft.page.repository.TagRepository;
 import com.totemsoft.page.repository.TagTypeRepository;
 
@@ -31,6 +37,7 @@ class KeyTaggingService {
 
     private final CurrencyRepository currencyRepository;
     private final KeyRepository keyRepository;
+    private final SeriesDataRepository seriesDataRepository;
     private final TagRepository tagRepository;
     private final TagTypeRepository tagTypeRepository;
 
@@ -69,20 +76,71 @@ class KeyTaggingService {
         saveTag(Currency.CURRENCY_BASE, currency.getCode(), currency.getTitle());
     }
 
-    // column/row tagTypes
-    List<Tag> findTags(ExchangeRate rate) {
+    List<Tag> findTags(ExchangeRate entity) {
         return List.of(
-            findTag(Currency.CURRENCY_BASE, rate.getBase()),
-            findTag(Currency.CURRENCY_CODE, rate.getCode()));
+            findTag(Currency.CURRENCY_BASE, entity.getBase()),
+            findTag(Currency.CURRENCY_CODE, entity.getCode()));
     }
 
-    Key saveKey(ExchangeRate rate) {
-        final var rateName = rate.getName();
-        return keyRepository.findByName(rateName)
+    Key saveKey(ExchangeRate entity) {
+        final var keyName = entity.getKeyName();
+        return keyRepository.findByName(keyName)
             .orElseGet(() -> keyRepository.save(Key.builder()
-                .name(rateName)
-                .title(rateName)
-                .tags(findTags(rate))
+                .name(keyName)
+                .title(keyName)
+                .tags(findTags(entity))
+                .build()));
+    }
+
+    SeriesData saveSeriesDataKey(ExchangeRate entity) {
+        final var key = saveKey(entity);
+        final var date = entity.getDate();
+        final long keyId = key.getId();
+        return seriesDataRepository.findByDateAndKeyId(date, keyId)
+            .orElseGet(() -> seriesDataRepository.save(SeriesData.builder()
+                .keyId(keyId)
+                .date(date)
+                .value(entity.getRate())
+                .currency(entity.getCode())
+                .baseCurrency(entity.getBase())
+                .title(entity.getKeyName())
+                .build()));
+    }
+
+    void saveSeriesDataKeys(List<ExchangeRate> rates) {
+        rates.forEach(this::saveSeriesDataKey);
+    }
+
+    List<Tag> findTags(EODBar entity) {
+        return List.of(
+            findTag(Exchange.EXCHANGE, entity.getExchange()),
+            findTag(ExchangeTicker.EXCHANGE_TICKER, entity.getSymbol()));
+    }
+
+    Key saveKey(EODBar entity) {
+        final var keyName = entity.getKeyName();
+        return keyRepository.findByName(keyName)
+            .orElseGet(() -> keyRepository.save(Key.builder()
+                .name(keyName)
+                .title(keyName)
+                .tags(findTags(entity))
+                .build()));
+    }
+
+    SeriesData saveSeriesDataKey(EODBar entity) {
+        final var key = saveKey(entity);
+        final var date = LocalDate.ofInstant(entity.getDate(), ZoneId.systemDefault());
+        final long keyId = key.getId();
+        final var currency = Optional.ofNullable(entity.getPriceCurrency())
+            .orElse(baseCurrency);
+        return seriesDataRepository.findByDateAndKeyId(date, keyId)
+            .orElseGet(() -> seriesDataRepository.save(SeriesData.builder()
+                .keyId(keyId)
+                .date(date)
+                .value(entity.getClose())
+                .currency(currency)
+                .baseCurrency(currency)
+                .title(entity.getKeyName())
                 .build()));
     }
 

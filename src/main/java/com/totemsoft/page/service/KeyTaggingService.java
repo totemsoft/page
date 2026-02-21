@@ -131,8 +131,7 @@ class KeyTaggingService {
         final var key = saveKey(entity);
         final var date = LocalDate.ofInstant(entity.getDate(), ZoneId.systemDefault());
         final long keyId = key.getId();
-        final var currency = Optional.ofNullable(entity.getPriceCurrency())
-            .orElse(baseCurrency);
+        final var currency = priceCurrency(entity);
         return seriesDataRepository.findByDateAndKeyId(date, keyId)
             .orElseGet(() -> seriesDataRepository.save(SeriesData.builder()
                 .keyId(keyId)
@@ -142,6 +141,12 @@ class KeyTaggingService {
                 .baseCurrency(currency)
                 .title(entity.getKeyName())
                 .build()));
+    }
+
+    private String priceCurrency(EODBar entity) {
+        final var defaultCurrency = "USD";
+        return Optional.ofNullable(entity.getPriceCurrency())
+            .orElseGet(() -> currencyRepository.existsById(defaultCurrency) ? defaultCurrency : baseCurrency);
     }
 
     Tag saveTag(Exchange entity) {

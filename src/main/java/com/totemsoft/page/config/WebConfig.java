@@ -38,11 +38,6 @@ import lombok.extern.log4j.Log4j2;
 @RegisterReflectionForBinding({
     Cell.class,
     ColumnDef.class,
-    //CurrencyDto.class,
-    //EODBarDto.class,
-    //ExchangeDto.class,
-    //ExchangeMicEod.class,
-    //ExchangeMicEodData.class,
     KeyDto.class,
     PageDto.class,
     PageResponse.class,

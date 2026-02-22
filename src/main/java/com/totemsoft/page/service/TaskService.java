@@ -104,6 +104,8 @@ class TaskService {
             mics.forEach(this::saveExchangeTickersEOD);
             //
             log.info("<<< marketStackTask completed at: {}", LocalTime.now());
+        } catch (ApiException ignore) {
+            // marketStackApi error will be logged in RestClient.defaultStatusHandler
         } catch (Throwable ignore) {
             log.warn("<<< marketStackTask failed:", ignore);
         }
@@ -122,7 +124,7 @@ class TaskService {
             log.debug(">>> exchangeTickers found: {} {}", mic, response.getPagination());
             marketStackService.saveExchangeTickers(mic, response.getData().getTickers());
         } catch (ApiException ignore) {
-            // will be logged in RestClient.defaultStatusHandler
+            // marketStackApi error will be logged in RestClient.defaultStatusHandler
         }
     }
 
@@ -140,11 +142,15 @@ class TaskService {
             return;
         }
         final var symbols = tickers.stream().map(ExchangeTicker::getSymbol).toList();
-        final var response = marketStackApi.eodDate(date, Optional.of(mic), symbols,
-            Optional.of(LIMIT), Optional.of(total), Optional.empty());
-        log.debug(">>> eodBars found: {}, {}, {}, {}", mic, date, symbols, response.getPagination());
-        marketStackService.saveExchangeTickersEOD(response.getData());
-        marketStackService.saveExchangeTickersEODTags(mic, instant);
+        try {
+            final var response = marketStackApi.eodDate(date, Optional.of(mic), symbols,
+                Optional.of(LIMIT), Optional.of(total), Optional.empty());
+            log.debug(">>> eodBars found: {}, {}, {}, {}", mic, date, symbols, response.getPagination());
+            marketStackService.saveExchangeTickersEOD(response.getData());
+            marketStackService.saveExchangeTickersEODTags(mic, instant);
+        } catch (ApiException ignore) {
+            // marketStackApi error will be logged in RestClient.defaultStatusHandler
+        }
     }
 
     @Scheduled(cron = "@daily") // @midnight

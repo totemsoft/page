@@ -2,6 +2,18 @@ create schema if not exists public;
 
 use public;
 
+create table if not exists oidc_user (
+  user_email varchar(64) not null,
+  user_name varchar(255) not null,
+  user_given_name varchar(64),
+  user_family_name varchar(64),
+  user_middle_name varchar(64),
+  user_gender varchar(32),
+  user_birthdate date,
+  user_updated_at datetime,
+  primary key (user_email)
+);
+
 create table if not exists currency (
   currency_code char(3) not null,
   currency_title varchar(255) not null,

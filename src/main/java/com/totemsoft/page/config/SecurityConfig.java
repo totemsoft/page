@@ -95,7 +95,7 @@ public class SecurityConfig {
             User.builder()
                 .username("admin@company.com")
                 .password(passwordEncoder.encode("Passw0rd"))
-                .roles(ROLE_ADMIN_PAGE, ROLE_SETUP)
+                .roles(ROLE_ADMIN_PAGE, ROLE_SETUP, ROLE_ADMIN_USER)
                 .build()
         ));
     }

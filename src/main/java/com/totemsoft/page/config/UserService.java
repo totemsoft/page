@@ -25,18 +25,18 @@ class UserService extends OidcUserService {
 
     @Override
     public OidcUser loadUser(OidcUserRequest userRequest) throws OAuth2AuthenticationException {
-        final var user = super.loadUser(userRequest);
-        log.debug("Loaded User [{}]: {}", user.getClass().getCanonicalName(), user);
-        final var entity = userAdminService.findUser(user);
-        log.debug("User: {}", entity);
-        if (!entity.getAuthorities().isEmpty()) {
-            final var authorities = new ArrayList<GrantedAuthority>(user.getAuthorities());
-            entity.getAuthorities().forEach(a ->
+        final var oidcUser = super.loadUser(userRequest);
+        log.debug("Loaded User [{}]: {}", oidcUser.getClass().getCanonicalName(), oidcUser);
+        final var user = userAdminService.findUser(oidcUser);
+        log.debug("User: {}", user);
+        if (!user.getAuthorities().isEmpty()) {
+            final var authorities = new ArrayList<GrantedAuthority>(oidcUser.getAuthorities());
+            user.getAuthorities().forEach(a ->
                 authorities.add(new SimpleGrantedAuthority(SecurityConfig.ROLE_PREFIX + a)));
             log.trace("Enhanced User authorities: {}", authorities);
-            return new DefaultOidcUser(authorities, user.getIdToken(), user.getUserInfo());
+            return new DefaultOidcUser(authorities, oidcUser.getIdToken(), oidcUser.getUserInfo());
         }
-        return user;
+        return oidcUser;
     }
 
 }

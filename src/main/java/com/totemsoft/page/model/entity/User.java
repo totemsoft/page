@@ -51,7 +51,7 @@ public class User {
     private LocalDate birthdate;
 
     @Column(name = "user_updated_at")
-    Instant updatedAt;
+    private Instant updatedAt;
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "oidc_user_authority",

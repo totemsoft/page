@@ -4,10 +4,14 @@ import java.time.Instant;
 import java.time.LocalDate;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Service;
 
+import com.totemsoft.page.config.SecurityConfig;
+import com.totemsoft.page.model.UserDto;
 import com.totemsoft.page.model.entity.User;
+import com.totemsoft.page.model.mapper.UserMapper;
 import com.totemsoft.page.repository.UserRepository;
 
 import jakarta.transaction.Transactional;
@@ -15,17 +19,22 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
 @Service
-//@PreAuthorize(SecurityConfig.HAS_ROLE_ADMIN_USER)
 @RequiredArgsConstructor
+@Transactional
 @Log4j2
 public class UserAdminService {
+
+    private final UserMapper userMapper;
 
     private final UserRepository userRepository;
 
     // no @PreAuthorize as it's called from UserService OidcUserService#loadUser
-    @Transactional
-    public User findUser(OidcUser user) {
-        final var email = user.getEmail();
+    public UserDto findUser(OidcUser oidcUser) {
+        return userMapper.map(getUser(oidcUser));
+    }
+
+    private User getUser(OidcUser oidcUser) {
+        final var email = oidcUser.getEmail();
         if (userRepository.existsById(email)) {
             log.debug("Found User: {}", email);
             return userRepository.findById(email)
@@ -34,14 +43,24 @@ public class UserAdminService {
         log.debug("Saving User: {}", email);
         return userRepository.save(User.builder()
             .email(email)
-            .name(user.getName())
-            .givenName(user.getGivenName())
-            .familyName(user.getFamilyName())
-            .middleName(user.getMiddleName())
-            .gender(user.getGender())
-            .birthdate(StringUtils.isBlank(user.getBirthdate()) ? null : LocalDate.parse(user.getBirthdate()))
-            .updatedAt(user.getUpdatedAt() == null ? Instant.now() : user.getUpdatedAt())
+            .name(oidcUser.getName())
+            .givenName(oidcUser.getGivenName())
+            .familyName(oidcUser.getFamilyName())
+            .middleName(oidcUser.getMiddleName())
+            .gender(oidcUser.getGender())
+            .birthdate(StringUtils.isBlank(oidcUser.getBirthdate()) ? null : LocalDate.parse(oidcUser.getBirthdate()))
+            .updatedAt(oidcUser.getUpdatedAt() == null ? Instant.now() : oidcUser.getUpdatedAt())
             .build());
+    }
+
+    @PreAuthorize(SecurityConfig.HAS_ROLE_ADMIN_USER)
+    public void addAuthority(String email, String authority) {
+        userRepository.insertAuthority(email, authority);
+    }
+
+    @PreAuthorize(SecurityConfig.HAS_ROLE_ADMIN_USER)
+    public void removeAuthority(String email, String authority) {
+        userRepository.deleteAuthority(email, authority);
     }
 
 }

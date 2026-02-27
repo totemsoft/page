@@ -14,6 +14,13 @@ create table if not exists oidc_user (
   primary key (user_email)
 );
 
+create table if not exists oidc_user_authority (
+  user_email varchar(64) not null,
+  user_authority varchar(64) not null,
+  constraint oidc_user_authority_fk1 foreign key (user_email) references oidc_user (user_email),
+  primary key (user_email, user_authority)
+);
+
 create table if not exists currency (
   currency_code char(3) not null,
   currency_title varchar(255) not null,

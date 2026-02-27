@@ -27,6 +27,7 @@ import org.springframework.security.web.header.writers.StaticHeadersWriter;
 public class SecurityConfig {
 
     public static final String IS_AUTHENTICATED = "isAuthenticated()";
+    public static final String ROLE_PREFIX = "ROLE_";
     public static final String ROLE_ADMIN = "ADMIN";
     public static final String ROLE_SETUP = "SETUP";
     public static final String ROLE_USER = "USER";

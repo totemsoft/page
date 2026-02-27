@@ -2,10 +2,16 @@ package com.totemsoft.page.model.entity;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -46,5 +52,12 @@ public class User {
 
     @Column(name = "user_updated_at")
     Instant updatedAt;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "oidc_user_authority",
+        joinColumns = @JoinColumn(name = "user_email"))
+    @Column(name = "user_authority")
+    @Builder.Default
+    private Set<String> authorities = new HashSet<>();
 
 }

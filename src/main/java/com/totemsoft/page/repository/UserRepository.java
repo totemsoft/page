@@ -8,10 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import com.totemsoft.page.model.entity.User;
 
-import jakarta.transaction.Transactional;
-
 @Repository
-@Transactional
 public interface UserRepository extends JpaRepository<User, String> {
 
     @Modifying(flushAutomatically = true)

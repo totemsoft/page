@@ -29,8 +29,10 @@ public class SecurityConfig {
     public static final String IS_AUTHENTICATED = "isAuthenticated()";
     public static final String ROLE_PREFIX = "ROLE_";
     public static final String ROLE_ADMIN_PAGE = "ADMIN_PAGE";
+    public static final String ROLE_ADMIN_USER = "ADMIN_USER";
     public static final String ROLE_SETUP = "SETUP";
     public static final String HAS_ROLE_ADMIN_PAGE = "hasRole('ADMIN_PAGE')";
+    public static final String HAS_ROLE_ADMIN_USER = "hasRole('ADMIN_USER')";
     public static final String HAS_ROLE_SETUP = "hasRole('SETUP')";
     public static final String HAS_AUTHORITY_OIDC_USER = "hasAuthority('OIDC_USER')";
 

@@ -14,10 +14,16 @@ create table if not exists oidc_user (
   primary key (user_email)
 );
 
+create table if not exists oidc_authority (
+  user_authority varchar(64) not null,
+  primary key (user_authority)
+);
+
 create table if not exists oidc_user_authority (
   user_email varchar(64) not null,
   user_authority varchar(64) not null,
   constraint oidc_user_authority_fk1 foreign key (user_email) references oidc_user (user_email),
+  constraint oidc_user_authority_fk2 foreign key (user_authority) references oidc_authority (user_authority),
   primary key (user_email, user_authority)
 );
 

@@ -25,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
 @Service
-@PreAuthorize(SecurityConfig.HAS_ROLE_ADMIN)
+@PreAuthorize(SecurityConfig.HAS_ROLE_ADMIN_PAGE)
 @RequiredArgsConstructor
 @Log4j2
 public class PageStructureService {

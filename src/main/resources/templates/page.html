@@ -7,7 +7,7 @@
     <link type="text/css" rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" />
     <script type="text/javascript" src="/js/yui/yui-combine.js"></script>
     <script type="text/javascript" src="/js/default.js"></script>
-    <script type="text/javascript" th:src="@{/js/admin.js}" sec:authorize="hasRole('ROLE_ADMIN')"></script>
+    <script type="text/javascript" th:src="@{/js/admin.js}" sec:authorize="hasRole('ROLE_ADMIN_PAGE')"></script>
     <script type="text/javascript" th:src="@{/js/setup.js}" sec:authorize="hasRole('ROLE_SETUP')"></script>
     <style type="text/css">
         .bold { font-weight: bold !important; }
@@ -96,7 +96,7 @@
                                     </a>
                                 </li>
                             </ul>
-                            <ul sec:authorize="hasRole('ROLE_ADMIN')">
+                            <ul sec:authorize="hasRole('ROLE_ADMIN_PAGE')">
                                 <li class="yuimenuitem">
                                     <a href="javascript:YAHOO.page.admin.addPage();" class="yuimenuitemlabel">
                                         <em>Add Page</em>
@@ -284,7 +284,7 @@
         </div>
     </div>
 
-    <div th:insert="~{admin :: admin(splitRatios=${splitRatios})}" sec:authorize="hasRole('ROLE_ADMIN')" class="hidden"></div>
+    <div th:insert="~{admin :: admin(splitRatios=${splitRatios})}" sec:authorize="hasRole('ROLE_ADMIN_PAGE')" class="hidden"></div>
     <div th:insert="~{setup :: setup()}" sec:authorize="hasRole('ROLE_SETUP')" class="hidden"></div>
 </body>
 </html>

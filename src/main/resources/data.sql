@@ -2,6 +2,12 @@
 SET AUTOCOMMIT OFF;
 BEGIN TRANSACTION;
 
+INSERT INTO oidc_authority (user_authority) SELECT * FROM (VALUES
+  ('ADMIN_PAGE'),
+  ('ADMIN_USER'),
+  ('SETUP')
+) WHERE NOT EXISTS (SELECT 1 FROM oidc_authority);
+
 INSERT INTO currency (currency_code, currency_title, currency_base) SELECT * FROM (VALUES
   ('EUR', 'Euro', 'Y')
 ) WHERE NOT EXISTS (SELECT 1 FROM currency);

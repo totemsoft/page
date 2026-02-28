@@ -44,6 +44,7 @@ import lombok.extern.log4j.Log4j2;
 
 @Service
 @PreAuthorize(SecurityConfig.HAS_ROLE_SETUP)
+@Transactional
 @RequiredArgsConstructor
 @Log4j2
 public class SetupService {
@@ -63,7 +64,6 @@ public class SetupService {
     private final TagRepository tagRepository;
     private final TagTypeRepository tagTypeRepository;
 
-    @Transactional
     public Long saveTag(TagDto dto) {
         log.trace("saving: {}", dto);
         final var id = dto.getId();
@@ -80,7 +80,6 @@ public class SetupService {
         return entity.getId();
     }
 
-    @Transactional
     public Integer saveTagType(TagTypeDto dto) {
         log.trace("saving: {}", dto);
         final var id = dto.getId();
@@ -97,7 +96,6 @@ public class SetupService {
         return entity.getId();
     }
 
-    @Transactional
     public SearchData<TagTypeDto> findTagTypes() {
         final var tagTypes = tagTypeRepository.findAll(Sort.by("title"));
         return SearchData.<TagTypeDto>builder()
@@ -105,13 +103,11 @@ public class SetupService {
             .build();
     }
 
-    @Transactional
     public List<DropdownOption> tagTypeDropdownOptions() {
         final var tagTypes = tagTypeRepository.findAll(Sort.by("title"));
         return dropdownOptionMapper.mapTagType(tagTypes);
     }
 
-    @Transactional
     public SearchData<TagDto> findTagsByKey(long keyId) {
         final var key = keyRepository.findById(keyId)
             .orElseThrow(() -> new EntityNotFoundException(keyId, Key.class));
@@ -120,7 +116,6 @@ public class SetupService {
             .build();
     }
 
-    @Transactional
     public SearchData<KeyDto> findKeys() {
         final var keys = keyRepository.findAll(Sort.by("title"));
         return SearchData.<KeyDto>builder()
@@ -128,7 +123,6 @@ public class SetupService {
             .build();
     }
 
-    @Transactional
     public Long saveKey(KeyDto dto) {
         log.trace("saving: {}", dto);
         final var id = dto.getId();
@@ -145,7 +139,6 @@ public class SetupService {
         return entity.getId();
     }
 
-    @Transactional
     public void saveKeyTags(long keyId, List<Long> tagIds) {
         keyTagRepository.deleteAllByKeyId(keyId);
         tagIds.forEach(tagId -> keyTagRepository.save(
@@ -157,7 +150,6 @@ public class SetupService {
         );
     }
 
-    @Transactional
     public SearchData<CurrencyDto> findCurrencies() {
         final var currencies = currencyRepository.findAll(
             Sort.by("base").descending().and(Sort.by("code")));
@@ -166,7 +158,6 @@ public class SetupService {
             .build();
     }
 
-    @Transactional
     public String saveCurrency(CurrencyDto dto) {
         log.trace("saving: {}", dto);
         final var code = dto.getCode();
@@ -177,7 +168,6 @@ public class SetupService {
         return entity.getCode();
     }
 
-    @Transactional
     public SearchData<ExchangeDto> findExchanges(
             Pagination pagination) {
         final Integer total;
@@ -201,7 +191,6 @@ public class SetupService {
             .build();
     }
 
-    @Transactional
     public String saveExchange(ExchangeDto dto) {
         log.trace("saving: {}", dto);
         final var mic = dto.getMic();
@@ -213,7 +202,6 @@ public class SetupService {
         return entity.getMic();
     }
 
-    @Transactional
     public SearchData<ExchangeTickerDto> findExchangeTickers(
             Optional<String> mic,
             Pagination pagination) {
@@ -238,7 +226,6 @@ public class SetupService {
             .build();
     }
 
-    @Transactional
     public void saveExchangeTicker(ExchangeTickerDto dto) {
         log.trace("saving: {}", dto);
         final var mic = dto.getMic();

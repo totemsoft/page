@@ -16,7 +16,6 @@ import org.springframework.stereotype.Service;
 import com.totemsoft.page.config.SecurityConfig;
 import com.totemsoft.page.model.Cell;
 import com.totemsoft.page.model.ColumnDef;
-import com.totemsoft.page.model.KeyDto;
 import com.totemsoft.page.model.Row;
 import com.totemsoft.page.model.SearchData;
 import com.totemsoft.page.model.SearchResult;
@@ -38,6 +37,7 @@ import lombok.extern.log4j.Log4j2;
 
 @Service
 @PreAuthorize(SecurityConfig.IS_AUTHENTICATED)
+@Transactional
 @RequiredArgsConstructor
 @Log4j2
 public class SubSectionService {
@@ -54,7 +54,6 @@ public class SubSectionService {
 
     private final SeriesDataMapper seriesDataMapper;
 
-    @Transactional
     public SearchResult<Row> find(long subSectionId,
             Optional<Integer> rowTagTypeId,
             Optional<Integer> columnTagTypeId) {
@@ -99,7 +98,6 @@ public class SubSectionService {
             .build();
     }
 
-    @Transactional
     public SearchResult<?> find(
             long subSectionId,
             LocalDate date,

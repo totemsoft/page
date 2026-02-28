@@ -203,6 +203,122 @@ YAHOO.page = {
             win.location.reload();
         }
     },
+    paginatorDefaultTemplate: '{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}',
+    paginationRequestBuilder: function(oState) {
+        oState = oState || { pagination: null, sortedBy: null };
+        let request = '';
+        const page = oState.pagination ? oState.pagination.page : 1; // 1 based
+        request += 'page=' + (page - 1); // 0 based
+        const offset = oState.pagination ? oState.pagination.recordOffset : 0;
+        request += '&offset=' + offset;
+        const limit = oState.pagination ? oState.pagination.rowsPerPage : 100;
+        request += '&limit=' + limit;
+        const total = oState.pagination ? oState.pagination.totalRecords : '';
+        request += '&total=' + total;
+        //const sort = oState.sortedBy ? oState.sortedBy.key : 'id'; 
+        //request += '&sort=' + sort;
+        //const dir = oState.sortedBy && oState.sortedBy.dir === YAHOO.widget.DataTable.CLASS_DESC ? 'desc' : 'asc'; 
+        //request += '&dir=' + dir;
+        return request;
+    },
+    initDataTable: function(entityName, oConfig) {
+        const oLiveData = oConfig.liveData;
+        const dataSource = new YAHOO.util.XHRDataSource(oLiveData, {
+            connXhrMode: 'queueRequests',
+            maxCacheEntries: 0,
+            responseType: YAHOO.util.XHRDataSource.TYPE_JSON,
+            responseSchema: {
+                resultsList: 'records',
+                // Access to values in the server response
+                metaFields: {
+                    columns: 'columns',
+                    totalRecords: 'total',
+                    startIndex: 'offset'
+                }
+            }
+        });
+        const elContainer = YUD.get(entityName);
+        const r = YUD.getRegion(elContainer);
+        const h = YUD.getViewportHeight();
+        const dataTableConfig = {
+            caption: oConfig.caption !== undefined ? oConfig.caption : null,
+            dynamicData: !!oConfig.dynamicData,
+            //sortedBy : {key: 'mic', dir: YAHOO.widget.DataTable.CLASS_ASC},
+            paginator: oConfig.paginator !== undefined ? oConfig.paginator : null,
+            initialLoad: true,
+            initialRequest: oConfig.requestBuilder(),
+            generateRequest: oConfig.requestBuilder,
+            width: (r.width - 2) + 'px',
+            height: h / 3 * 2 + 'px'
+        };
+        const oColumnDefs = [];
+        const dataTable = new YAHOO.widget.ScrollingDataTable(elContainer,
+            oColumnDefs, dataSource, dataTableConfig);
+        // 1. access data before it gets added to RecordSet and rendered to the TBODY
+        dataTable.doBeforeLoadData = function(oRequest, oResponse, oPayload) {
+            const meta = oResponse.meta;
+            const columnDefs = meta.columns;
+            if (columnDefs) {
+                //this.disable();
+                let editable = false;
+                columnDefs.forEach((columnDef, index) => {
+                    if (!this.getColumn(columnDef.key)) {
+                        const oConfigs = {
+                            disableBtns: columnDef.disableBtns
+                        };
+                        if (columnDef.editor === 'dropdown' && columnDef.dropdownOptions !== undefined) {
+                            oConfigs.dropdownOptions = columnDef.dropdownOptions;
+                            oConfigs.multiple = columnDef.multiple;
+                            columnDef.editor = new YAHOO.widget.DropdownCellEditor(oConfigs);
+                        } else if (columnDef.editor === 'textbox') {
+                            columnDef.editor = new YAHOO.widget.TextboxCellEditor(oConfigs);
+                        }
+                        const column = this.insertColumn(columnDef, index);
+                        if (column.editor) {
+                            editable = true;
+                            if (oConfig.saveEvent !== undefined) {
+                                column.editor.subscribe('saveEvent', oConfig.saveEvent);
+                            }
+                        }
+                    }
+                })
+                this.getDataSource().responseSchema.fields = columnDefs.map(columnDef => columnDef.key);
+                if (editable) {
+                    this.subscribe('cellMouseoverEvent', this.onEventHighlightCell);
+                    this.subscribe('cellMouseoutEvent', this.onEventUnhighlightCell);
+                    this.subscribe('cellClickEvent', this.onEventShowCellEditor);
+                }
+                //this.undisable();
+            }
+            if (oPayload.pagination) {
+                oPayload.totalRecords = oResponse.meta.totalRecords;
+                oPayload.pagination.recordOffset = oResponse.meta.startIndex;
+            }
+            return oPayload;
+        };
+        return dataTable;
+    },
+    updateDataTable: function(dataTable) {
+        // delete all rows
+        const length = dataTable.getRecordSet().getLength();
+        dataTable.deleteRows(0, length);
+        // remove all columns (except for first one)
+        const columns = dataTable.getColumnSet();
+        columns.keys.reverse().forEach(column => {
+            dataTable.removeColumn(column);
+        });
+        //
+        const state = dataTable.getState();
+        const request = dataTable.get('generateRequest')(state, dataTable);
+        const callback = {
+            cache: false,
+            success: dataTable.onDataReturnInsertRows,
+            failure: dataTable.onDataReturnInsertRows,
+            scope: dataTable,
+            argument: state
+        };
+        dataTable.getDataSource().sendRequest(request, callback);
+    },
     init: function(oContainer) {
         // Registry of cell formatting functions
         // custom 'tag' column formatter
@@ -232,7 +348,7 @@ YAHOO.page = {
         YUE.addListener('pageDate', 'change', function(e) {
             //const date = YUE.getTarget(e).value;
             //YAHOO.page.reloadWindow(pageId, date);
-            YAHOO.page.updateDataTables();
+            YAHOO.page.updateSubSectionDataTables();
         });
         //
         YAHOO.page.updateNumberFormat();
@@ -240,7 +356,7 @@ YAHOO.page = {
         YUE.addListener('pageCurrency', 'change', function(e) {
             const currency = YUE.getTarget(e).value;
             YAHOO.page.updateCurrencyFormat(currency);
-            YAHOO.page.updateDataTables();
+            YAHOO.page.updateSubSectionDataTables();
         });
         // fire the custom event
         YAHOO.page.pageReadyEvent.fire({tabView: YAHOO.page.tabView});
@@ -311,14 +427,14 @@ YAHOO.page = {
             // via grid.css
             elSubSections.forEach((elSubSection, index, array) => {
                 const id = elSubSection.id; // subSection.{id}
-                const dataTable = this.initDataTable(YUD.get('data.' + id));
+                const dataTable = this.initSubSectionDataTable(YUD.get('data.' + id));
                 YAHOO.page.dataTables.push(dataTable);
             });
             // via LayoutManager
             //YAHOO.page.optional.initSubSectionsLayout(section, elSubSections);
         }
     },
-    initDataTable: function(elSubSection) {
+    initSubSectionDataTable: function(elSubSection) {
         const id = elSubSection.id; // data.subSection.{id}
         const subSectionId = this.getId(id);
         const headerId = 'hd.subSection.' + subSectionId; // hd.subSection.{id}
@@ -385,7 +501,7 @@ YAHOO.page = {
         //});
         return dataTable;
     },
-    updateDataTables: function() {
+    updateSubSectionDataTables: function() {
         YAHOO.page.dataTables.forEach(dataTable => {
             const state = dataTable.getState();
             const request = dataTable.get('generateRequest')(state, dataTable);

@@ -34,11 +34,13 @@ import com.totemsoft.page.repository.TagRepository;
 import com.totemsoft.page.repository.TagTypeRepository;
 
 import jakarta.transaction.Transactional;
+import jakarta.transaction.Transactional.TxType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
 @Service
 @PreAuthorize(SecurityConfig.IS_AUTHENTICATED)
+@Transactional
 @RequiredArgsConstructor
 @Log4j2
 public class PageService {
@@ -55,37 +57,33 @@ public class PageService {
     private final PageMapper pageMapper;
     private final SetupMapper setupMapper;
 
+    @Transactional(value = TxType.SUPPORTS)
     public LocalDate latestDate() {
         return LocalDate.now().minusDays(1);
     }
 
-    @Transactional
     public List<CurrencyDto> findBaseCurrencies() {
         final var currencies = currencyRepository.findByBaseTrue();
         return pageMapper.mapCurrency(currencies);
     }
 
-    @Transactional
     public List<ExchangeDto> findBaseExchanges() {
         final var exchanges = exchangeRepository.findByBaseTrue();
         return marketStackMapper.mapExchange(exchanges);
     }
 
-    @Transactional
     public PageDto findPage(long pageId) {
         final var page = pageRepository.findById(pageId)
             .orElseThrow(() -> new EntityNotFoundException(pageId, Page.class));
         return pageMapper.map(page);
     }
 
-    @Transactional
     public List<PageDto> findPages() {
         log.trace("Getting all available pages ...");
         final var pages = pageRepository.findAll(Sort.by("name"));
         return pageMapper.map(pages);
     }
 
-    @Transactional
     public PageDto findDefaultPage() {
         log.trace("Getting first available page ...");
         final var page = pageRepository.findFirstByOrderByIdAsc()
@@ -93,20 +91,17 @@ public class PageService {
         return pageMapper.map(page);
     }
 
-    @Transactional
     public List<TagTypeDto> findTagTypes() {
         final var tagTypes = tagTypeRepository.findAll(Sort.by("title"));
         return pageMapper.mapTagType(tagTypes);
     }
 
-    @Transactional
     public SearchData<TagDto> findTags(Optional<Integer> tagTypeId) {
         return SearchData.<TagDto>builder()
             .records(tagTypeId.isEmpty() ? List.of() : pageMapper.mapTag(tagRepository.findByTagTypeId(tagTypeId.get())))
             .build();
     }
 
-    @Transactional
     public SearchData<TagDto> findTags(int tagTypeId, String name) {
         final var tags = tagRepository.findByTagTypeIdAndNameContainingIgnoreCase(tagTypeId, name);
         return SearchData.<TagDto>builder()
@@ -114,7 +109,6 @@ public class PageService {
             .build();
     }
 
-    @Transactional
     public SearchData<KeyDto> findKeys(long subSectionId) {
         final var subSection = subSectionRepository.findById(subSectionId)
             .orElseThrow(() -> new EntityNotFoundException(subSectionId, SubSection.class));
@@ -126,7 +120,6 @@ public class PageService {
             .build();
     }
 
-    @Transactional
     public SearchData<KeyDto> findKeys(Map<Integer, Object> tagTypeMap) {
         final var tagIds = new HashSet<Long>();
         final var tagTitles = new HashMap<Integer, String>();

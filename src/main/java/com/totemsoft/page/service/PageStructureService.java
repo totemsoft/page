@@ -26,6 +26,7 @@ import lombok.extern.log4j.Log4j2;
 
 @Service
 @PreAuthorize(SecurityConfig.HAS_ROLE_ADMIN_PAGE)
+@Transactional
 @RequiredArgsConstructor
 @Log4j2
 public class PageStructureService {
@@ -38,7 +39,6 @@ public class PageStructureService {
     private final SubSectionRepository subSectionRepository;
     private final TabRepository tabRepository;
 
-    @Transactional
     public PageResponse savePage(final PageDto pageDto) {
         log.trace("saving: {}", pageDto);
         final var pageId = pageDto.getId();
@@ -66,7 +66,6 @@ public class PageStructureService {
             .build();
     }
 
-    @Transactional
     public void saveTab(final TabDto tabDto) {
         log.trace("saving: {}", tabDto);
         final var tabId = tabDto.getId();
@@ -83,7 +82,6 @@ public class PageStructureService {
         tabRepository.save(tab);
     }
 
-    @Transactional
     public void saveSection(final SectionDto sectionDto) {
         log.trace("saving: {}", sectionDto);
         final var sectionId = sectionDto.getId();
@@ -101,7 +99,6 @@ public class PageStructureService {
         sectionRepository.save(section);
     }
 
-    @Transactional
     public void saveSubSection(final SubSectionDto subSectionDto) {
         log.trace("saving: {}", subSectionDto);
         final var subSectionId = subSectionDto.getId();
@@ -120,7 +117,6 @@ public class PageStructureService {
         subSectionRepository.save(subSection);
     }
 
-    @Transactional
     public void mapSubSection(final SubSectionDto subSectionDto) {
         final var subSection = subSectionRepository.findById(subSectionDto.getId())
                 .orElseThrow(() -> new EntityNotFoundException(subSectionDto.getId(), SubSection.class));

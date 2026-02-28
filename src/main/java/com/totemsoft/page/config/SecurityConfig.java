@@ -35,6 +35,7 @@ public class SecurityConfig {
     public static final String HAS_ROLE_ADMIN_USER = "hasRole('ADMIN_USER')";
     public static final String HAS_ROLE_SETUP = "hasRole('SETUP')";
     public static final String HAS_AUTHORITY_OIDC_USER = "hasAuthority('OIDC_USER')";
+    public static final String PERMIT_ALL = "permitAll()";
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, UserService userService) {
@@ -95,6 +96,7 @@ public class SecurityConfig {
             User.builder()
                 .username("admin@company.com")
                 .password(passwordEncoder.encode("Passw0rd"))
+                //.roles(ROLE_ADMIN_PAGE, ROLE_SETUP)
                 .roles(ROLE_ADMIN_PAGE, ROLE_SETUP, ROLE_ADMIN_USER)
                 .build()
         ));

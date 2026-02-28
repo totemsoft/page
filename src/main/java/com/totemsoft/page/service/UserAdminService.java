@@ -4,11 +4,13 @@ import java.time.Instant;
 import java.time.LocalDate;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Service;
 
 import com.totemsoft.page.config.SecurityConfig;
+import com.totemsoft.page.model.SearchData;
 import com.totemsoft.page.model.UserDto;
 import com.totemsoft.page.model.entity.User;
 import com.totemsoft.page.model.mapper.UserMapper;
@@ -19,8 +21,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
 @Service
-@RequiredArgsConstructor
+@PreAuthorize(SecurityConfig.HAS_ROLE_ADMIN_USER)
 @Transactional
+@RequiredArgsConstructor
 @Log4j2
 public class UserAdminService {
 
@@ -29,6 +32,7 @@ public class UserAdminService {
     private final UserRepository userRepository;
 
     // no @PreAuthorize as it's called from UserService OidcUserService#loadUser
+    @PreAuthorize(SecurityConfig.PERMIT_ALL)
     public UserDto findUser(OidcUser oidcUser) {
         return userMapper.map(getUser(oidcUser));
     }
@@ -53,14 +57,23 @@ public class UserAdminService {
             .build());
     }
 
-    @PreAuthorize(SecurityConfig.HAS_ROLE_ADMIN_USER)
     public void addAuthority(String email, String authority) {
         userRepository.insertAuthority(email, authority);
     }
 
-    @PreAuthorize(SecurityConfig.HAS_ROLE_ADMIN_USER)
     public void removeAuthority(String email, String authority) {
         userRepository.deleteAuthority(email, authority);
+    }
+
+    public SearchData<UserDto> findUsers() {
+        final var users = userRepository.findAll(Sort.by("email"));
+        return SearchData.<UserDto>builder()
+            .records(userMapper.mapUsers(users))
+            .build();
+    }
+
+    public void saveUser(UserDto userDto) {
+        
     }
 
 }

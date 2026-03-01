@@ -266,7 +266,10 @@ YAHOO.page = {
                         const oConfigs = {
                             disableBtns: columnDef.disableBtns
                         };
-                        if (columnDef.editor === 'dropdown' && columnDef.dropdownOptions !== undefined) {
+                        if (columnDef.editor === 'checkbox' && columnDef.checkboxOptions !== undefined) {
+                            oConfigs.checkboxOptions = columnDef.checkboxOptions;
+                            columnDef.editor = new YAHOO.widget.CheckboxCellEditor(oConfigs);
+                        } else if (columnDef.editor === 'dropdown' && columnDef.dropdownOptions !== undefined) {
                             oConfigs.dropdownOptions = columnDef.dropdownOptions;
                             oConfigs.multiple = columnDef.multiple;
                             columnDef.editor = new YAHOO.widget.DropdownCellEditor(oConfigs);

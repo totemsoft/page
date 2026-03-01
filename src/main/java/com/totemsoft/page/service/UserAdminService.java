@@ -57,14 +57,6 @@ public class UserAdminService {
             .build());
     }
 
-    public void addAuthority(String email, String authority) {
-        userRepository.insertAuthority(email, authority);
-    }
-
-    public void removeAuthority(String email, String authority) {
-        userRepository.deleteAuthority(email, authority);
-    }
-
     public SearchData<UserDto> findUsers() {
         final var users = userRepository.findAll(Sort.by("email"));
         return SearchData.<UserDto>builder()
@@ -72,8 +64,13 @@ public class UserAdminService {
             .build();
     }
 
-    public void saveUser(UserDto userDto) {
-        
+    public void saveUserAuthorities(UserDto userDto) {
+        final var email = userDto.getEmail();
+        final var entity = userRepository.findById(email)
+            .orElseThrow(() -> new EntityNotFoundException(email, User.class));
+        entity.setAuthorities(userDto.getAuthorities());
+        userRepository.save(entity);
+        log.debug("Saved User Authorities: {}", entity);
     }
 
 }

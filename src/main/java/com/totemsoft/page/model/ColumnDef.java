@@ -64,6 +64,8 @@ public class ColumnDef {
 
     private String editor;
 
+    private List<String> checkboxOptions;
+
     private List<DropdownOption> dropdownOptions;
 
     private boolean multiple;

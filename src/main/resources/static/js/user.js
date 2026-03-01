@@ -20,29 +20,28 @@ YAHOO.page.user = {
                 let request = entityName;
                 return request;
             };
+            const saveEvent = function(oArgs) {
+                //const el = oArgs.target; // radio/checkbox, el.checked
+                const key = this.getColumn().field;
+                const data = this.getRecord().getData();
+                const userDto = {
+                    email: data.email, // PK
+                    authorities: oArgs.newData
+                };
+                const callback = YAHOO.page.emptyCallback;
+                //const callback = YAHOO.page.user.saveCallback;
+                callback.scope = YAHOO.page.user.usersDataTable;
+                callback.argument = data;
+                YAHOO.page.sendPostRequest(YAHOO.page.user.liveData + entityName, callback, userDto);
+            };
             const dataTableConfig = {
                 liveData: YAHOO.page.user.liveData,
-                requestBuilder: requestBuilder
+                requestBuilder: requestBuilder,
+                saveEvent: saveEvent
             }
             const dataTable = YAHOO.page.initDataTable(entityName, dataTableConfig);
             dataTable.subscribe('rowClickEvent', dataTable.onEventSelectRow);
             //dataTable.subscribe('cellClickEvent', dataTable.onEventSelectCell);
-            dataTable.subscribe('checkboxClickEvent', function(oArgs) {
-                const elCheckbox = oArgs.target;
-                const row = this.getRecord(elCheckbox);
-                if (!elCheckbox.checked) {
-                    row.setData('role', null);
-                }
-                const data = row.getData();
-                const userDto = {
-                    email: data.email, // PK
-                    role: data.role // authorities[i] add/remove
-                };
-                const callback = YAHOO.page.emptyCallback;
-                callback.scope = YAHOO.page.user.usersDataTable;
-                callback.argument = data;
-                YAHOO.page.sendPostRequest(YAHOO.page.user.liveData + entityName, callback, userDto);
-            });
             YAHOO.page.user.usersDataTable = dataTable;
         } else {
             YAHOO.page.updateDataTable(YAHOO.page.user.usersDataTable);

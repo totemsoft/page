@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.totemsoft.page.config.SecurityConfig;
-import com.totemsoft.page.model.ColumnDef.CellFormatterEnum;
+import com.totemsoft.page.model.ColumnDef.CellEditorEnum;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -47,19 +47,13 @@ public class UserDto {
                 .width(100)
                 .build(),
             ColumnDef.builder()
-                .key("role0")
-                .label(SecurityConfig.ROLE_ADMIN_PAGE)
-                .formatter(CellFormatterEnum.CHECKBOX.name().toLowerCase())
-                .build(),
-            ColumnDef.builder()
-                .key("role1")
-                .label(SecurityConfig.ROLE_ADMIN_USER)
-                .formatter(CellFormatterEnum.CHECKBOX.name().toLowerCase())
-                .build(),
-            ColumnDef.builder()
-                .key("role2")
-                .label(SecurityConfig.ROLE_SETUP)
-                .formatter(CellFormatterEnum.CHECKBOX.name().toLowerCase())
+                .key("authorities")
+                .label("Roles")
+                .editor(CellEditorEnum.CHECKBOX.name().toLowerCase())
+                .checkboxOptions(List.of(
+                    SecurityConfig.ROLE_ADMIN_PAGE,
+                    SecurityConfig.ROLE_ADMIN_USER,
+                    SecurityConfig.ROLE_SETUP))
                 .build()
             );
     }

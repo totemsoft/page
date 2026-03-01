@@ -26,8 +26,8 @@ class UserController {
     }
 
     @PostMapping("/users/user")
-    void saveUser(@RequestBody UserDto userDto) {
-        userAdminService.saveUser(userDto);
+    void saveUserAuthorities(@RequestBody UserDto userDto) {
+        userAdminService.saveUserAuthorities(userDto);
     }
 
 }

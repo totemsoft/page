@@ -2,6 +2,7 @@ package com.totemsoft.page.service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.ZoneId;
@@ -43,14 +44,11 @@ class TaskService {
     private final ExchangeRateService exchangeRateService;
     private final KeyTaggingService keyTaggingService;
     private final MarketStackService marketStackService;
+    private final PageService pageService;
 
     private final EODBarRepository eodBarRepository;
     private final KeyRepository keyRepository;
     private final SeriesDataRepository seriesDataRepository;
-
-    LocalDate latestDate() {
-        return LocalDate.now().minusDays(1);
-    }
 
     @Scheduled(cron = "@daily") // @midnight
     @Scheduled(initialDelay = 5_000) // one-time
@@ -64,7 +62,7 @@ class TaskService {
                 keyTaggingService.saveCurrencyTags();
             }
             //
-            final var date = this.latestDate();
+            final var date = pageService.latestDate();
             if (exchangeRateService.existsByDateExchangeRate(date)) {
                 log.info("<<< exchangeRates already loaded for: {}", date);
                 return;
@@ -85,6 +83,12 @@ class TaskService {
     @Scheduled(initialDelay = 10_000) // one-time
     void marketStackTask() {
         log.info(">>> marketStackTask started at: {}", LocalTime.now());
+        final var date = pageService.latestDate();
+        final var dayOfWeek = date.getDayOfWeek();
+        if (dayOfWeek == DayOfWeek.SATURDAY || dayOfWeek == DayOfWeek.SUNDAY) {
+            log.info("<<< marketStackTask skiped for {}: {}", dayOfWeek, date);
+            return;
+        }
         try {
             // retrieve exchanges via API
             final var total = marketStackService.countExchanges(); // pagination.total=2817
@@ -129,7 +133,7 @@ class TaskService {
     }
 
     private void saveExchangeTickersEOD(String mic) {
-        final var date = this.latestDate();
+        final var date = pageService.latestDate();
         final var instant = date.atStartOfDay(ZoneId.systemDefault()).toInstant();
         final var total = 0; // marketStackService.countExchangeTickersEOD(mic, instant);
         if (eodBarRepository.existsByExchangeAndDateAfter(mic, instant)) {
@@ -162,7 +166,7 @@ class TaskService {
     void seriesDataTask() {
         log.info(">>> seriesDataTask started at: {}", LocalTime.now());
         try {
-            final var date = this.latestDate();
+            final var date = pageService.latestDate();
             final var pageable = PageRequest.of(0, 10, Sort.by("id").ascending());
             final var keys = keyRepository.findAll(pageable).getContent();
             if (!seriesDataRepository.findByDateAndKeyIn(date, keys).isEmpty()) {

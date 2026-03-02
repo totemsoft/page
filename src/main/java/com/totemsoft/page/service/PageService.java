@@ -57,6 +57,7 @@ public class PageService {
     private final PageMapper pageMapper;
     private final SetupMapper setupMapper;
 
+    @PreAuthorize(RoleEnum.PERMIT_ALL)
     @Transactional(value = TxType.SUPPORTS)
     public LocalDate latestDate() {
         return LocalDate.now().minusDays(1);

@@ -9,7 +9,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.oauth2.core.oidc.user.OidcUser;
 import org.springframework.stereotype.Service;
 
-import com.totemsoft.page.config.SecurityConfig;
+import com.totemsoft.page.config.RoleEnum;
 import com.totemsoft.page.model.SearchData;
 import com.totemsoft.page.model.UserDto;
 import com.totemsoft.page.model.entity.User;
@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
 @Service
-@PreAuthorize(SecurityConfig.HAS_ROLE_ADMIN_USER)
+@PreAuthorize(RoleEnum.HAS_ROLE_ADMIN_USER)
 @Transactional
 @RequiredArgsConstructor
 @Log4j2
@@ -32,7 +32,7 @@ public class UserAdminService {
     private final UserRepository userRepository;
 
     // no @PreAuthorize as it's called from UserService OidcUserService#loadUser
-    @PreAuthorize(SecurityConfig.PERMIT_ALL)
+    @PreAuthorize(RoleEnum.PERMIT_ALL)
     public UserDto findUser(OidcUser oidcUser) {
         return userMapper.map(getUser(oidcUser));
     }

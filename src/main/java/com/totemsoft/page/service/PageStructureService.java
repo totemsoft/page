@@ -3,7 +3,7 @@ package com.totemsoft.page.service;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
-import com.totemsoft.page.config.SecurityConfig;
+import com.totemsoft.page.config.RoleEnum;
 import com.totemsoft.page.model.PageDto;
 import com.totemsoft.page.model.PageResponse;
 import com.totemsoft.page.model.SectionDto;
@@ -25,7 +25,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
 @Service
-@PreAuthorize(SecurityConfig.HAS_ROLE_ADMIN_PAGE)
+@PreAuthorize(RoleEnum.HAS_ROLE_ADMIN_PAGE)
 @Transactional
 @RequiredArgsConstructor
 @Log4j2

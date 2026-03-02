@@ -26,17 +26,6 @@ import org.springframework.security.web.header.writers.StaticHeadersWriter;
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    public static final String IS_AUTHENTICATED = "isAuthenticated()";
-    public static final String PERMIT_ALL = "permitAll()";
-    public static final String ROLE_PREFIX = "ROLE_";
-    public static final String ROLE_ADMIN_PAGE = "ADMIN_PAGE";
-    public static final String ROLE_ADMIN_USER = "ADMIN_USER";
-    public static final String ROLE_SETUP = "SETUP";
-    public static final String HAS_ROLE_ADMIN_PAGE = "hasRole('ADMIN_PAGE')";
-    public static final String HAS_ROLE_ADMIN_USER = "hasRole('ADMIN_USER')";
-    public static final String HAS_ROLE_SETUP = "hasRole('SETUP')";
-    public static final String HAS_AUTHORITY_OIDC_USER = "hasAuthority('OIDC_USER')";
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, UserService userService) {
         return http
@@ -96,8 +85,10 @@ public class SecurityConfig {
             User.builder()
                 .username("admin@company.com")
                 .password(passwordEncoder.encode("Passw0rd"))
-                .roles(ROLE_ADMIN_PAGE, ROLE_SETUP)
-                //.roles(ROLE_ADMIN_PAGE, ROLE_SETUP, ROLE_ADMIN_USER)
+                .roles(
+                    RoleEnum.ADMIN_PAGE.name(),
+                    //RoleEnum.ADMIN_USER.name(),
+                    RoleEnum.SETUP.name())
                 .build()
         ));
     }

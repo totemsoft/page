@@ -32,7 +32,7 @@ class UserService extends OidcUserService {
         if (!user.getAuthorities().isEmpty()) {
             final var authorities = new ArrayList<GrantedAuthority>(oidcUser.getAuthorities());
             user.getAuthorities().forEach(a ->
-                authorities.add(new SimpleGrantedAuthority(SecurityConfig.ROLE_PREFIX + a)));
+                authorities.add(new SimpleGrantedAuthority(RoleEnum.ROLE_PREFIX + a)));
             log.trace("Enhanced User authorities: {}", authorities);
             return new DefaultOidcUser(authorities, oidcUser.getIdToken(), oidcUser.getUserInfo());
         }

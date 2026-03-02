@@ -11,7 +11,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
-import com.totemsoft.page.config.SecurityConfig;
+import com.totemsoft.page.config.RoleEnum;
 import com.totemsoft.page.exchangerates.v1.model.CurrencyDto;
 import com.totemsoft.page.marketstack.v2.model.ExchangeDto;
 import com.totemsoft.page.model.KeyDto;
@@ -39,7 +39,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
 @Service
-@PreAuthorize(SecurityConfig.IS_AUTHENTICATED)
+@PreAuthorize(RoleEnum.IS_AUTHENTICATED)
 @Transactional
 @RequiredArgsConstructor
 @Log4j2

@@ -145,9 +145,12 @@ class TaskService {
         try {
             final var response = marketStackApi.eodDate(date, Optional.of(mic), symbols,
                 Optional.of(LIMIT), Optional.of(total), Optional.empty());
-            log.debug(">>> eodBars found: {}, {}, {}, {}", mic, date, symbols, response.getPagination());
-            marketStackService.saveExchangeTickersEOD(response.getData());
-            marketStackService.saveExchangeTickersEODTags(mic, instant);
+            final var pagination = response.getPagination();
+            log.debug(">>> eodBars found: {}, {}, {}, {}", mic, date, symbols, pagination);
+            if (pagination.getCount() > 0) {
+                marketStackService.saveExchangeTickersEOD(response.getData());
+                marketStackService.saveExchangeTickersEODTags(mic, instant);
+            }
         } catch (ApiException ignore) {
             // marketStackApi error will be logged in RestClient.defaultStatusHandler
         }

@@ -6,7 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.totemsoft.page.config.SecurityConfig;
+import com.totemsoft.page.config.RoleEnum;
 import com.totemsoft.page.model.ColumnDef.CellEditorEnum;
 
 import lombok.AllArgsConstructor;
@@ -51,9 +51,9 @@ public class UserDto {
                 .label("Roles")
                 .editor(CellEditorEnum.CHECKBOX.name().toLowerCase())
                 .checkboxOptions(List.of(
-                    SecurityConfig.ROLE_ADMIN_PAGE,
-                    SecurityConfig.ROLE_ADMIN_USER,
-                    SecurityConfig.ROLE_SETUP))
+                    RoleEnum.ADMIN_PAGE.name(),
+                    RoleEnum.ADMIN_USER.name(),
+                    RoleEnum.SETUP.name()))
                 .build()
             );
     }

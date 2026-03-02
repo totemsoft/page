@@ -13,14 +13,14 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
-import com.totemsoft.page.config.SecurityConfig;
+import com.totemsoft.page.config.RoleEnum;
 import com.totemsoft.page.model.Cell;
 import com.totemsoft.page.model.ColumnDef;
+import com.totemsoft.page.model.ColumnDef.CellFormatterEnum;
 import com.totemsoft.page.model.Row;
 import com.totemsoft.page.model.SearchData;
 import com.totemsoft.page.model.SearchResult;
 import com.totemsoft.page.model.SeriesDataDto;
-import com.totemsoft.page.model.ColumnDef.CellFormatterEnum;
 import com.totemsoft.page.model.entity.SeriesData;
 import com.totemsoft.page.model.entity.SubSection;
 import com.totemsoft.page.model.entity.Tag;
@@ -36,7 +36,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
 @Service
-@PreAuthorize(SecurityConfig.IS_AUTHENTICATED)
+@PreAuthorize(RoleEnum.IS_AUTHENTICATED)
 @Transactional
 @RequiredArgsConstructor
 @Log4j2

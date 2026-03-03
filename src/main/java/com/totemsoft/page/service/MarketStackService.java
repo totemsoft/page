@@ -83,12 +83,13 @@ class MarketStackService {
         bars.forEach(this::saveExchangeTickersEODTag);
     }
 
+    // api/supported_tickers_2.csv
+    // ticker,exchange,assetType,priceCurrency,startDate,endDate
+    // AAPL,NASDAQ,Stock,USD,1980-12-12,2025-03-12
     Tag saveExchangeTickersEODTag(EODBar entity) {
-        log.debug("tagging: {}", entity);
-        if (entity.getAssetType() != null) {
-            return keyTaggingService.saveTag(EODBar.ASSET_CLASS, entity.getAssetType(), entity.getName());
-        }
-        return null;
+        final var assetType = entity.getAssetType() == null ? entity.getAssetType() : "Stock";
+        log.debug("tagging as {}: {}", assetType, entity);
+        return keyTaggingService.saveTag(EODBar.ASSET_CLASS, assetType, entity.getName());
     }
 
 }

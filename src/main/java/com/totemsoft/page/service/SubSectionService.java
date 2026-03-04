@@ -149,7 +149,7 @@ public class SubSectionService {
             exchangeRate.setBase(subSectionCurrency);
             exchangeRate.setCode(pageCurrency);
         }
-        log.debug("#{} exchangeRate: {}", subSectionId, exchangeRate);
+        log.trace("#{} exchangeRate: {}", subSectionId, exchangeRate);
         //
         final Optional<CellFormatterEnum> formatter = sameCurrency ?
             Optional.of(CellFormatterEnum.CURRENCY) : Optional.empty();

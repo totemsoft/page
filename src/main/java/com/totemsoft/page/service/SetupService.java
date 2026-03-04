@@ -27,8 +27,8 @@ import com.totemsoft.page.model.entity.marketstack.Exchange;
 import com.totemsoft.page.model.entity.marketstack.ExchangeTicker;
 import com.totemsoft.page.model.entity.marketstack.ExchangeTickerId;
 import com.totemsoft.page.model.mapper.DropdownOptionMapper;
+import com.totemsoft.page.model.mapper.ExchangeRateMapper;
 import com.totemsoft.page.model.mapper.MarketStackMapper;
-import com.totemsoft.page.model.mapper.PageMapper;
 import com.totemsoft.page.model.mapper.SetupMapper;
 import com.totemsoft.page.repository.CurrencyRepository;
 import com.totemsoft.page.repository.ExchangeRepository;
@@ -52,8 +52,8 @@ public class SetupService {
     private final KeyTaggingService keyTaggingService;
 
     private final DropdownOptionMapper dropdownOptionMapper;
+    private final ExchangeRateMapper exchangeRateMapper;
     private final MarketStackMapper marketStackMapper;
-    private final PageMapper pageMapper;
     private final SetupMapper setupMapper;
 
     private final CurrencyRepository currencyRepository;
@@ -69,7 +69,7 @@ public class SetupService {
         final var id = dto.getId();
         Tag entity;
         if (id == null) {
-            entity = pageMapper.mapTag(dto);
+            entity = setupMapper.mapTag(dto);
         } else {
             entity = tagRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(id, Tag.class));
@@ -85,7 +85,7 @@ public class SetupService {
         final var id = dto.getId();
         TagType entity;
         if (id == null) {
-            entity = pageMapper.mapTagType(dto);
+            entity = setupMapper.mapTagType(dto);
         } else {
             entity = tagTypeRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(id, TagType.class));
@@ -99,7 +99,7 @@ public class SetupService {
     public SearchData<TagTypeDto> findTagTypes() {
         final var tagTypes = tagTypeRepository.findAll(Sort.by("title"));
         return SearchData.<TagTypeDto>builder()
-            .records(pageMapper.mapTagType(tagTypes))
+            .records(setupMapper.mapTagType(tagTypes))
             .build();
     }
 
@@ -154,7 +154,7 @@ public class SetupService {
         final var currencies = currencyRepository.findAll(
             Sort.by("base").descending().and(Sort.by("code")));
         return SearchData.<CurrencyDto>builder()
-            .records(pageMapper.mapCurrency(currencies))
+            .records(exchangeRateMapper.mapCurrency(currencies))
             .build();
     }
 

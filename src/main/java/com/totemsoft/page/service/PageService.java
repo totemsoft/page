@@ -21,6 +21,7 @@ import com.totemsoft.page.model.TagDto;
 import com.totemsoft.page.model.TagTypeDto;
 import com.totemsoft.page.model.entity.Page;
 import com.totemsoft.page.model.entity.SubSection;
+import com.totemsoft.page.model.mapper.ExchangeRateMapper;
 import com.totemsoft.page.model.mapper.MarketStackMapper;
 import com.totemsoft.page.model.mapper.PageMapper;
 import com.totemsoft.page.model.mapper.SetupMapper;
@@ -53,6 +54,7 @@ public class PageService {
     private final TagRepository tagRepository;
     private final TagTypeRepository tagTypeRepository;
 
+    private final ExchangeRateMapper exchangeRateMapper;
     private final MarketStackMapper marketStackMapper;
     private final PageMapper pageMapper;
     private final SetupMapper setupMapper;
@@ -65,7 +67,7 @@ public class PageService {
 
     public List<CurrencyDto> findBaseCurrencies() {
         final var currencies = currencyRepository.findByBaseTrue();
-        return pageMapper.mapCurrency(currencies);
+        return exchangeRateMapper.mapCurrency(currencies);
     }
 
     public List<ExchangeDto> findBaseExchanges() {
@@ -94,19 +96,19 @@ public class PageService {
 
     public List<TagTypeDto> findTagTypes() {
         final var tagTypes = tagTypeRepository.findAll(Sort.by("title"));
-        return pageMapper.mapTagType(tagTypes);
+        return setupMapper.mapTagType(tagTypes);
     }
 
     public SearchData<TagDto> findTags(Optional<Integer> tagTypeId) {
         return SearchData.<TagDto>builder()
-            .records(tagTypeId.isEmpty() ? List.of() : pageMapper.mapTag(tagRepository.findByTagTypeId(tagTypeId.get())))
+            .records(tagTypeId.isEmpty() ? List.of() : setupMapper.mapTag(tagRepository.findByTagTypeId(tagTypeId.get())))
             .build();
     }
 
     public SearchData<TagDto> findTags(int tagTypeId, String name) {
         final var tags = tagRepository.findByTagTypeIdAndNameContainingIgnoreCase(tagTypeId, name);
         return SearchData.<TagDto>builder()
-            .records(pageMapper.mapTag(tags))
+            .records(setupMapper.mapTag(tags))
             .build();
     }
 

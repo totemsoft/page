@@ -8,7 +8,6 @@ import java.util.List;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
-import org.springframework.beans.factory.annotation.Value;
 
 import com.totemsoft.page.exchangerates.v1.model.ExchangeRateDto;
 import com.totemsoft.page.model.Cell;
@@ -21,10 +20,6 @@ import lombok.extern.log4j.Log4j2;
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 @Log4j2
 public abstract class SeriesDataMapper {
-
-    /** exchangeratesapi base currency */
-    @Value("${page.exchangeratesapi.io.base-currency}")
-    private String baseCurrency;
 
     public abstract SeriesDataDto map(SeriesData data);
     public abstract Cell<BigDecimal> mapSeriesData(SeriesData data);
@@ -55,10 +50,9 @@ public abstract class SeriesDataMapper {
         }
         // Special case: exchangeRate(s) EUR/USD or EUR/EUR
         if (sd.getKey().findTag(Currency.CURRENCY_BASE).isPresent()) {
-            log.debug("{}: {}", er, sdt);
             return divide(value, rate);
         }
-        // General case: seriesData
+        // General case: seriesData EUR/EUR or USD/USD
         if (er.getCode().equals(sdt.getCurrency())) {
             // eg sd:USD/USD vs er:EUR/AUD
             return divide(value, rate);

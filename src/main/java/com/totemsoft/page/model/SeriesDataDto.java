@@ -10,15 +10,12 @@ import com.totemsoft.page.model.ColumnDef.CellFormatterEnum;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.ToString;
 
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@ToString(onlyExplicitlyIncluded = true)
 public class SeriesDataDto {
 
     @EqualsAndHashCode.Include
-    @ToString.Include
     private Long id;
 
     //@JsonFormat(shape = JsonFormat.Shape.NUMBER)

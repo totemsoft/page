@@ -63,11 +63,11 @@ class ExchangeRateService {
                 //return value;
             }
             final var exchangeRate = exchangeRateRepository.save(ExchangeRate.builder()
-                .code(code)
                 .date(date)
+                .base(base) // baseCurrency
+                .code(code)
                 .rate(rate)
                 .timestamp(timestamp)
-                .base(base) // baseCurrency
                 .build());
             result.add(exchangeRate);
         });

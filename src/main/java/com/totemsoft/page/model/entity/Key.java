@@ -60,6 +60,10 @@ public class Key {
         return tags.stream().filter(t -> t.getTagTypeId().equals(tagTypeId)).findFirst();
     }
 
+    public Optional<Tag> findTag(String tagTypeName) {
+        return tags.stream().filter(t -> t.getTagType().getName().equals(tagTypeName)).findFirst();
+    }
+
     public boolean anyMatch(Long tagId) {
         return tags.stream().anyMatch(t -> t.getId().equals(tagId));
     }

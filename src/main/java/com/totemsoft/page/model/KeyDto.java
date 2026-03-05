@@ -5,7 +5,6 @@ import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.totemsoft.page.model.ColumnDef.CellEditorEnum;
-import com.totemsoft.page.model.ColumnDef.CellFormatterEnum;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
@@ -62,7 +61,7 @@ public class KeyDto {
             ColumnDef.builder()
                 .key("action")
                 .label(CssClasName.NBSP)
-                .className("collapsed")
+                .className(CssClasName.COLLAPSED)
                 .width(25)
                 .build()
             );

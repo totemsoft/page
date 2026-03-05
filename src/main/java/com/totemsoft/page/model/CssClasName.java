@@ -9,6 +9,7 @@ public final class CssClasName {
     /** The {@code &nbsp;} (non-breaking space) is an HTML character */
     public static final String NBSP = "&#160;";
 
+    public static final String COLLAPSED = "collapsed";
     public static final String RIGHT = "right";
     public static final String WIDTH0 = "width0";
 

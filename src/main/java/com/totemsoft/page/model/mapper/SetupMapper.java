@@ -17,7 +17,6 @@ import com.totemsoft.page.model.entity.TagType;
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface SetupMapper {
 
-    //@Mapping(target = "tags.tagType", ignore = true)
     Key mapKey(KeyDto keyDto);
     KeyDto mapKey(Key key);
     List<KeyDto> mapKey(Collection<Key> keys);

@@ -80,7 +80,7 @@ class TaskService {
     }
 
     @Scheduled(cron = "@daily") // @midnight
-    @Scheduled(initialDelay = 10_000) // one-time
+    //@Scheduled(initialDelay = 10_000) // one-time
     void marketStackTask() {
         log.info(">>> marketStackTask started at: {}", LocalTime.now());
         final var date = pageService.latestDate();

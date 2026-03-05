@@ -48,7 +48,7 @@ public abstract class SeriesDataMapper {
             log.warn("Zero rate: {}", er);
             //return value;
         }
-        // Special case: exchangeRate(s) EUR/USD or EUR/EUR
+        // Special case: exchangeRate(s) EUR/EUR, EUR/USD, etc
         if (sd.getKey().findTag(Currency.CURRENCY_BASE).isPresent()) {
             return divide(value, rate);
         }

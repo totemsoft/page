@@ -44,7 +44,10 @@ public class Tag implements Comparable<Tag> {
     @Column(name = "tag_type_id")
     private Integer tagTypeId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    // TODO: remove this dependency
+    // Generation of HibernateProxy instances at runtime is not allowed when the configured BytecodeProvider is 'none';
+    // your model requires a more advanced BytecodeProvider to be enabled.
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "tag_type_id", insertable = false, updatable = false)
     private TagType tagType;
 

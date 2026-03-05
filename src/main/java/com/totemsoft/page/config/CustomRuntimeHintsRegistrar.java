@@ -13,6 +13,7 @@ import org.springframework.security.oauth2.client.authentication.OAuth2Authentic
 import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 
 import com.totemsoft.page.exchangerates.v1.model.CurrencyDto;
+import com.totemsoft.page.exchangerates.v1.model.ExchangeRateDto;
 import com.totemsoft.page.exchangerates.v1.model.ExchangeRateSymbols;
 import com.totemsoft.page.exchangerates.v1.model.ExchangeRates;
 import com.totemsoft.page.marketstack.v2.model.EODBarDto;
@@ -43,6 +44,7 @@ public class CustomRuntimeHintsRegistrar implements RuntimeHintsRegistrar {
         hints.serialization()
             // exchangerates api
             .registerType(CurrencyDto.class)
+            .registerType(ExchangeRateDto.class)
             .registerType(ExchangeRates.class)
             .registerType(ExchangeRateSymbols.class)
             // marketstack api

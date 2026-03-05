@@ -1,5 +1,6 @@
 package com.totemsoft.page.exchangerates.v1.model;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.LocalDate;
@@ -7,7 +8,9 @@ import java.time.LocalDate;
 import lombok.Data;
 
 @Data
-public class ExchangeRateDto {
+public class ExchangeRateDto implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private LocalDate date;
 

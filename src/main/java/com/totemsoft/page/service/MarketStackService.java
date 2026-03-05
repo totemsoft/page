@@ -87,7 +87,7 @@ class MarketStackService {
     // ticker,exchange,assetType,priceCurrency,startDate,endDate
     // AAPL,NASDAQ,Stock,USD,1980-12-12,2025-03-12
     Tag saveExchangeTickersEODTag(EODBar entity) {
-        final var assetType = entity.getAssetType() != null ? entity.getAssetType() : "Stock";
+        final var assetType = entity.getAssetType() != null ? entity.getAssetType() : EODBar.ASSET_CLASS_STOCK;
         log.debug("tagging as {}: {}", assetType, entity);
         return keyTaggingService.saveTag(EODBar.ASSET_CLASS, assetType, entity.getName());
     }

@@ -29,6 +29,10 @@ public class EODBar {
 
     /** TagType name, eg for columns */
     public static final String ASSET_CLASS = "ASSET_CLASS";
+    // TagType values
+    public static final String ASSET_CLASS_ETF = "ETF";
+    public static final String ASSET_CLASS_MUTUAL_FUND = "Mutual Fund";
+    public static final String ASSET_CLASS_STOCK = "Stock";
 
     /** MIC of the exchange. */
     @EqualsAndHashCode.Include

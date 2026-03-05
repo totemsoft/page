@@ -114,7 +114,8 @@ class KeyTaggingService {
     List<Tag> findTags(EODBar entity) {
         return List.of(
             findTag(Exchange.EXCHANGE, entity.getExchange()),
-            findTag(ExchangeTicker.EXCHANGE_TICKER, entity.getSymbol()));
+            findTag(ExchangeTicker.EXCHANGE_TICKER, entity.getSymbol()),
+            findTag(EODBar.ASSET_CLASS, EODBar.ASSET_CLASS_STOCK));
     }
 
     Key saveKey(EODBar entity) {

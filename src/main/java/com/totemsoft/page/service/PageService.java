@@ -106,6 +106,7 @@ public class PageService {
     }
 
     public SearchData<TagDto> findTags(int tagTypeId, String name) {
+        name = name.stripLeading();
         final var tags = tagRepository.findByTagTypeIdAndNameContainingIgnoreCase(tagTypeId, name);
         return SearchData.<TagDto>builder()
             .records(setupMapper.mapTag(tags))

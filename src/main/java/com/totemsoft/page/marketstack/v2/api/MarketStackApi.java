@@ -88,6 +88,7 @@ public class MarketStackApi {
      * @param offset - Pagination offset (number of results to skip). Default 0.
      * @return Returns EOD data for the given date for all symbols on a specific exchange.
      */
+    @Deprecated(forRemoval = true, since = "marketStackApi#eodDate used instead")
     public ExchangeMicEod exchangeMicEodDate(
             String mic,
             LocalDate date,

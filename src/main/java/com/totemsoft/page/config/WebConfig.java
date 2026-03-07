@@ -74,7 +74,8 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Bean
     RestClient exchangeRatesApiRestClient(
-            @Value("${page.exchangeratesapi.io.base-url}") String baseUrl) {
+            @Value("${page.exchangeratesapi.io.base-url}") String baseUrl,
+            RestClientInterceptor restClientInterceptor) {
         return RestClient.builder()
             .baseUrl(baseUrl)
             //.apiVersionInserter(ApiVersionInserter.usePathSegment(0))
@@ -89,12 +90,15 @@ public class WebConfig implements WebMvcConfigurer {
                     throw new ApiException(error);
                 }
             )
+            .bufferContent((uri, method) -> true)
+            .requestInterceptor(restClientInterceptor)
             .build();
     }
 
     @Bean
     RestClient marketStackApiRestClient(
-            @Value("${page.marketstack.com.base-url}") String baseUrl) {
+            @Value("${page.marketstack.com.base-url}") String baseUrl,
+            RestClientInterceptor restClientInterceptor) {
         return RestClient.builder()
             .baseUrl(baseUrl)
             //.apiVersionInserter(ApiVersionInserter.usePathSegment(0))
@@ -109,6 +113,8 @@ public class WebConfig implements WebMvcConfigurer {
                     throw new ApiException(error);
                 }
             )
+            .bufferContent((uri, method) -> true)
+            .requestInterceptor(restClientInterceptor)
             .build();
     }
 

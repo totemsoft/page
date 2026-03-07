@@ -48,8 +48,10 @@ export class AwsCdkStack extends cdk.Stack {
     // EFS
     const efsVolumeName = 'efsVolume';
     const efsMountPath = '/mnt/efs';
-    const accessPointPath = '/db';
-    const dbPath =`${efsMountPath}${accessPointPath}`;
+    const apiAccessPointPath = '/api';
+    const apiPath =`${efsMountPath}${apiAccessPointPath}`;
+    const dbAccessPointPath = '/db';
+    const dbPath =`${efsMountPath}${dbAccessPointPath}`;
     const dbName = 'pagedb_001';
     // OPTIONAL: to copy in Application#main (or skip copy if env var DB_NAME_PREV not set)
     const dbNamePrev = 'pagedb_002';
@@ -114,8 +116,20 @@ export class AwsCdkStack extends cdk.Stack {
       encrypted: true, // Transit encryption must be enabled if IAM authorization is used
     });
 
-    const accessPoint = fileSystem.addAccessPoint('admin', {
-      path: accessPointPath,
+    const apiAccessPoint = fileSystem.addAccessPoint('admin', {
+      path: apiAccessPointPath,
+      createAcl: {
+        ownerUid: '1001', // admin
+        ownerGid: '1001',
+        permissions: '640' // rw-r----- (owner,group,others)
+      },
+      posixUser: {
+        uid: '0', // root
+        gid: '0'
+      }
+    });
+    const dbAccessPoint = fileSystem.addAccessPoint('admin', {
+      path: dbAccessPointPath,
       createAcl: {
         ownerUid: '1001', // admin
         ownerGid: '1001',
@@ -151,10 +165,20 @@ export class AwsCdkStack extends cdk.Stack {
       efsVolumeConfiguration: {
         fileSystemId: fileSystem.fileSystemId,
         authorizationConfig: {
-          accessPointId: accessPoint.accessPointId
+          accessPointId: apiAccessPoint.accessPointId
         },
-        transitEncryption: 'ENABLED', // ecs.EfsTransitEncryption.ENABLED,
-      },
+        transitEncryption: 'ENABLED'
+      }
+    });
+    taskDef.addVolume({
+      name: efsVolumeName,
+      efsVolumeConfiguration: {
+        fileSystemId: fileSystem.fileSystemId,
+        authorizationConfig: {
+          accessPointId: dbAccessPoint.accessPointId
+        },
+        transitEncryption: 'ENABLED'
+      }
     });
 
     // create a task definition with CloudWatch Logs
@@ -170,6 +194,7 @@ export class AwsCdkStack extends cdk.Stack {
  //     ],
       taskDefinition: taskDef,
       environment: {
+        API_PATH: apiPath,
         DB_PATH: dbPath,
         DB_NAME: dbName,
         DB_NAME_PREV: dbNamePrev

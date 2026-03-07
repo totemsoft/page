@@ -46,12 +46,13 @@ export class AwsCdkStack extends cdk.Stack {
     const javaOpts = null;
 //*/
     // EFS
-    const efsVolumeName = 'efsVolume';
     const efsMountPath = '/mnt/efs';
+    const apiVolumeName = 'api';
     const apiAccessPointPath = '/api';
-    const apiPath =`${efsMountPath}${apiAccessPointPath}`;
+    const apiPath = `${efsMountPath}${apiAccessPointPath}`;
+    const dbVolumeName = 'db';
     const dbAccessPointPath = '/db';
-    const dbPath =`${efsMountPath}${dbAccessPointPath}`;
+    const dbPath = `${efsMountPath}${dbAccessPointPath}`;
     const dbName = 'pagedb_001';
     // OPTIONAL: to copy in Application#main (or skip copy if env var DB_NAME_PREV not set)
     const dbNamePrev = 'pagedb_002';
@@ -116,7 +117,7 @@ export class AwsCdkStack extends cdk.Stack {
       encrypted: true, // Transit encryption must be enabled if IAM authorization is used
     });
 
-    const apiAccessPoint = fileSystem.addAccessPoint('admin', {
+    const apiAccessPoint = fileSystem.addAccessPoint('api', {
       path: apiAccessPointPath,
       createAcl: {
         ownerUid: '1001', // admin
@@ -128,7 +129,7 @@ export class AwsCdkStack extends cdk.Stack {
         gid: '0'
       }
     });
-    const dbAccessPoint = fileSystem.addAccessPoint('admin', {
+    const dbAccessPoint = fileSystem.addAccessPoint('db', {
       path: dbAccessPointPath,
       createAcl: {
         ownerUid: '1001', // admin
@@ -161,7 +162,7 @@ export class AwsCdkStack extends cdk.Stack {
     taskDef.addToTaskRolePolicy(taskPolicy);
 //*/
     taskDef.addVolume({
-      name: efsVolumeName,
+      name: apiVolumeName,
       efsVolumeConfiguration: {
         fileSystemId: fileSystem.fileSystemId,
         authorizationConfig: {
@@ -171,7 +172,7 @@ export class AwsCdkStack extends cdk.Stack {
       }
     });
     taskDef.addVolume({
-      name: efsVolumeName,
+      name: dbVolumeName,
       efsVolumeConfiguration: {
         fileSystemId: fileSystem.fileSystemId,
         authorizationConfig: {
@@ -205,11 +206,18 @@ export class AwsCdkStack extends cdk.Stack {
       ]
     });
     EnvironmentUtils.addEnvironments(this, containerDef, javaOpts);
-    containerDef.addMountPoints({
-      sourceVolume: efsVolumeName,
-      containerPath: efsMountPath,
-      readOnly: false,
-    });
+    containerDef.addMountPoints(
+      {
+        sourceVolume: apiVolumeName,
+        containerPath: apiPath,
+        readOnly: false,
+      },
+      {
+        sourceVolume: dbVolumeName,
+        containerPath: dbPath,
+        readOnly: false,
+      }
+    );
 
     const domainZone = HostedZone.fromLookup(this, 'Zone', {
       domainName

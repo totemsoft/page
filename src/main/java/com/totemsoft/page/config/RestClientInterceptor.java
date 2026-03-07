@@ -24,8 +24,10 @@ public class RestClientInterceptor implements ClientHttpRequestInterceptor {
 
     public RestClientInterceptor(@Value("${page.apiPath}") String apiPath) throws IOException {
         this.apiPath = Paths.get(apiPath);
+        log.debug("apiPath: {}", this.apiPath);
         if (Files.notExists(this.apiPath)) {
-            Files.createDirectories(this.apiPath);
+            final var path = Files.createDirectories(this.apiPath);
+            log.debug("Just created: {}", path);
         }
     }
 

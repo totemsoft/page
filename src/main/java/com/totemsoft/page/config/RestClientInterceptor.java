@@ -44,7 +44,11 @@ public class RestClientInterceptor implements ClientHttpRequestInterceptor {
     private void save(URI uri, byte[] body) {
         try {
             final var filePath = getFilePath(uri);
-            Files.write(filePath, body, StandardOpenOption.TRUNCATE_EXISTING);
+            if (Files.notExists(filePath)) {
+                Files.write(filePath, body, StandardOpenOption.CREATE_NEW);
+            } else {
+                Files.write(filePath, body, StandardOpenOption.TRUNCATE_EXISTING);
+            }
         } catch (Exception ignore) {
             log.warn("FAILED to save response:", ignore);
         }

@@ -1,5 +1,6 @@
 package com.totemsoft.page.config;
 
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import org.springframework.context.annotation.Bean;
@@ -18,8 +19,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.HttpStatusEntryPoint;
+import org.springframework.security.web.firewall.HttpFirewall;
+import org.springframework.security.web.firewall.StrictHttpFirewall;
 import org.springframework.security.web.header.Header;
 import org.springframework.security.web.header.writers.StaticHeadersWriter;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 @Configuration
 @EnableWebSecurity
@@ -91,6 +95,28 @@ public class SecurityConfig {
                     RoleEnum.SETUP.name())
                 .build()
         ));
+    }
+
+    @Bean
+    public HttpFirewall httpFirewall() {
+        final var firewall = new StrictHttpFirewall();
+        firewall.setAllowUrlEncodedSlash(false); // Disallow encoded slashes (default)
+        firewall.setAllowSemicolon(false);       // Disallow semicolons (prevents some bypasses) (default)
+        firewall.setAllowBackSlash(false);       // Disallow backslash (default)
+        firewall.setAllowedHttpMethods(List.of(RequestMethod.GET.name(), RequestMethod.POST.name()));
+        //firewall.setAllowedHeaderNames(StrictHttpFirewall.ALLOWED_HEADER_NAMES);   // default
+        //firewall.setAllowedHeaderValues(StrictHttpFirewall.ALLOWED_HEADER_VALUES); // default
+        firewall.setAllowedHeaderValues(header -> {
+            // In the case of header values, consider parsing them as UTF-8 at verification time
+            final var parsed = new String(header.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
+            return StrictHttpFirewall.ALLOWED_HEADER_VALUES.test(parsed);
+        });
+        firewall.setAllowedParameterValues(value -> {
+            // In the case of parameter values, consider parsing them as UTF-8 at verification time (default is to allow any parameter value)
+            final var parsed = new String(value.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
+            return StrictHttpFirewall.ALLOWED_HEADER_VALUES.test(parsed);
+        });
+        return firewall;
     }
 
 }

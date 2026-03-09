@@ -1,6 +1,8 @@
 package com.totemsoft.page.service;
 
 import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,6 +30,8 @@ import lombok.extern.log4j.Log4j2;
 @RequiredArgsConstructor
 @Log4j2
 class MarketStackService {
+
+    private static final int LIMIT = 1000;
 
     private final MarketStackApi marketStackApi;
 
@@ -75,25 +79,49 @@ class MarketStackService {
         }
     }
 
-    List<ExchangeTicker> findExchangeTickersBase(String mic) {
-        return exchangeTickerRepository.findByMicAndBaseTrue(mic);
-    }
-
     ExchangeTicker saveExchangeTicker(String mic, ExchangeTickerDto dto) {
         return exchangeTickerRepository.save(marketStackMapper.mapExchangeTicker(mic, dto));
     }
 
-    void saveExchangeTickersEOD(List<EODBarDto> bars) {
-        bars.forEach(this::saveExchangeTickerEOD);
+    void saveExchangeTickersEOD(String mic, LocalDate date) {
+        final var instant = date.atStartOfDay(ZoneId.systemDefault()).toInstant();
+        final var total = 0; // marketStackService.countExchangeTickersEOD(mic, instant);
+        if (eodBarRepository.existsByExchangeAndDateAfter(mic, instant)) {
+            log.info("<<< eodBar(s) already loaded for: {}, {}", mic, date);
+            return;
+        }
+        final var tickers = findExchangeTickersBase(mic);
+        if (tickers.isEmpty()) {
+            log.info("<<< no tickers found for: {}", mic);
+            return;
+        }
+        final var symbols = tickers.stream().map(ExchangeTicker::getSymbol).toList();
+        try {
+            final var response = marketStackApi.eodDate(date, Optional.of(mic), symbols,
+                Optional.of(LIMIT), Optional.of(total), Optional.empty());
+            final var pagination = response.getPagination();
+            log.debug(">>> eodBars found: {}, {}, {}, {}", mic, date, symbols, pagination);
+            if (pagination.getCount() > 0) {
+                final var bars = response.getData();
+                bars.forEach(this::saveExchangeTickerEOD);
+                saveExchangeTickersEODTags(mic, instant);
+            }
+        } catch (ApiException ignore) {
+            // marketStackApi error will be logged in RestClient.defaultStatusHandler
+        }
     }
 
-    EODBar saveExchangeTickerEOD(EODBarDto dto) {
+    private List<ExchangeTicker> findExchangeTickersBase(String mic) {
+        return exchangeTickerRepository.findByMicAndBaseTrue(mic);
+    }
+
+    private EODBar saveExchangeTickerEOD(EODBarDto dto) {
         final var entity = eodBarRepository.save(marketStackMapper.mapEODBar(dto));
         keyTaggingService.saveSeriesDataKey(entity);
         return entity;
     }
 
-    void saveExchangeTickersEODTags(String exchange, Instant date) {
+    private void saveExchangeTickersEODTags(String exchange, Instant date) {
         final var bars = eodBarRepository.findByExchangeAndDateAfter(exchange, date);
         bars.forEach(this::saveExchangeTickersEODTag);
     }

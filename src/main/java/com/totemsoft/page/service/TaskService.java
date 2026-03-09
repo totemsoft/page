@@ -5,7 +5,6 @@ import java.math.RoundingMode;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.ZoneId;
 import java.util.Optional;
 
 import org.apache.commons.lang3.RandomStringUtils;
@@ -18,8 +17,6 @@ import org.springframework.stereotype.Component;
 import com.totemsoft.page.exchangerates.v1.api.ExchangeRatesApi;
 import com.totemsoft.page.marketstack.v2.api.MarketStackApi;
 import com.totemsoft.page.model.entity.SeriesData;
-import com.totemsoft.page.model.entity.marketstack.ExchangeTicker;
-import com.totemsoft.page.repository.EODBarRepository;
 import com.totemsoft.page.repository.KeyRepository;
 import com.totemsoft.page.repository.SeriesDataRepository;
 
@@ -46,7 +43,6 @@ class TaskService {
     private final MarketStackService marketStackService;
     private final PageService pageService;
 
-    private final EODBarRepository eodBarRepository;
     private final KeyRepository keyRepository;
     private final SeriesDataRepository seriesDataRepository;
 
@@ -106,41 +102,13 @@ class TaskService {
             //mics.forEach(mic -> marketStackService.saveExchangeTickers(mic, LIMIT, 0));
             // save eodBars for selected base tickers
             log.debug(">>> saving exchangeTickers EOD for: {}", mics);
-            mics.forEach(this::saveExchangeTickersEOD);
+            mics.forEach(mic -> marketStackService.saveExchangeTickersEOD(mic, date));
             //
             log.info("<<< marketStackTask completed at: {}", LocalTime.now());
         } catch (ApiException ignore) {
             // marketStackApi error will be logged in RestClient.defaultStatusHandler
         } catch (Throwable ignore) {
             log.warn("<<< marketStackTask failed:", ignore);
-        }
-    }
-
-    private void saveExchangeTickersEOD(String mic) {
-        final var date = pageService.latestDate();
-        final var instant = date.atStartOfDay(ZoneId.systemDefault()).toInstant();
-        final var total = 0; // marketStackService.countExchangeTickersEOD(mic, instant);
-        if (eodBarRepository.existsByExchangeAndDateAfter(mic, instant)) {
-            log.info("<<< eodBar(s) already loaded for: {}, {}", mic, date);
-            return;
-        }
-        final var tickers = marketStackService.findExchangeTickersBase(mic);
-        if (tickers.isEmpty()) {
-            log.info("<<< no tickers found for: {}", mic);
-            return;
-        }
-        final var symbols = tickers.stream().map(ExchangeTicker::getSymbol).toList();
-        try {
-            final var response = marketStackApi.eodDate(date, Optional.of(mic), symbols,
-                Optional.of(LIMIT), Optional.of(total), Optional.empty());
-            final var pagination = response.getPagination();
-            log.debug(">>> eodBars found: {}, {}, {}, {}", mic, date, symbols, pagination);
-            if (pagination.getCount() > 0) {
-                marketStackService.saveExchangeTickersEOD(response.getData());
-                marketStackService.saveExchangeTickersEODTags(mic, instant);
-            }
-        } catch (ApiException ignore) {
-            // marketStackApi error will be logged in RestClient.defaultStatusHandler
         }
     }
 

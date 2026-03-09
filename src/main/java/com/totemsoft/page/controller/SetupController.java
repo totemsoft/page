@@ -14,6 +14,7 @@ import com.totemsoft.page.exchangerates.v1.model.CurrencyDto;
 import com.totemsoft.page.marketstack.v2.model.ExchangeDto;
 import com.totemsoft.page.marketstack.v2.model.ExchangeTickerDto;
 import com.totemsoft.page.model.KeyDto;
+import com.totemsoft.page.model.LoadDto;
 import com.totemsoft.page.model.Pagination;
 import com.totemsoft.page.model.SearchResult;
 import com.totemsoft.page.model.TagDto;
@@ -42,7 +43,8 @@ class SetupController {
     }
 
     @PostMapping("/setup/tagType")
-    Integer saveTagType(@RequestBody TagTypeDto tagTypeDto) {
+    Integer saveTagType(
+            @RequestBody TagTypeDto tagTypeDto) {
         return setupService.saveTagType(tagTypeDto);
     }
 
@@ -56,7 +58,8 @@ class SetupController {
     }
 
     @PostMapping("/setup/tag")
-    Long saveTag(@RequestBody TagDto tagDto) {
+    Long saveTag(
+            @RequestBody TagDto tagDto) {
         return setupService.saveTag(tagDto);
     }
 
@@ -69,12 +72,14 @@ class SetupController {
     }
 
     @PostMapping("/setup/key")
-    Long saveKey(@RequestBody KeyDto keyDto) {
+    Long saveKey(
+            @RequestBody KeyDto keyDto) {
         return setupService.saveKey(keyDto);
     }
 
     @GetMapping("/setup/tagByKey/{keyId}")
-    SearchResult<TagDto> findTagsByKey(@PathVariable long keyId) {
+    SearchResult<TagDto> findTagsByKey(
+            @PathVariable long keyId) {
         return SearchResult.<TagDto>builder()
             .columns(TagDto.columnsTagsByKey(setupService.tagTypeDropdownOptions()))
             .data(setupService.findTagsByKey(keyId))
@@ -82,7 +87,8 @@ class SetupController {
     }
 
     @PostMapping("/setup/key/{keyId}/tags")
-    void saveKeyTags(@PathVariable long keyId,
+    void saveKeyTags(
+            @PathVariable long keyId,
             @RequestBody List<Long> tagIds) {
         setupService.saveKeyTags(keyId, tagIds);
     }
@@ -111,7 +117,8 @@ class SetupController {
     }
 
     @PostMapping("/setup/exchange")
-    String saveExchange(@RequestBody ExchangeDto exchangeDto) {
+    String saveExchange(
+            @RequestBody ExchangeDto exchangeDto) {
         return setupService.saveExchange(exchangeDto);
     }
 
@@ -127,8 +134,15 @@ class SetupController {
     }
 
     @PostMapping("/setup/exchangeTicker")
-    void saveExchangeTicker(@RequestBody ExchangeTickerDto exchangeTickerDto) {
+    void saveExchangeTicker(
+            @RequestBody ExchangeTickerDto exchangeTickerDto) {
         setupService.saveExchangeTicker(exchangeTickerDto);
+    }
+
+    @PostMapping("/setup/exchangeTicker/load")
+    void loadExchangeTickers(
+            @RequestBody LoadDto<String> loadDto) {
+        setupService.loadExchangeTickers(loadDto);
     }
 
 }

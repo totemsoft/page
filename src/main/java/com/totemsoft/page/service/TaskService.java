@@ -100,11 +100,12 @@ class TaskService {
             } else {
                 log.debug("<<< marketStackTask exchanges already loaded");
             }
-            // save tickers for selected base exchanges
+            // save tickers/EOD for selected base exchanges
             final var mics = marketStackService.findExchangeBaseMic();
-            log.debug(">>> saving exchangeTickers for: {}", mics);
-            mics.forEach(this::saveExchangeTickers);
+            //log.debug(">>> saving exchangeTickers for: {}", mics);
+            //mics.forEach(mic -> marketStackService.saveExchangeTickers(mic, LIMIT, 0));
             // save eodBars for selected base tickers
+            log.debug(">>> saving exchangeTickers EOD for: {}", mics);
             mics.forEach(this::saveExchangeTickersEOD);
             //
             log.info("<<< marketStackTask completed at: {}", LocalTime.now());
@@ -112,23 +113,6 @@ class TaskService {
             // marketStackApi error will be logged in RestClient.defaultStatusHandler
         } catch (Throwable ignore) {
             log.warn("<<< marketStackTask failed:", ignore);
-        }
-    }
-
-    private void saveExchangeTickers(String mic) {
-        final var total = marketStackService.countExchangeTickers(mic);
-        // XNAS total=45204 (NASDAQ - ALL MARKETS)
-        if (total % LIMIT != 0) {
-            log.debug("<<< {} exchangeTickers already loaded for: {}", total, mic);
-            return;
-        }
-        try {
-            final var response = marketStackApi.exchangeTickers(mic,
-                Optional.of(LIMIT), Optional.of(total));
-            log.debug(">>> exchangeTickers found: {} {}", mic, response.getPagination());
-            marketStackService.saveExchangeTickers(mic, response.getData().getTickers());
-        } catch (ApiException ignore) {
-            // marketStackApi error will be logged in RestClient.defaultStatusHandler
         }
     }
 

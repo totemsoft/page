@@ -18,6 +18,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import com.totemsoft.page.model.Cell;
 import com.totemsoft.page.model.ColumnDef;
 import com.totemsoft.page.model.KeyDto;
+import com.totemsoft.page.model.LoadDto;
 import com.totemsoft.page.model.PageDto;
 import com.totemsoft.page.model.PageResponse;
 import com.totemsoft.page.model.Pagination;
@@ -39,6 +40,7 @@ import lombok.extern.log4j.Log4j2;
     Cell.class,
     ColumnDef.class,
     KeyDto.class,
+    LoadDto.class,
     PageDto.class,
     PageResponse.class,
     Pagination.class,

@@ -532,6 +532,7 @@ YAHOO.page.setup = {
                 const callback = YAHOO.page.emptyCallback;
                 callback.scope = YAHOO.page.setup.exchangeTickerDataTable;
                 callback.argument = data;
+                // POST /setup/exchangeTicker
                 YAHOO.page.sendPostRequest(YAHOO.page.setup.liveData + entityName, callback, exchangeTickerDto);
             });
             YAHOO.page.setup.exchangeTickerDataTable = dataTable;
@@ -539,6 +540,19 @@ YAHOO.page.setup = {
             const elExchange = YUD.get(entityName + '.exchange');
             YUE.addListener(elExchange, 'change', function(ev) {
                 YAHOO.page.updateDataTable(YAHOO.page.setup.exchangeTickerDataTable);
+            });
+            // load more tickers from api
+            new YAHOO.widget.Button(entityName + '.loadButton').on('click', function(e) {
+                const dto = {
+                    id: elExchange.value, // mic
+                    limit: 1000,
+                    remainder: -1
+                };
+                const callback = YAHOO.page.emptyCallback;
+                callback.scope = YAHOO.page.setup.exchangeTickerDataTable;
+                //callback.argument = ?;
+                // POST /setup/exchangeTicker/load
+                YAHOO.page.sendPostRequest(YAHOO.page.setup.liveData + entityName + '/load', callback, dto);
             });
         } else {
             YAHOO.page.updateDataTable(YAHOO.page.setup.exchangeTickerDataTable);

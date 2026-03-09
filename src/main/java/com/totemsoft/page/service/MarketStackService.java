@@ -2,9 +2,11 @@ package com.totemsoft.page.service;
 
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
+import com.totemsoft.page.marketstack.v2.api.MarketStackApi;
 import com.totemsoft.page.marketstack.v2.model.EODBarDto;
 import com.totemsoft.page.marketstack.v2.model.ExchangeDto;
 import com.totemsoft.page.marketstack.v2.model.ExchangeTickerDto;
@@ -26,6 +28,8 @@ import lombok.extern.log4j.Log4j2;
 @RequiredArgsConstructor
 @Log4j2
 class MarketStackService {
+
+    private final MarketStackApi marketStackApi;
 
     private final KeyTaggingService keyTaggingService;
 
@@ -52,16 +56,27 @@ class MarketStackService {
         return exchangeRepository.save(marketStackMapper.mapExchange(dto));
     }
 
-    int countExchangeTickers(String mic) {
-        return exchangeTickerRepository.countByMic(mic);
+    void saveExchangeTickers(String mic, int limit, int remainder) {
+        log.debug(">>> saving exchangeTickers for: {}", mic);
+        final var total = exchangeTickerRepository.countByMic(mic);
+        // XNAS total=45270 (NASDAQ - ALL MARKETS)
+        if (remainder >= 0 && total % limit != remainder) {
+            log.debug("<<< {} exchangeTickers already loaded for: {}", total, mic);
+            return;
+        }
+        try {
+            final var response = marketStackApi.exchangeTickers(mic,
+                Optional.of(limit), Optional.of(total));
+            log.debug(">>> exchangeTickers found: {} {}", mic, response.getPagination());
+            final var tickers = response.getData().getTickers();
+            tickers.forEach(ticker -> exchangeTickerRepository.save(marketStackMapper.mapExchangeTicker(mic, ticker)));
+        } catch (ApiException ignore) {
+            // marketStackApi error will be logged in RestClient.defaultStatusHandler
+        }
     }
 
     List<ExchangeTicker> findExchangeTickersBase(String mic) {
         return exchangeTickerRepository.findByMicAndBaseTrue(mic);
-    }
-
-    void saveExchangeTickers(String mic, List<ExchangeTickerDto> tickers) {
-        tickers.forEach(ticker -> exchangeTickerRepository.save(marketStackMapper.mapExchangeTicker(mic, ticker)));
     }
 
     ExchangeTicker saveExchangeTicker(String mic, ExchangeTickerDto dto) {

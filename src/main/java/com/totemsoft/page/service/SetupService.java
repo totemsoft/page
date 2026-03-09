@@ -14,6 +14,7 @@ import com.totemsoft.page.marketstack.v2.model.ExchangeDto;
 import com.totemsoft.page.marketstack.v2.model.ExchangeTickerDto;
 import com.totemsoft.page.model.ColumnDef.DropdownOption;
 import com.totemsoft.page.model.KeyDto;
+import com.totemsoft.page.model.LoadDto;
 import com.totemsoft.page.model.Pagination;
 import com.totemsoft.page.model.SearchData;
 import com.totemsoft.page.model.TagDto;
@@ -50,6 +51,7 @@ import lombok.extern.log4j.Log4j2;
 public class SetupService {
 
     private final KeyTaggingService keyTaggingService;
+    private final MarketStackService marketStackService;
 
     private final DropdownOptionMapper dropdownOptionMapper;
     private final ExchangeRateMapper exchangeRateMapper;
@@ -227,7 +229,7 @@ public class SetupService {
     }
 
     public void saveExchangeTicker(ExchangeTickerDto dto) {
-        log.trace("saving: {}", dto);
+        log.trace("saveExchangeTicker: {}", dto);
         final var mic = dto.getMic();
         final var symbol = dto.getSymbol();
         var entity = exchangeTickerRepository.findById(new ExchangeTickerId(mic, symbol))
@@ -235,6 +237,11 @@ public class SetupService {
         entity.setBase(dto.getBase());
         entity = exchangeTickerRepository.save(entity);
         keyTaggingService.saveTag(entity);
+    }
+
+    public void loadExchangeTickers(LoadDto<String> dto) {
+        log.debug("loadExchangeTickers: {}", dto);
+        marketStackService.saveExchangeTickers(dto.getId(), dto.getLimit(), dto.getRemainder());
     }
 
 }

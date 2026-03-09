@@ -82,15 +82,16 @@
         <div id="exchangeTickerDialog">
             <div class="hd">Stock Exchange Ticker</div>
             <div class="bd">
-                <div class="table-container">
-                    <div>
-                        <div class="right">Stock Exchange:</div>
-                        <div>
-                            <select id="exchangeTicker.exchange">
-                                <option value="" th:text="#{option.null}"></option>
-                                <option th:each="item: ${exchanges}" th:value="${item.mic}" th:text="${item.name}"></option>
-                            </select>
-                        </div>
+                <div class="yui-gb">
+                    <div class="yui-u first right">Stock Exchange:</div>
+                    <div class="yui-u">
+                        <select id="exchangeTicker.exchange">
+                            <option value="" th:text="#{option.null}"></option>
+                            <option th:each="item: ${exchanges}" th:value="${item.mic}" th:text="${item.name}"></option>
+                        </select>
+                    </div>
+                    <div class="yui-u right">
+                        <input type="button" id="exchangeTicker.loadButton" title="Load more tickers" value="Load" />
                     </div>
                 </div>
                 <div id="paginator.hd.exchangeTicker"></div>

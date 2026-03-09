@@ -111,6 +111,7 @@ public class SecurityConfig {
             final var parsed = new String(header.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
             return StrictHttpFirewall.ALLOWED_HEADER_VALUES.test(parsed);
         });
+        //firewall.setAllowedParameterNames(StrictHttpFirewall.ALLOWED_PARAMETER_NAMES); // default
         firewall.setAllowedParameterValues(value -> {
             // In the case of parameter values, consider parsing them as UTF-8 at verification time (default is to allow any parameter value)
             final var parsed = new String(value.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);

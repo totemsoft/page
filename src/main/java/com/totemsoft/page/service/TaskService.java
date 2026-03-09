@@ -15,7 +15,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.totemsoft.page.exchangerates.v1.api.ExchangeRatesApi;
-import com.totemsoft.page.marketstack.v2.api.MarketStackApi;
 import com.totemsoft.page.model.entity.SeriesData;
 import com.totemsoft.page.repository.KeyRepository;
 import com.totemsoft.page.repository.SeriesDataRepository;
@@ -29,14 +28,11 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 class TaskService {
 
-    private static final int LIMIT = 1000;
-
     /** exchangeratesapi base currency */
     @Value("${page.exchangeratesapi.io.base-currency}")
     private String baseCurrency;
 
     private final ExchangeRatesApi exchangeRatesApi;
-    private final MarketStackApi marketStackApi;
 
     private final ExchangeRateService exchangeRateService;
     private final KeyTaggingService keyTaggingService;
@@ -86,16 +82,8 @@ class TaskService {
             return;
         }
         try {
-            // retrieve exchanges via API
-            final var total = marketStackService.countExchanges(); // pagination.total=2817
-            if (total < 2817) {
-                final var response = marketStackApi.exchanges(
-                    Optional.of(LIMIT), Optional.of(total), Optional.empty());
-                log.debug(">>> exchanges found: {}", response.getPagination());
-                marketStackService.saveExchanges(response.getData());
-            } else {
-                log.debug("<<< marketStackTask exchanges already loaded");
-            }
+            // retrieve exchanges via API and save
+            marketStackService.saveExchanges();
             // save tickers/EOD for selected base exchanges
             final var mics = marketStackService.findExchangeBaseMic();
             //log.debug(">>> saving exchangeTickers for: {}", mics);

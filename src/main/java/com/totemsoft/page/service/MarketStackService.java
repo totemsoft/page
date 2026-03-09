@@ -52,11 +52,21 @@ class MarketStackService {
             .stream().map(e -> e.getMic()).toList();
     }
 
-    void saveExchanges(List<ExchangeDto> exchanges) {
-        exchanges.forEach(this::saveExchange);
+    void saveExchanges() {
+        // retrieve exchanges via API
+        final var total = this.countExchanges(); // pagination.total=2817
+        if (total < 2817) {
+            final var response = marketStackApi.exchanges(
+                Optional.of(LIMIT), Optional.of(total), Optional.empty());
+            log.debug(">>> exchanges found: {}", response.getPagination());
+            final var exchanges = response.getData();
+            exchanges.forEach(this::saveExchange);
+        } else {
+            log.debug("<<< marketStackTask exchanges already loaded");
+        }
     }
 
-    Exchange saveExchange(ExchangeDto dto) {
+    private Exchange saveExchange(ExchangeDto dto) {
         return exchangeRepository.save(marketStackMapper.mapExchange(dto));
     }
 

@@ -28,7 +28,7 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 class TaskService {
 
-    private static final String CRON = "0 0 6 * * *"; // 8:00:00, @daily, @midnight
+    private static final String CRON = "0 0 9 * * *"; // 8:00:00, @daily, @midnight
 
     /** exchangeratesapi base currency */
     @Value("${page.exchangeratesapi.io.base-currency}")

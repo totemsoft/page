@@ -31,7 +31,7 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 class MarketStackService {
 
-    private static final int LIMIT = 1000;
+    static final int LIMIT = 1000;
 
     private final MarketStackApi marketStackApi;
 

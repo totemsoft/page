@@ -89,7 +89,7 @@ class TaskService {
             // save tickers/EOD for selected base exchanges
             final var mics = marketStackService.findExchangeBaseMic();
             //log.debug(">>> saving exchangeTickers for: {}", mics);
-            //mics.forEach(mic -> marketStackService.saveExchangeTickers(mic, LIMIT, 0));
+            //mics.forEach(mic -> marketStackService.saveExchangeTickers(mic, MarketStackService.LIMIT, 0));
             // save eodBars for selected base tickers
             log.debug(">>> saving exchangeTickers EOD for: {}", mics);
             mics.forEach(mic -> marketStackService.saveExchangeTickersEOD(mic, date));

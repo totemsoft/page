@@ -41,12 +41,16 @@ class KeyTaggingService {
     private final TagRepository tagRepository;
     private final TagTypeRepository tagTypeRepository;
 
-    Tag saveTag(String tagTypeName, String tagName, String tagTitle) {
-        final var tagType = tagTypeRepository.findByName(tagTypeName)
+    private TagType tagType(String tagTypeName) {
+        return tagTypeRepository.findByName(tagTypeName)
             .orElseGet(() -> tagTypeRepository.save(TagType.builder()
                 .name(tagTypeName)
                 .title(tagTypeName.toLowerCase().replace('_', ' '))
                 .build()));
+    }
+
+    Tag saveTag(String tagTypeName, String tagName, String tagTitle) {
+        final var tagType = tagType(tagTypeName);
         final int tagTypeId = tagType.getId();
         return tagRepository.findByTagTypeIdAndName(tagTypeId, tagName)
             .orElseGet(() -> tagRepository.save(Tag.builder()
@@ -57,8 +61,7 @@ class KeyTaggingService {
     }
 
     Tag findTag(String tagTypeName, String tagName) {
-        final var tagType = tagTypeRepository.findByName(tagTypeName)
-            .orElseThrow(() -> new EntityNotFoundException(tagTypeName, TagType.class));
+        final var tagType = tagType(tagTypeName);
         final int tagTypeId = tagType.getId();
         return tagRepository.findByTagTypeIdAndName(tagTypeId, tagName)
             .orElseThrow(() -> new EntityNotFoundException(tagTypeId + ':' + tagName, Tag.class));

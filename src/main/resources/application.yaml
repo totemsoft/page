@@ -17,6 +17,7 @@ logging:
     #org.springframework.boot.autoconfigure: DEBUG
     org.apache.tomcat.util.http: ERROR
     org.apache.catalina.connector.CoyoteAdapter: ERROR
+    org.apache.coyote.http11.Http11Processor: ERROR
 
 management:
   endpoints:

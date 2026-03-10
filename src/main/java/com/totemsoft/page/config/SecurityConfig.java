@@ -38,6 +38,7 @@ public class SecurityConfig {
                 .requestMatchers("/").permitAll()
                 .requestMatchers(HttpMethod.GET, "/css/**", "/js/**", "/*.json", "/*.ico").permitAll()
                 .requestMatchers("/*.php").denyAll()
+                //.requestMatchers(RegexRequestMatcher.regexMatcher("/.+\\.php\\?.*")).denyAll()
                 .anyRequest().authenticated()
             )
             .formLogin(c -> c

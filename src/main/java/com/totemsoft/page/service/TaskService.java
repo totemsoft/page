@@ -28,8 +28,6 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 class TaskService {
 
-    private static final String CRON = "0 0 9 * * *"; // 8:00:00, @daily, @midnight
-
     /** exchangeratesapi base currency */
     @Value("${page.exchangeratesapi.io.base-currency}")
     private String baseCurrency;
@@ -44,7 +42,7 @@ class TaskService {
     private final KeyRepository keyRepository;
     private final SeriesDataRepository seriesDataRepository;
 
-    @Scheduled(cron = CRON)
+    @Scheduled(cron = "${page.exchangeratesapi.io.cron}")
     @Scheduled(initialDelay = 5_000) // one-time
     void exchangeRateTask() {
         log.info(">>> exchangeRateTask started at: {}", LocalTime.now());
@@ -73,7 +71,7 @@ class TaskService {
         }
     }
 
-    @Scheduled(cron = CRON)
+    @Scheduled(cron = "${page.marketstack.com.cron}")
     //@Scheduled(initialDelay = 10_000) // one-time
     void marketStackTask() {
         log.info(">>> marketStackTask started at: {}", LocalTime.now());
@@ -102,7 +100,7 @@ class TaskService {
         }
     }
 
-    @Scheduled(cron = CRON)
+    @Scheduled(cron = "${page.test.cron}")
     @Scheduled(initialDelay = 15_000) // one-time
     @Transactional
     void seriesDataTask() {

@@ -7,9 +7,13 @@ page:
     base-currency: EUR # AUD,USD - base_currency_access_restricted
     base-url: https://api.exchangeratesapi.io/v1
     access-key: ${EXCHANGERATESAPI_ACCESS_KEY:accessKey}
+    cron: 0 0 9 * * *
   marketstack.com:
     base-url: https://api.marketstack.com/v2
     access-key: ${MARKETSTACK_ACCESS_KEY:accessKey}
+    cron: 30 0 9 * * *
+  test:
+    cron: '@daily'
 
 logging:
   level:

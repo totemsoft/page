@@ -12,6 +12,7 @@ import com.totemsoft.page.config.RoleEnum;
 import com.totemsoft.page.exchangerates.v1.model.CurrencyDto;
 import com.totemsoft.page.marketstack.v2.model.ExchangeDto;
 import com.totemsoft.page.marketstack.v2.model.ExchangeTickerDto;
+import com.totemsoft.page.marketstack.v2.model.PaginationDto;
 import com.totemsoft.page.model.ColumnDef.DropdownOption;
 import com.totemsoft.page.model.KeyDto;
 import com.totemsoft.page.model.LoadDto;
@@ -239,9 +240,9 @@ public class SetupService {
         keyTaggingService.saveTag(entity);
     }
 
-    public void loadExchangeTickers(LoadDto<String> dto) {
+    public PaginationDto loadExchangeTickers(LoadDto<String> dto) {
         log.debug("loadExchangeTickers: {}", dto);
-        marketStackService.saveExchangeTickers(dto.getId(), dto.getLimit(), dto.getRemainder());
+        return marketStackService.saveExchangeTickers(dto.getId(), dto.getLimit(), dto.getRemainder());
     }
 
 }

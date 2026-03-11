@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.totemsoft.page.exchangerates.v1.model.CurrencyDto;
 import com.totemsoft.page.marketstack.v2.model.ExchangeDto;
 import com.totemsoft.page.marketstack.v2.model.ExchangeTickerDto;
+import com.totemsoft.page.marketstack.v2.model.PaginationDto;
 import com.totemsoft.page.model.KeyDto;
 import com.totemsoft.page.model.LoadDto;
 import com.totemsoft.page.model.Pagination;
@@ -140,9 +141,9 @@ class SetupController {
     }
 
     @PostMapping("/setup/exchangeTicker/load")
-    void loadExchangeTickers(
+    PaginationDto loadExchangeTickers(
             @RequestBody LoadDto<String> loadDto) {
-        setupService.loadExchangeTickers(loadDto);
+        return setupService.loadExchangeTickers(loadDto);
     }
 
 }

@@ -6,12 +6,14 @@ import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import com.totemsoft.page.marketstack.v2.api.MarketStackApi;
 import com.totemsoft.page.marketstack.v2.model.EODBarDto;
 import com.totemsoft.page.marketstack.v2.model.ExchangeDto;
 import com.totemsoft.page.marketstack.v2.model.ExchangeTickerDto;
+import com.totemsoft.page.marketstack.v2.model.PaginationDto;
 import com.totemsoft.page.model.entity.Tag;
 import com.totemsoft.page.model.entity.marketstack.EODBar;
 import com.totemsoft.page.model.entity.marketstack.Exchange;
@@ -70,22 +72,30 @@ class MarketStackService {
         return exchangeRepository.save(marketStackMapper.mapExchange(dto));
     }
 
-    void saveExchangeTickers(String mic, int limit, int remainder) {
-        log.debug(">>> saving exchangeTickers for: {}", mic);
+    PaginationDto saveExchangeTickers(String mic, int limit, int remainder) {
+        if (StringUtils.isBlank(mic)) {
+            return null;
+        }
         final var total = exchangeTickerRepository.countByMic(mic);
-        // XNAS total=45270 (NASDAQ - ALL MARKETS)
+        // e.g. XNAS (NASDAQ - ALL MARKETS) total=45282
         if (remainder >= 0 && total % limit != remainder) {
             log.debug("<<< {} exchangeTickers already loaded for: {}", total, mic);
-            return;
+            return PaginationDto.builder()
+                .limit(limit)
+                .total(total)
+                .build();
         }
         try {
             final var response = marketStackApi.exchangeTickers(mic,
                 Optional.of(limit), Optional.of(total));
-            log.debug(">>> exchangeTickers found: {} {}", mic, response.getPagination());
+            final var pagination = response.getPagination();
+            log.debug(">>> exchangeTickers found: {} {}", mic, pagination);
             final var tickers = response.getData().getTickers();
             tickers.forEach(ticker -> exchangeTickerRepository.save(marketStackMapper.mapExchangeTicker(mic, ticker)));
+            return pagination;
         } catch (ApiException ignore) {
             // marketStackApi error will be logged in RestClient.defaultStatusHandler
+            return null;
         }
     }
 

@@ -9,6 +9,7 @@ page:
     access-key: ${EXCHANGERATESAPI_ACCESS_KEY:accessKey}
     cron: 0 0 5 * * *
   marketstack.com:
+    default-currency: USD
     base-url: https://api.marketstack.com/v2
     access-key: ${MARKETSTACK_ACCESS_KEY:accessKey}
     cron: 0 0 8 * * *

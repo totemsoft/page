@@ -35,6 +35,10 @@ class KeyTaggingService {
     @Value("${page.exchangeratesapi.io.base-currency}")
     private String baseCurrency;
 
+    /** exchangeratesapi base currency */
+    @Value("${page.marketstack.com.default-currency}")
+    private String defaultCurrency;
+
     private final CurrencyRepository currencyRepository;
     private final KeyRepository keyRepository;
     private final SeriesDataRepository seriesDataRepository;
@@ -60,7 +64,7 @@ class KeyTaggingService {
                 .build()));
     }
 
-    Tag findTag(String tagTypeName, String tagName) {
+    private Tag findTag(String tagTypeName, String tagName) {
         final var tagType = tagType(tagTypeName);
         final int tagTypeId = tagType.getId();
         return tagRepository.findByTagTypeIdAndName(tagTypeId, tagName)
@@ -85,7 +89,7 @@ class KeyTaggingService {
             findTag(Currency.CURRENCY_CODE, entity.getCode()));
     }
 
-    Key saveKey(ExchangeRate entity) {
+    private Key saveKey(ExchangeRate entity) {
         final var keyName = entity.getKeyName();
         return keyRepository.findByName(keyName)
             .orElseGet(() -> keyRepository.save(Key.builder()
@@ -121,7 +125,7 @@ class KeyTaggingService {
             findTag(EODBar.ASSET_CLASS, EODBar.ASSET_CLASS_STOCK));
     }
 
-    Key saveKey(EODBar entity) {
+    private Key saveKey(EODBar entity) {
         final var keyName = entity.getKeyName();
         return keyRepository.findByName(keyName)
             .orElseGet(() -> keyRepository.save(Key.builder()
@@ -148,7 +152,6 @@ class KeyTaggingService {
     }
 
     private String priceCurrency(EODBar entity) {
-        final var defaultCurrency = "USD";
         return Optional.ofNullable(entity.getPriceCurrency())
             .orElseGet(() -> currencyRepository.existsById(defaultCurrency) ? defaultCurrency : baseCurrency);
     }

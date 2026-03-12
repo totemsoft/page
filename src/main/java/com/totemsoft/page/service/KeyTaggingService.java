@@ -64,7 +64,7 @@ class KeyTaggingService {
         final var tagType = tagType(tagTypeName);
         final int tagTypeId = tagType.getId();
         return tagRepository.findByTagTypeIdAndName(tagTypeId, tagName)
-            .orElseThrow(() -> new EntityNotFoundException(tagTypeId + ':' + tagName, Tag.class));
+            .orElseGet(() -> saveTag(tagTypeName, tagName, tagName));
     }
 
     void saveCurrencyTags() {

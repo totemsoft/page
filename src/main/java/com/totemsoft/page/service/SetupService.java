@@ -100,14 +100,14 @@ public class SetupService {
     }
 
     public SearchData<TagTypeDto> findTagTypes() {
-        final var tagTypes = tagTypeRepository.findAll(Sort.by("title"));
+        final var tagTypes = tagTypeRepository.findAll(Sort.by("name"));
         return SearchData.<TagTypeDto>builder()
             .records(setupMapper.mapTagType(tagTypes))
             .build();
     }
 
     public List<DropdownOption> tagTypeDropdownOptions() {
-        final var tagTypes = tagTypeRepository.findAll(Sort.by("title"));
+        final var tagTypes = tagTypeRepository.findAll(Sort.by("name"));
         return dropdownOptionMapper.mapTagType(tagTypes);
     }
 

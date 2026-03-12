@@ -30,6 +30,7 @@ INSERT INTO tag_type (tag_type_name, tag_type_title) SELECT * FROM (VALUES
   ('TAG_TYPE_01', 'Tag Type 01'), -- row
   ('TAG_TYPE_02', 'Tag Type 02') -- column
 ) WHERE NOT EXISTS (SELECT 1 FROM tag_type);
+DELETE FROM tag_type WHERE tag_type_name IN ('TAG_TYPE_03', 'TAG_TYPE_04', 'TAG_TYPE_05', 'TAG_TYPE_06', 'TAG_TYPE_07', 'TAG_TYPE_08', 'TAG_TYPE_09', 'TAG_TYPE_10');
 
 INSERT INTO tag (tag_name, tag_title, tag_type_id) SELECT * FROM (VALUES
   ('TAG_01', 'Tag 01', 1), -- row

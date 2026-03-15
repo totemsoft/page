@@ -26,11 +26,9 @@ import com.totemsoft.page.model.SeriesDataDto;
 import com.totemsoft.page.model.entity.SeriesData;
 import com.totemsoft.page.model.entity.SubSection;
 import com.totemsoft.page.model.entity.Tag;
-import com.totemsoft.page.model.entity.exchangerates.ExchangeRate;
 import com.totemsoft.page.model.entity.exchangerates.ExchangeRateId;
 import com.totemsoft.page.model.mapper.ExchangeRateMapper;
 import com.totemsoft.page.model.mapper.SeriesDataMapper;
-import com.totemsoft.page.repository.ExchangeRateRepository;
 import com.totemsoft.page.repository.SeriesDataRepository;
 import com.totemsoft.page.repository.SubSectionRepository;
 
@@ -49,7 +47,8 @@ public class SubSectionService {
     @Value("${page.exchangeratesapi.io.base-currency}")
     private String baseCurrency;
 
-    private final ExchangeRateRepository exchangeRateRepository;
+    private final ExchangeRateService exchangeRateService;
+
     private final SubSectionRepository subSectionRepository;
     private final SeriesDataRepository seriesDataRepository;
 
@@ -125,8 +124,7 @@ public class SubSectionService {
             .base(baseCurrency)
             .code(pageCurrency)
             .build();
-        final var pageExchangeRate = exchangeRateRepository.findById(pageExchangeRateId)
-            .orElseThrow(() -> new EntityNotFoundException(pageExchangeRateId, ExchangeRate.class));
+        final var pageExchangeRate = exchangeRateService.findExchangeRate(pageExchangeRateId);
         // find subSection data currency
         final var sameCurrency = data.stream().allMatch(SeriesData::sameCurrency);
         final var subSectionCurrency = sameCurrency ?
@@ -142,9 +140,8 @@ public class SubSectionService {
                 .base(baseCurrency)
                 .code(subSectionCurrency)
                 .build();
-            final var subSectionExchangeRate = exchangeRateRepository.findById(subSectionExchangeRateId);
-            exchangeRate = exchangeRateMapper.map(subSectionExchangeRate
-                .orElseThrow(() -> new EntityNotFoundException(subSectionExchangeRateId, ExchangeRate.class)));
+            final var subSectionExchangeRate = exchangeRateService.findExchangeRate(subSectionExchangeRateId);
+            exchangeRate = exchangeRateMapper.map(subSectionExchangeRate);
             exchangeRate.setRate(pageExchangeRate.getRate().divide(exchangeRate.getRate(), RoundingMode.HALF_UP));
             exchangeRate.setBase(subSectionCurrency);
             exchangeRate.setCode(pageCurrency);

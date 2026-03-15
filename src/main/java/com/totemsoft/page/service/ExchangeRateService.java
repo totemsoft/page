@@ -1,5 +1,6 @@
 package com.totemsoft.page.service;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDate;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import com.totemsoft.page.exchangerates.v1.model.ExchangeRates;
 import com.totemsoft.page.model.entity.exchangerates.Currency;
 import com.totemsoft.page.model.entity.exchangerates.ExchangeRate;
+import com.totemsoft.page.model.entity.exchangerates.ExchangeRateId;
 import com.totemsoft.page.repository.CurrencyRepository;
 import com.totemsoft.page.repository.ExchangeRateRepository;
 
@@ -48,6 +50,20 @@ class ExchangeRateService {
 
     boolean existsByDateExchangeRate(LocalDate date) {
         return exchangeRateRepository.existsByDate(date);
+    }
+
+    ExchangeRate findExchangeRate(ExchangeRateId exchangeRateId) {
+        final var date = exchangeRateId.getDate();
+        if (!exchangeRateId.getBase().equals(exchangeRateId.getCode()) || existsByDateExchangeRate(date)) {
+            return exchangeRateRepository.findById(exchangeRateId)
+                .orElseThrow(() -> new EntityNotFoundException(exchangeRateId, ExchangeRate.class));
+        }
+        return ExchangeRate.builder()
+            .date(date)
+            .base(exchangeRateId.getBase())
+            .code(exchangeRateId.getCode())
+            .rate(BigDecimal.ONE)
+            .build();
     }
 
     List<ExchangeRate> saveExchangeRates(ExchangeRates exchangeRates) {

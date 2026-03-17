@@ -120,11 +120,13 @@ class MarketStackService {
             final var response = marketStackApi.eodDate(date, Optional.of(mic), symbols,
                 Optional.of(LIMIT), Optional.of(total), Optional.empty());
             final var pagination = response.getPagination();
-            log.debug(">>> eodBars found: {}, {}, {}, {}", mic, date, symbols, pagination);
             if (pagination.getCount() > 0) {
+                log.debug(">>> eodBars found: {}, {}, {}, {}", mic, date, symbols, pagination);
                 final var bars = response.getData();
                 bars.forEach(this::saveExchangeTickerEOD);
                 saveExchangeTickersEODTags(mic, instant);
+            } else {
+                log.debug(">>> eodBars NOT found: {}, {}, {}, {}", mic, date, symbols, pagination);
             }
         } catch (ApiException ignore) {
             // marketStackApi error will be logged in RestClient.defaultStatusHandler

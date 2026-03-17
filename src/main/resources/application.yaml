@@ -12,7 +12,7 @@ page:
     default-currency: USD
     base-url: https://api.marketstack.com/v2
     access-key: ${MARKETSTACK_ACCESS_KEY:accessKey}
-    cron: 0 0 7 * * *
+    cron: 0 0 8 * * *
   test:
     cron: '@daily'
 

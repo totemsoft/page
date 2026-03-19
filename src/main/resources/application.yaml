@@ -22,6 +22,8 @@ logging:
     #org.springframework.boot.autoconfigure: DEBUG
     org.apache.tomcat.util.http: ERROR
     org.apache.catalina.connector.CoyoteAdapter: ERROR
+    org.apache.catalina.core: ERROR
+    org.apache.catalina.core.ContainerBase: off
     org.apache.coyote.http11.Http11Processor: ERROR
 
 management:

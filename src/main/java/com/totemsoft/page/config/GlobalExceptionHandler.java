@@ -29,7 +29,8 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<Object> handle(EntityNotFoundException ex, WebRequest request) {
         final HttpStatus status = HttpStatus.NOT_FOUND;
-        return errorAndLogException(status, ex, null);
+        return error(status, ex, ex.getMessage());
+        //return errorAndLogException(status, ex, ex.getMessage());
     }
 
     //@ExceptionHandler(HttpRequestMethodNotSupportedException.class)

@@ -37,7 +37,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @Override
     protected @Nullable ResponseEntity<Object> handleHttpRequestMethodNotSupported(
             HttpRequestMethodNotSupportedException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
-        return error(status, ex, null);
+        return error(status, ex, request.getContextPath());
         //return super.handleHttpRequestMethodNotSupported(ex, headers, status, request);
     }
 

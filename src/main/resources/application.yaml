@@ -82,6 +82,7 @@ spring:
   transaction:
     rollback-on-commit-failure: true
   web:
+    #error.whitelabel.enabled: false
     resources:
       cache:
         period: 15

@@ -39,6 +39,7 @@ import lombok.extern.log4j.Log4j2;
 @RegisterReflectionForBinding({
     Cell.class,
     ColumnDef.class,
+    ErrorResponse.class,
     KeyDto.class,
     LoadDto.class,
     PageDto.class,

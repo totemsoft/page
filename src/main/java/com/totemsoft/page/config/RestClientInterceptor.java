@@ -6,6 +6,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.Arrays;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpRequest;
@@ -13,6 +16,8 @@ import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.stereotype.Component;
+
+import com.totemsoft.page.marketstack.v2.api.MarketStackApi;
 
 import lombok.extern.log4j.Log4j2;
 
@@ -55,11 +60,26 @@ public class RestClientInterceptor implements ClientHttpRequestInterceptor {
     }
 
     public Path getFilePath(URI uri) throws IOException {
-        log.trace("URI: {}", uri);
+        log.debug("URI: {}", uri.getPath());
         final var path = uri.getPath();
-        //final var query = uri.getQuery();
+        final var query = uri.getQuery();
+        final var params = Arrays.stream(query.split("&"))
+            .map(elem -> elem.split("="))
+            .collect(Collectors.toMap(e -> e[0], e -> e[1]));
+        log.debug("URI params: {}", params);
+        final var exchange = Optional.ofNullable(params.get(MarketStackApi.EXCHANGE));
+        final var search = Optional.ofNullable(params.get(MarketStackApi.SEARCH));
+        final var symbols = Optional.ofNullable(params.get(MarketStackApi.SYMBOLS));
+        final var limit = Optional.ofNullable(params.get(MarketStackApi.LIMIT));
+        final var offset = Optional.ofNullable(params.get(MarketStackApi.OFFSET));
         // replace any character that is NOT a letter, number, dot, underscore, or hyphen with an underscore
-        final var fileName = path.replaceAll("[^a-zA-Z0-9._-]", "_") + ".json";
+        final var fileName = path.replaceAll("[^a-zA-Z0-9._-]", "_")
+            + '_' + exchange.orElse("")
+            + '_' + search.orElse("")
+            + '_' + symbols.orElse("")
+            + '_' + limit.orElse("")
+            + '_' + offset.orElse("")
+            + ".json";
         log.trace(">>> fileName: {}", fileName);
         final var host = uri.getHost();
         final var filePath = apiPath.resolve(host, fileName).normalize();

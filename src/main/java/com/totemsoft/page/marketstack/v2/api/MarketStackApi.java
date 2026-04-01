@@ -23,6 +23,13 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class MarketStackApi {
 
+    private static final String ACCESS_KEY = "access_key";
+    public static final String EXCHANGE = "exchange";
+    public static final String SEARCH = "search";
+    public static final String SYMBOLS = "symbols";
+    public static final String LIMIT = "limit";
+    public static final String OFFSET = "offset";
+
     @Value("${page.marketstack.com.access-key}")
     private String accessKey;
 
@@ -43,10 +50,10 @@ public class MarketStackApi {
         final var response = marketStackApiRestClient.get()
             .uri(uriBuilder -> uriBuilder
                 .path("/exchanges")
-                .queryParam("access_key", accessKey)
-                .queryParam("limit", limit.orElse(100))
-                .queryParam("offset", offset.orElse(0))
-                .queryParam("search", search.orElse(""))
+                .queryParam(ACCESS_KEY, accessKey)
+                .queryParam(LIMIT, limit.orElse(100))
+                .queryParam(OFFSET, offset.orElse(0))
+                .queryParam(SEARCH, search.orElse(""))
                 .build())
             .accept(MediaType.APPLICATION_JSON)
             .retrieve()
@@ -69,9 +76,9 @@ public class MarketStackApi {
         final var response = marketStackApiRestClient.get()
             .uri(uriBuilder -> uriBuilder
                 .path("/exchanges/{mic}/tickers")
-                .queryParam("access_key", accessKey)
-                .queryParam("limit", limit.orElse(100))
-                .queryParam("offset", offset.orElse(0))
+                .queryParam(ACCESS_KEY, accessKey)
+                .queryParam(LIMIT, limit.orElse(100))
+                .queryParam(OFFSET, offset.orElse(0))
                 .build(Map.of("mic", mic)))
             .accept(MediaType.APPLICATION_JSON)
             .retrieve()
@@ -99,10 +106,10 @@ public class MarketStackApi {
         final var response = marketStackApiRestClient.get()
             .uri(uriBuilder -> uriBuilder
                 .path("/exchanges/{mic}/eod/{date}")
-                .queryParam("access_key", accessKey)
-                .queryParam("symbols", String.join(",", symbols))
-                .queryParam("limit", limit.orElse(100))
-                .queryParam("offset", offset.orElse(0))
+                .queryParam(ACCESS_KEY, accessKey)
+                .queryParam(SYMBOLS, String.join(",", symbols))
+                .queryParam(LIMIT, limit.orElse(100))
+                .queryParam(OFFSET, offset.orElse(0))
                 .build(Map.of("mic", mic, "date", date)))
             .accept(MediaType.APPLICATION_JSON)
             .retrieve()
@@ -131,11 +138,11 @@ public class MarketStackApi {
         final var response = marketStackApiRestClient.get()
             .uri(uriBuilder -> uriBuilder
                 .path("/eod/{date}")
-                .queryParam("access_key", accessKey)
-                .queryParam("exchange", exchange.orElse(""))
-                .queryParam("symbols", String.join(",", symbols))
-                .queryParam("limit", limit.orElse(100))
-                .queryParam("offset", offset.orElse(0))
+                .queryParam(ACCESS_KEY, accessKey)
+                .queryParam(EXCHANGE, exchange.orElse(""))
+                .queryParam(SYMBOLS, String.join(",", symbols))
+                .queryParam(LIMIT, limit.orElse(100))
+                .queryParam(OFFSET, offset.orElse(0))
                 .queryParam("sort", sort.orElse("ASC"))
                 .build(Map.of("date", date)))
             .accept(MediaType.APPLICATION_JSON)

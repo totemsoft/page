@@ -13,8 +13,10 @@ import com.totemsoft.page.model.entity.marketstack.ExchangeTickerId;
 public interface ExchangeTickerRepository extends JpaRepository<ExchangeTicker, ExchangeTickerId> {
 
     int countByMic(String mic);
+    int countByMicAndNameNotNullAndNameNot(String mic, String name);
 
     List<ExchangeTicker> findByMic(String mic, Pageable pageable);
+    List<ExchangeTicker> findByMicAndNameNotNullAndNameNot(String mic, String name, Pageable pageable);
 
     List<ExchangeTicker> findByMicAndBaseTrue(String mic);
 

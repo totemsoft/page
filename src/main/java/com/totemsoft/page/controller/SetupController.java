@@ -126,11 +126,12 @@ class SetupController {
     @GetMapping("/setup/exchangeTicker")
     SearchResult<ExchangeTickerDto> findExchangeTickers(
             @RequestParam(name = "mic") Optional<String> mic,
+            @RequestParam(name = "nameNotEmpty") Optional<Boolean> nameNotEmpty,
             Pagination pagination) {
-        log.trace("findExchangeTickers for {}: {}", mic, pagination);
+        log.trace("findExchangeTickers for {}/{}: {}", mic, nameNotEmpty, pagination);
         return SearchResult.<ExchangeTickerDto>builder()
             .columns(ExchangeTickerDto.columns(true))
-            .data(setupService.findExchangeTickers(mic, pagination))
+            .data(setupService.findExchangeTickers(mic, nameNotEmpty, pagination))
             .build();
     }
 

@@ -1,5 +1,6 @@
 package com.totemsoft.page.service;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -207,26 +208,36 @@ public class SetupService {
 
     public SearchData<ExchangeTickerDto> findExchangeTickers(
             Optional<String> mic,
+            Optional<Boolean> nameNotEmpty,
             Pagination pagination) {
         final Integer total;
         if (mic.isPresent()) {
-            total = exchangeTickerRepository.countByMic(mic.get());
+            total = nameNotEmpty.orElse(false) ?
+                exchangeTickerRepository.countByMicAndNameNotNullAndNameNot(mic.get(), "") :
+                exchangeTickerRepository.countByMic(mic.get());
         } else {
             total = pagination.getTotal();
         }
-        final var sort = Sort.by("base").descending().and(Sort.by("symbol"));
         return SearchData.<ExchangeTickerDto>builder()
-            .records(mic.isEmpty() ? List.of() : marketStackMapper.mapExchangeTicker(
-                exchangeTickerRepository.findByMic(mic.get(),
-                    PageRequest.of(
-                        pagination.getPage(),
-                        pagination.getLimit(),
-                        sort))
-            ))
+            .records(mic.isEmpty() ? List.of() : marketStackMapper.mapExchangeTicker(tickers(mic.get(), nameNotEmpty.orElse(false), pagination)))
             .offset(pagination.getOffset())
             .limit(pagination.getLimit())
             .total(total)
             .build();
+    }
+
+    private Collection<ExchangeTicker> tickers(
+            String mic,
+            boolean nameNotEmpty,
+            Pagination pagination) {
+        final var sort = Sort.by("base").descending().and(Sort.by("symbol"));
+        final var pageable = PageRequest.of(
+            pagination.getPage(),
+            pagination.getLimit(),
+            sort);
+        return nameNotEmpty ?
+            exchangeTickerRepository.findByMicAndNameNotNullAndNameNot(mic, "", pageable) :
+            exchangeTickerRepository.findByMic(mic, pageable);
     }
 
     public void saveExchangeTicker(ExchangeTickerDto dto) {

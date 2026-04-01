@@ -499,6 +499,7 @@ YAHOO.page.setup = {
                 const mic = YUD.get(entityName + '.exchange').value;
                 if (mic) {
                     request += '?mic=' + mic;
+                    request += '&nameNotEmpty=' + 'true'; // TODO: add UI control
                     request += '&' + YAHOO.page.paginationRequestBuilder(oState);
                 }
                 return request;

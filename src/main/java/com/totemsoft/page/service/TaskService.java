@@ -43,7 +43,7 @@ class TaskService {
     private final SeriesDataRepository seriesDataRepository;
 
     @Scheduled(cron = "${page.exchangeratesapi.io.cron}")
-    //@Scheduled(initialDelay = 5_000) // one-time
+    @Scheduled(initialDelay = 5_000) // one-time
     void exchangeRateTask() {
         log.info(">>> exchangeRateTask started at: {}", LocalTime.now());
         try {

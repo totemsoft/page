@@ -23,7 +23,7 @@ import lombok.extern.log4j.Log4j2;
 @Log4j2
 public class MarketStackApi {
 
-    private static final String ACCESS_KEY = "access_key";
+    public static final String ACCESS_KEY = "access_key";
     public static final String EXCHANGE = "exchange";
     public static final String SEARCH = "search";
     public static final String SYMBOLS = "symbols";

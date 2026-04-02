@@ -10,6 +10,7 @@ import org.springframework.web.client.RestClient;
 
 import com.totemsoft.page.exchangerates.v1.model.ExchangeRateSymbols;
 import com.totemsoft.page.exchangerates.v1.model.ExchangeRates;
+import com.totemsoft.page.marketstack.v2.api.MarketStackApi;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -18,6 +19,10 @@ import lombok.extern.log4j.Log4j2;
 @RequiredArgsConstructor
 @Log4j2
 public class ExchangeRatesApi {
+
+    private static final String ACCESS_KEY = MarketStackApi.ACCESS_KEY; // "access_key";
+    public static final String BASE = "base";
+    private static final String SYMBOLS = MarketStackApi.SYMBOLS; // "symbols";
 
     @Value("${page.exchangeratesapi.io.access-key}")
     private String accessKey;
@@ -33,7 +38,7 @@ public class ExchangeRatesApi {
         final var response = exchangeRatesApiRestClient.get()
             .uri(uriBuilder -> uriBuilder
                 .path("/symbols")
-                .queryParam("access_key", accessKey)
+                .queryParam(ACCESS_KEY, accessKey)
                 .build())
             .accept(MediaType.APPLICATION_JSON)
             .retrieve()
@@ -46,9 +51,9 @@ public class ExchangeRatesApi {
         final var response = exchangeRatesApiRestClient.get()
             .uri(uriBuilder -> uriBuilder
                 .path("/latest")
-                .queryParam("access_key", accessKey)
-                .queryParam("base", baseCurrency)
-                .queryParam("symbols", symbols.orElse(""))
+                .queryParam(ACCESS_KEY, accessKey)
+                .queryParam(BASE, baseCurrency)
+                .queryParam(SYMBOLS, symbols.orElse(""))
                 .build())
             .accept(MediaType.APPLICATION_JSON)
             .retrieve()
@@ -61,9 +66,9 @@ public class ExchangeRatesApi {
         final var response = exchangeRatesApiRestClient.get()
             .uri(uriBuilder -> uriBuilder
                 .path("/{date}")
-                .queryParam("access_key", accessKey)
-                .queryParam("base", baseCurrency)
-                .queryParam("symbols", symbols.orElse(""))
+                .queryParam(ACCESS_KEY, accessKey)
+                .queryParam(BASE, baseCurrency)
+                .queryParam(SYMBOLS, symbols.orElse(""))
                 .build(date))
             .accept(MediaType.APPLICATION_JSON)
             .retrieve()

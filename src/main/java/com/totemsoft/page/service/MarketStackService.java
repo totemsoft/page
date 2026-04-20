@@ -1,6 +1,5 @@
 package com.totemsoft.page.service;
 
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneOffset;
 import java.util.List;
@@ -129,8 +128,7 @@ class MarketStackService {
             if (pagination.getCount() > 0) {
                 log.debug(">>> eodBars found: {}, {}/{}, {}, {}", mic, date, instant, symbols, pagination);
                 final var bars = response.getData();
-                bars.forEach(this::saveExchangeTickerEOD);
-                saveExchangeTickersEODTags(mic, instant);
+                bars.forEach(bar -> saveExchangeTickersEODTag(saveExchangeTickerEOD(bar)));
             } else {
                 log.debug(">>> eodBars NOT found: {}, {}/{}, {}, {}", mic, date, instant, symbols, pagination);
             }
@@ -147,11 +145,6 @@ class MarketStackService {
         final var entity = eodBarRepository.save(marketStackMapper.mapEODBar(dto));
         keyTaggingService.saveSeriesDataKey(entity);
         return entity;
-    }
-
-    private void saveExchangeTickersEODTags(String exchange, Instant date) {
-        final var bars = eodBarRepository.findByExchangeAndDateAfter(exchange, date);
-        bars.forEach(this::saveExchangeTickersEODTag);
     }
 
     // api/supported_tickers_2.csv

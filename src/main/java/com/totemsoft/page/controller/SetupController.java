@@ -147,4 +147,10 @@ class SetupController {
         return setupService.loadExchangeTickers(loadDto);
     }
 
+    @PostMapping("/setup/exchangeTicker/loadData")
+    void loadExchangeTickersData(
+            @RequestBody LoadDto<String> loadDto) {
+        setupService.loadExchangeTickersData(loadDto);
+    }
+
 }

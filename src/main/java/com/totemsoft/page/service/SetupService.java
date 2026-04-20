@@ -256,4 +256,9 @@ public class SetupService {
         return marketStackService.saveExchangeTickers(dto.getId(), dto.getLimit(), dto.getRemainder());
     }
 
+    public void loadExchangeTickersData(LoadDto<String> dto) {
+        log.debug("loadExchangeTickersData: {}", dto);
+        marketStackService.saveExchangeTickersData(dto.getId(), dto.getDate());
+    }
+
 }

@@ -543,7 +543,7 @@ YAHOO.page.setup = {
                 YAHOO.page.updateDataTable(YAHOO.page.setup.exchangeTickerDataTable);
             });
             // load more tickers from api
-            new YAHOO.widget.Button(entityName + '.loadButton').on('click', function(e) {
+            new YAHOO.widget.Button(entityName + '.loadTickersButton').on('click', function(e) {
                 const dto = {
                     id: elExchange.value, // mic
                     limit: 1000,
@@ -554,6 +554,19 @@ YAHOO.page.setup = {
                 //callback.argument = ?;
                 // POST /setup/exchangeTicker/load
                 YAHOO.page.sendPostRequest(YAHOO.page.setup.liveData + entityName + '/load', callback, dto);
+            });
+            // load tickers data from api
+            new YAHOO.widget.Button(entityName + '.loadTickersDataButton').on('click', function(e) {
+                const date = YAHOO.page.pageDate();
+                const dto = {
+                    id: elExchange.value, // mic
+                    date: date
+                };
+                const callback = YAHOO.page.emptyCallback;
+                callback.scope = YAHOO.page.setup.exchangeTickerDataTable;
+                //callback.argument = ?;
+                // POST /setup/exchangeTicker/load
+                YAHOO.page.sendPostRequest(YAHOO.page.setup.liveData + entityName + '/loadData', callback, dto);
             });
         } else {
             YAHOO.page.updateDataTable(YAHOO.page.setup.exchangeTickerDataTable);

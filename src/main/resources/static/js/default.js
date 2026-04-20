@@ -178,12 +178,16 @@ YAHOO.page = {
             YAHOO.page.failureHandler(oResponse);
         }
     },
+    pageDate: function() {
+        const date = YUD.get('pageDate').value;
+        return date;
+    },
     reloadWindowCallback: {
         cache: false,
         success: function(oResponse) {
             const data = YAHOO.page.parseJsonData(oResponse.responseText, true);
             const pageId = data && data.pageId ? data.pageId : YAHOO.page.getPageId();
-            const date = YUD.get('pageDate').value;
+            const date = YAHOO.page.pageDate();
             YAHOO.page.reloadWindow(pageId, date);
         },
         failure: function(oResponse) {
@@ -458,7 +462,7 @@ YAHOO.page = {
         });
         const r = YUD.getRegion(elSubSection);
         const requestBuilder = function(oState, oDataTable) {
-            const date = YUD.get('pageDate').value;
+            const date = YAHOO.page.pageDate();
             let request = subSectionId + '/' + date;
             const currency = YUD.get('pageCurrency').value;
             request += '/' + currency;

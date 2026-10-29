@@ -12,11 +12,9 @@ import com.totemsoft.page.exchangerates.v1.model.ExchangeRateSymbols;
 import com.totemsoft.page.exchangerates.v1.model.ExchangeRates;
 import com.totemsoft.page.marketstack.v2.api.MarketStackApi;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
 @Service
-@RequiredArgsConstructor
 @Log4j2
 public class ExchangeRatesApi {
 
@@ -32,6 +30,10 @@ public class ExchangeRatesApi {
     private String baseCurrency;
 
     private final RestClient exchangeRatesApiRestClient;
+
+    public ExchangeRatesApi(RestClient exchangeRatesApiRestClient) {
+        this.exchangeRatesApiRestClient = exchangeRatesApiRestClient;
+    }
 
     public ExchangeRateSymbols symbols() {
         log.debug(">>> loading symbols");

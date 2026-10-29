@@ -48,11 +48,11 @@ class TaskService {
         log.info(">>> exchangeRateTask started at: {}", LocalTime.now());
         try {
             // retrieve currencies via API (one page default currency EUR is loaded via data.sql)
-            if (exchangeRateService.countCurrencies() < 2) {
-                final var symbols = exchangeRatesApi.symbols();
-                exchangeRateService.saveCurrencies(symbols.getSymbols());
+            //final var countCurrencies = exchangeRateService.countCurrencies();
+            //if (countCurrencies < 2) {
+                exchangeRateService.saveCurrencies(exchangeRatesApi.symbols().getSymbols());
                 keyTaggingService.saveCurrencyTags();
-            }
+            //}
             //
             final var date = pageService.latestDate();
             if (exchangeRateService.existsByDateExchangeRate(date)) {

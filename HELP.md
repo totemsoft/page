@@ -1,6 +1,7 @@
 # page-builder
     sdk list java
-    sdk install java 25.0.1-tem
+    sdk install java 25.0.5.0+8-tem
+    sdk use java 25.0.5.0+8-tem
 
     ./mvnw -version
     ./mvnw clean install -Dtest -DfailIfNoTests=false

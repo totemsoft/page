@@ -58,6 +58,7 @@ class TaskService {
         }
     }
 
+    @Scheduled(initialDelay = 10_000) // one-time
     @Scheduled(cron = "${page.exchangeratesapi.io.cron.exchangeRateTask}")
     void exchangeRateTask() {
         log.info(">>> exchangeRateTask started at: {}", LocalTime.now());
@@ -79,6 +80,7 @@ class TaskService {
         }
     }
 
+    //@Scheduled(initialDelay = 15_000) // one-time
     @Scheduled(cron = "${page.marketstack.com.cron.marketStackTask}")
     void marketStackTask() {
         log.info(">>> marketStackTask started at: {}", LocalTime.now());
@@ -107,6 +109,7 @@ class TaskService {
         }
     }
 
+    @Scheduled(initialDelay = 20_000) // one-time
     @Scheduled(cron = "${page.test.cron.seriesDataTask}")
     @Transactional
     void seriesDataTask() {

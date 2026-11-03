@@ -42,10 +42,9 @@ class TaskService {
     private final KeyRepository keyRepository;
     private final SeriesDataRepository seriesDataRepository;
 
-    @Scheduled(cron = "${page.exchangeratesapi.io.cron}")
-    @Scheduled(initialDelay = 5_000) // one-time
-    void exchangeRateTask() {
-        log.info(">>> exchangeRateTask started at: {}", LocalTime.now());
+    @Scheduled(initialDelay = 5_000) // one-time on startup to refresh currency symbols
+    void currencyTask() {
+        log.info(">>> currencyTask started at: {}", LocalTime.now());
         try {
             // retrieve currencies via API (one page default currency EUR is loaded via data.sql)
             //final var countCurrencies = exchangeRateService.countCurrencies();
@@ -53,7 +52,16 @@ class TaskService {
                 exchangeRateService.saveCurrencies(exchangeRatesApi.symbols().getSymbols());
                 keyTaggingService.saveCurrencyTags();
             //}
-            //
+            log.info("<<< currencyTask completed at: {}", LocalTime.now());
+        } catch (Throwable ignore) {
+            log.warn("<<< currencyTask failed:", ignore);
+        }
+    }
+
+    @Scheduled(cron = "${page.exchangeratesapi.io.cron.exchangeRateTask}")
+    void exchangeRateTask() {
+        log.info(">>> exchangeRateTask started at: {}", LocalTime.now());
+        try {
             final var date = pageService.latestDate();
             if (exchangeRateService.existsByDateExchangeRate(date)) {
                 log.info("<<< exchangeRates already loaded for: {}", date);
@@ -71,8 +79,7 @@ class TaskService {
         }
     }
 
-    @Scheduled(cron = "${page.marketstack.com.cron}")
-    //@Scheduled(initialDelay = 10_000) // one-time
+    @Scheduled(cron = "${page.marketstack.com.cron.marketStackTask}")
     void marketStackTask() {
         log.info(">>> marketStackTask started at: {}", LocalTime.now());
         final var date = pageService.latestDate();
@@ -100,8 +107,7 @@ class TaskService {
         }
     }
 
-    @Scheduled(cron = "${page.test.cron}")
-    @Scheduled(initialDelay = 15_000) // one-time
+    @Scheduled(cron = "${page.test.cron.seriesDataTask}")
     @Transactional
     void seriesDataTask() {
         log.info(">>> seriesDataTask started at: {}", LocalTime.now());
